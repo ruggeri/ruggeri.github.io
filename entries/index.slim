@@ -3,5 +3,5 @@ h1 Entries
 ul
   - published_entries.each do |e|
     li
-      a href="/dist/#{e.relative_target_path}"
+      a href="./dist/#{e.relative_target_path}"
         = e.meta.title
