@@ -18,7 +18,9 @@ end
 
 `mkdir -p #{entry_dir}`
 File.open(slim_fname, "w") do |f|
-  f.puts "h1 HELLO WORLD"
+  f.puts "markdown:"
+  f.puts "  # #\{meta.title\}"
+  f.puts "  Your fabulous content goes here!"
 end
 File.open(yaml_fname, "w") do |f|
   f.puts ({

@@ -43,7 +43,7 @@ class Entry
 
   def content
     source = File.read(content_path)
-    content = Slim::Template.new { source }.render
+    content = Slim::Template.new { source }.render(nil, { meta: meta })
     content
   end
 
