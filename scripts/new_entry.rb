@@ -22,7 +22,9 @@ File.open(slim_fname, "w") do |f|
 end
 File.open(yaml_fname, "w") do |f|
   f.puts ({
-            "title" => basename
+            "title" => basename,
+            "is_published" => false,
+            "publication_time" => nil,
           }).to_yaml
 end
 

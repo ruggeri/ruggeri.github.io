@@ -1,0 +1,5 @@
+ul
+  - published_entries.each do |e|
+    li
+      a href="./#{e.relative_target_path}"
+        = e.meta.title
