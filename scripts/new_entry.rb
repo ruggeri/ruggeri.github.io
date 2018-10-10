@@ -6,9 +6,9 @@ ENTRIES_DIR = "./entries"
 
 basename = ARGV.shift
 date_string = Time.now.strftime("%Y-%m-%d")
+# If no basename is given that's okay.
+basename ||= date_string
 entry_dir = "#{ENTRIES_DIR}/#{date_string}"
-
-raise "WTF" unless basename
 
 slim_fname = "#{entry_dir}/#{basename}.slim"
 yaml_fname = "#{entry_dir}/#{basename}.yaml"
