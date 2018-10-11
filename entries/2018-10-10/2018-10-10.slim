@@ -71,4 +71,37 @@ markdown:
         qsort (resliceArraySlice as (pivotIdx + 1) rightLen)
   ```
 
-  Look at that highlighting! Wow oh wow!
+  Look at that highlighting! Wow oh wow! How about some C++?
+
+  ```cpp
+  void sort(std::vector<int>& nums, int start, int len) {
+    if (len == 0) {
+      return;
+    }
+
+    int pivotIdx = start;
+    const int pivot = nums[pivotIdx];
+    for (int idx = start; idx < start+len; idx += 1) {
+      int val = nums[idx];
+      if (pivot <= val) {
+        continue;
+      }
+
+      nums[pivotIdx] = val;
+      nums[idx] = nums[pivotIdx + 1];
+      nums[pivotIdx + 1] = pivot;
+      pivotIdx += 1;
+    }
+
+    int numLeft = pivotIdx - start;
+    int numRight = (start + len) - (pivotIdx + 1);
+
+    // printVector(nums);
+    if (numLeft > 0) {
+      sort(nums, start, numLeft);
+    }
+    if (numRight > 0) {
+      sort(nums, pivotIdx + 1, numRight);
+    }
+  }
+  ```

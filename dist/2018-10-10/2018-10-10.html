@@ -47,7 +47,37 @@ $$</span><br /></p>
 <a class="sourceLine" id="cb1-8" data-line-number="8">      qsort (resliceArraySlice as <span class="dv">0</span> leftLen)</a>
 <a class="sourceLine" id="cb1-9" data-line-number="9">      <span class="kw">let</span> rightLen <span class="fu">=</span> (asLength as) <span class="fu">-</span> (pivotIdx <span class="fu">+</span> <span class="dv">1</span>)</a>
 <a class="sourceLine" id="cb1-10" data-line-number="10">      qsort (resliceArraySlice as (pivotIdx <span class="fu">+</span> <span class="dv">1</span>) rightLen)</a></code></pre></div>
-<p>Look at that highlighting! Wow oh wow!</p></div></div></div></body><script type="text/x-mathjax-config">MathJax.Hub.Config({
+<p>Look at that highlighting! Wow oh wow! How about some C++?</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode cpp"><code class="sourceCode cpp"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="dt">void</span> sort(<span class="bu">std::</span>vector&lt;<span class="dt">int</span>&gt;&amp; nums, <span class="dt">int</span> start, <span class="dt">int</span> len) {</a>
+<a class="sourceLine" id="cb2-2" data-line-number="2">  <span class="cf">if</span> (len == <span class="dv">0</span>) {</a>
+<a class="sourceLine" id="cb2-3" data-line-number="3">    <span class="cf">return</span>;</a>
+<a class="sourceLine" id="cb2-4" data-line-number="4">  }</a>
+<a class="sourceLine" id="cb2-5" data-line-number="5"></a>
+<a class="sourceLine" id="cb2-6" data-line-number="6">  <span class="dt">int</span> pivotIdx = start;</a>
+<a class="sourceLine" id="cb2-7" data-line-number="7">  <span class="at">const</span> <span class="dt">int</span> pivot = nums[pivotIdx];</a>
+<a class="sourceLine" id="cb2-8" data-line-number="8">  <span class="cf">for</span> (<span class="dt">int</span> idx = start; idx &lt; start+len; idx += <span class="dv">1</span>) {</a>
+<a class="sourceLine" id="cb2-9" data-line-number="9">    <span class="dt">int</span> val = nums[idx];</a>
+<a class="sourceLine" id="cb2-10" data-line-number="10">    <span class="cf">if</span> (pivot &lt;= val) {</a>
+<a class="sourceLine" id="cb2-11" data-line-number="11">      <span class="cf">continue</span>;</a>
+<a class="sourceLine" id="cb2-12" data-line-number="12">    }</a>
+<a class="sourceLine" id="cb2-13" data-line-number="13"></a>
+<a class="sourceLine" id="cb2-14" data-line-number="14">    nums[pivotIdx] = val;</a>
+<a class="sourceLine" id="cb2-15" data-line-number="15">    nums[idx] = nums[pivotIdx + <span class="dv">1</span>];</a>
+<a class="sourceLine" id="cb2-16" data-line-number="16">    nums[pivotIdx + <span class="dv">1</span>] = pivot;</a>
+<a class="sourceLine" id="cb2-17" data-line-number="17">    pivotIdx += <span class="dv">1</span>;</a>
+<a class="sourceLine" id="cb2-18" data-line-number="18">  }</a>
+<a class="sourceLine" id="cb2-19" data-line-number="19"></a>
+<a class="sourceLine" id="cb2-20" data-line-number="20">  <span class="dt">int</span> numLeft = pivotIdx - start;</a>
+<a class="sourceLine" id="cb2-21" data-line-number="21">  <span class="dt">int</span> numRight = (start + len) - (pivotIdx + <span class="dv">1</span>);</a>
+<a class="sourceLine" id="cb2-22" data-line-number="22"></a>
+<a class="sourceLine" id="cb2-23" data-line-number="23">  <span class="co">// printVector(nums);</span></a>
+<a class="sourceLine" id="cb2-24" data-line-number="24">  <span class="cf">if</span> (numLeft &gt; <span class="dv">0</span>) {</a>
+<a class="sourceLine" id="cb2-25" data-line-number="25">    sort(nums, start, numLeft);</a>
+<a class="sourceLine" id="cb2-26" data-line-number="26">  }</a>
+<a class="sourceLine" id="cb2-27" data-line-number="27">  <span class="cf">if</span> (numRight &gt; <span class="dv">0</span>) {</a>
+<a class="sourceLine" id="cb2-28" data-line-number="28">    sort(nums, pivotIdx + <span class="dv">1</span>, numRight);</a>
+<a class="sourceLine" id="cb2-29" data-line-number="29">  }</a>
+<a class="sourceLine" id="cb2-30" data-line-number="30">}</a></code></pre></div></div></div></div></body><script type="text/x-mathjax-config">MathJax.Hub.Config({
   tex2jax: {
       inlineMath: [['$', '$']],
       displayMath: [['$$', '$$']],
