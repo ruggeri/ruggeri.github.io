@@ -47,6 +47,11 @@ class Entry
     content
   end
 
+  def full_content
+    template_source = File.read("./templates/default.slim")
+    Slim::Template.new { template_source }.render { content }
+  end
+
   def meta
     return @meta if @meta
     @meta = EntryMeta.new YAML.load(File.read(meta_path))
@@ -54,7 +59,7 @@ class Entry
   end
 
   def write_out_to_file!(file)
-    file.puts content
+    file.puts full_content
   end
 
   def content_basename
