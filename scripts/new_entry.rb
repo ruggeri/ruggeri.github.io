@@ -19,7 +19,9 @@ end
 `mkdir -p #{entry_dir}`
 File.open(slim_fname, "w") do |f|
   f.puts "markdown:"
-  f.puts "  # #\{meta.title\}"
+  # Weird, but Pandoc will generate an id randomly and give
+  # non-deterministic output??
+  f.puts "  # #\{meta.title\} {id=title}"
   f.puts "  Your fabulous content goes here!"
 end
 File.open(yaml_fname, "w") do |f|
