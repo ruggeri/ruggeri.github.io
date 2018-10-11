@@ -55,3 +55,20 @@ markdown:
   We have established the contradiction. It must not be possible to
   write $\sqrt{2}$ as $\frac{a}{b}$, which means $\sqrt{2}$ was not
   rational in the first place.
+
+  ## A little code!
+
+  ```haskell
+  qsort :: ArraySlice -> IO ()
+  qsort as
+    | (asLength as) == 0 = do
+        return ()
+    | otherwise = do
+        pivotIdx <- partition as 0 0
+        let leftLen = pivotIdx
+        qsort (resliceArraySlice as 0 leftLen)
+        let rightLen = (asLength as) - (pivotIdx + 1)
+        qsort (resliceArraySlice as (pivotIdx + 1) rightLen)
+  ```
+
+  Look at that highlighting! Wow oh wow!

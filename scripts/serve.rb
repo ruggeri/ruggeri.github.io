@@ -2,10 +2,12 @@
 
 require 'webrick'
 
-s = WEBrick::HTTPServer.new(:Port => 3000,  :DocumentRoot => ".")
+server = WEBrick::HTTPServer.new(:Port => 3000)
+
+server.mount '/blog2', WEBrick::HTTPServlet::FileHandler, './'
 
 trap("INT") {
-  s.shutdown
+  server.shutdown
 }
 
-s.start
+server.start
