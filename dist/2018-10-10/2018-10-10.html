@@ -1,15 +1,37 @@
-<head><meta charset="UTF-8" /><script async="" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"></script></head><h1 id="owqnl72jg">2018-10-10: First Post!</h1>
+<head><meta charset="UTF-8" /><script async="" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"></script></head><h1 id="ovdd9g9sc">2018-10-10: First Post!</h1>
 <p>Time to try blogging again! You can see the code for the simple setup I’m using <a href="https://github.com/ruggeri/blog2">here</a>.</p>
 <p>Here’s a quick test of my setup.</p>
 <h2 id="proof-that-sqrt2-is-irrational">Proof that <span class="math inline">$\sqrt{2}$</span> is irrational</h2>
-<p>Say that <span class="math inline">$\sqrt{2}$</span> were rational. Then therefore we must have:</p>
-<p>[[ \sqrt{2} = \frac{a}{b} ]]</p>
-<p>We may assume the fraction is in lowest terms. Which means <span class="math inline"><em>a</em>, <em>b</em></span> have no common factors.</p>
-<p>Now, consider:</p>
-<p>[[ 2 = \frac{ a^2 }{ b^2 } ]]</p>
-<p>Now, it is not possible that <span class="math inline">2</span> is a factor of both <span class="math inline"><em>a</em>, <em>b</em></span>, by our lowest terms assumption.</p><script type="text/x-mathjax-config">MathJax.Hub.Config({
+<p>Say that <span class="math inline">$\sqrt{2}$</span> were rational. We will aim to produce a contradiction. Then the definition of rationality implies that:</p>
+<p><br /><span class="math display">$$\sqrt{2} = \frac{a}{b}$$</span><br /></p>
+<p>for some <span class="math inline"><em>a</em>, <em>b</em></span> integers. Further, we may assume that the fraction is in lowest terms, which means that <span class="math inline"><em>a</em>, <em>b</em></span> share no factors.</p>
+<p>Now, squaring both sides tells us:</p>
+<p><br /><span class="math display">$$
+  \begin{align}
+    \sqrt{2} &amp;= \frac{a}{b}\\
+    2 &amp;= \frac{a^2}{b^2}\\
+    2 b^2 &amp;= a^2
+  \end{align}
+$$</span><br /></p>
+<p>This implies that 2 is a factor of <span class="math inline"><em>a</em><sup>2</sup></span>.</p>
+<p>Note that, if the prime factorization of <span class="math inline"><em>a</em></span> is:</p>
+<p><br /><span class="math display">$$
+  \begin{align}
+    a = p_1^{k_1} p_2^{k_2} \cdots p_n^{k_n}
+  \end{align}
+$$</span><br /></p>
+<p>then this implies</p>
+<p><br /><span class="math display">$$
+  \begin{align}
+    a^2 = p_1^{2k_1} p_2^{2k_2} \cdots p_n^{2k_n}
+  \end{align}
+$$</span><br /></p>
+<p>Therefore: if <span class="math inline"><em>p</em><sub><em>i</em></sub></span> is a prime factor which divides <span class="math inline"><em>a</em><sup>2</sup></span>, than in fact we must have <span class="math inline"><em>p</em><sub><em>i</em></sub><sup>2</sup></span> divides <span class="math inline"><em>a</em><sup>2</sup></span>.</p>
+<p>Therefore, we know that if 2 divides <span class="math inline"><em>a</em><sup>2</sup></span>, then so must <span class="math inline">2<sup>2</sup> = 4</span>. Which allows us to say that <span class="math inline">$\frac{a^2}{2}$</span> should still be divisible by 2.</p>
+<p>But note: <span class="math inline">$b = \frac{a^2}{2}$</span>. So therefore <span class="math inline"><em>b</em></span> should be divisible by 2. That would contradict our choice that <span class="math inline"><em>a</em>, <em>b</em></span> had no common factors.</p>
+<p>We have established the contradiction. It must not be possible to write <span class="math inline">$\sqrt{2}$</span> as <span class="math inline">$\frac{a}{b}$</span>, which means <span class="math inline">$\sqrt{2}$</span> was not rational in the first place.</p><script type="text/x-mathjax-config">MathJax.Hub.Config({
     tex2jax: {
         inlineMath: [['$', '$']],
-        displayMath: [['[[', ']]']],
+        displayMath: [['$$', '$$']],
     }
 });</script>

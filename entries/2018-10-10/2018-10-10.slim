@@ -8,16 +8,52 @@ markdown:
 
   ## Proof that $\sqrt{2}$ is irrational
 
-  Say that $\sqrt{2}$ were rational. Then therefore we must have:
+  Say that $\sqrt{2}$ were rational. We will aim to produce a
+  contradiction. Then the definition of rationality implies that:
 
-  [[ \\sqrt{2} = \\frac{a}{b} ]]
+  $$\sqrt{2} = \frac{a}{b}$$
 
-  We may assume the fraction is in lowest terms. Which means $a, b$ have
-  no common factors.
+  for some $a, b$ integers. Further, we may assume that the fraction is
+  in lowest terms, which means that $a, b$ share no factors.
 
-  Now, consider:
+  Now, squaring both sides tells us:
 
-  [[ 2 = \\frac{ a^2 }{ b^2 } ]]
+  $$
+    \begin{align}
+      \sqrt{2} &= \frac{a}{b}\\
+      2 &= \frac{a^2}{b^2}\\
+      2 b^2 &= a^2
+    \end{align}
+  $$
 
-  Now, it is not possible that $2$ is a factor of both $a, b$, by our
-  lowest terms assumption.
+  This implies that 2 is a factor of $a^2$.
+  
+  Note that, if the prime factorization of $a$ is:
+
+  $$
+    \begin{align}
+      a = p_1^{k_1} p_2^{k_2} \cdots p_n^{k_n}
+    \end{align}
+  $$
+  
+  then this implies
+
+  $$
+    \begin{align}
+      a^2 = p_1^{2k_1} p_2^{2k_2} \cdots p_n^{2k_n}
+    \end{align}
+  $$
+
+  Therefore: if $p_i$ is a prime factor which divides $a^2$, than
+  in fact we must have $p_i^2$ divides $a^2$.
+
+  Therefore, we know that if 2 divides $a^2$, then so must $2^2 = 4$.
+  Which allows us to say that $\frac{a^2}{2}$ should still be divisible
+  by 2.
+
+  But note: $b = \frac{a^2}{2}$. So therefore $b$ should be divisible by
+  2. That would contradict our choice that $a, b$ had no common factors.
+  
+  We have established the contradiction. It must not be possible to
+  write $\sqrt{2}$ as $\frac{a}{b}$, which means $\sqrt{2}$ was not
+  rational in the first place.
