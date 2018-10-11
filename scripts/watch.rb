@@ -1,0 +1,10 @@
+#!/usr/bin/env ruby
+
+require 'open3'
+
+Open3.popen3("fswatch ./entries") do |stdin, stdout, stderr, status, thread|
+  while changed_fname = stdout.gets
+    puts "Changed: #{changed_fname}"
+    `./scripts/build_all.rb`
+  end
+end
