@@ -25,6 +25,13 @@ body
       div class="col-12 col-md-8"
         == yield
 
+    div class="row justify-content-center"
+      div class="col-12 col-md-8"
+        h1 Comments!
+        javascript:
+          const url = "https://7n5x5r84kc.execute-api.us-west-2.amazonaws.com/production/comments?post_id=1234";
+          fetch(url, { mode: "cors" }).then(response => response.json()).then(json => console.log(json));
+
 script type="text/x-mathjax-config"
   |
     MathJax.Hub.Config({
