@@ -41,7 +41,7 @@ class Comments extends React.Component {
 
     return (
       <div>
-        <h1>Comments are cool!</h1>
+        <h1>Comments</h1>
 
         <CommentForm />
 
