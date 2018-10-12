@@ -1,4 +1,5 @@
 import React from 'react';
+import Comment from './/comment.jsx';
 import CommentForm from './comment_form.jsx';
 import API from './api.js';
 
@@ -13,9 +14,17 @@ class Comments extends React.Component {
 
   componentDidMount() {
     API.listenForComments((comments) => {
-      // Copy and sort.
+      // Copy and sort in reverse order.
       comments = comments.slice();
-      comments.sort((a, b) => a.created_at > b.created_at);
+      comments.sort((a, b) => {
+        if (a.created_at > b.created_at) {
+          return -1;
+        } else if (a.created_at == b.created_at) {
+          return 0;
+        } else {
+          return +1;
+        }
+      });
 
       this.setState({
         comments,
@@ -27,7 +36,7 @@ class Comments extends React.Component {
 
   render() {
     const commentEls = this.state.comments.map(
-      c => <li key={c.comment_id}>{c.text}</li>
+      c => <Comment comment={c} key={c.comment_id} />
     );
 
     return (
@@ -36,9 +45,9 @@ class Comments extends React.Component {
 
         <CommentForm />
 
-        <ul>
+        <div>
           {commentEls}
-        </ul>
+        </div>
       </div>
     );
   }
