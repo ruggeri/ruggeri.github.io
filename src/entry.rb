@@ -9,6 +9,10 @@ class EntryMeta
     @payload = meta_yaml_payload
   end
 
+  def entry_id
+    @payload["entry_id"]
+  end
+
   def is_published?
     @payload["is_published"]
   end
@@ -49,7 +53,7 @@ class Entry
 
   def full_content
     template_source = File.read("./templates/default.slim")
-    Slim::Template.new { template_source }.render { content }
+    Slim::Template.new { template_source }.render(nil, { meta: meta }) { content }
   end
 
   def meta

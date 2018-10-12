@@ -1,5 +1,6 @@
 #!/usr/bin/env ruby
 
+require 'securerandom'
 require 'yaml'
 
 ENTRIES_DIR = "./entries"
@@ -29,6 +30,7 @@ File.open(yaml_fname, "w") do |f|
             "title" => basename,
             "is_published" => false,
             "publication_time" => nil,
+            "entry_id" => SecureRandom::hex,
           }).to_yaml
 end
 
