@@ -1,7 +1,8 @@
 import $ from 'jquery';
+import { DateTime } from 'luxon';
 import xss from 'xss';
-import showdown from 'showdown';
 import React from 'react';
+import showdown from 'showdown';
 
 // Relies on highlight.js being loaded on the side.
 
@@ -31,6 +32,8 @@ class Comment extends React.PureComponent {
     const { author_name, text, created_at } = this.props.comment;
     const html = this.converter.makeHtml(text);
 
+    const datestring = DateTime.fromISO(created_at).toLocal().toFormat("ccc, d LLL yyyy hh:mm a");
+
     return (
       <div className="card mb-3">
         <div className="card-body">
@@ -40,7 +43,7 @@ class Comment extends React.PureComponent {
         <div className="card-footer text-muted">
           {xss(author_name)}
 
-          <span className="float-right">{this.props.isPreview ? "(preview)" : created_at }</span>
+          <span className="float-right">{this.props.isPreview ? "(preview)" : datestring }</span>
         </div>
       </div>
     );
