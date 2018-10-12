@@ -1,11 +1,10 @@
-import '@babel/polyfill';
-
 import React from 'react';
-import ReactDOM from 'react-dom';
+import CommentForm from './comment_form.jsx';
+import Config from './config.js';
 
 class Comments extends React.Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
 
     this.state = {
       comments: []
@@ -13,7 +12,7 @@ class Comments extends React.Component {
   }
 
   async componentDidMount() {
-    const url = "https://7n5x5r84kc.execute-api.us-west-2.amazonaws.com/production/comments?post_id=1234";
+    const url = `${Config.BASE_URL}?entry_id=${entryId}`;
     const responseBody = await (await fetch(url, { cors: true })).json();
     console.log(responseBody)
     
@@ -23,10 +22,15 @@ class Comments extends React.Component {
   }
 
   render() {
-    const commentEls = this.state.comments.map(c => <li key={c.comment_id}>{c.text}</li>);
+    const commentEls = this.state.comments.map(
+      c => <li key={c.comment_id}>{c.text}</li>
+    );
+
     return (
       <div>
         <h1>Comments are cool!</h1>
+
+        <CommentForm />
 
         <ul>
           {commentEls}
@@ -36,6 +40,4 @@ class Comments extends React.Component {
   }
 }
 
-const commentElement = document.getElementById("comments");
-
-ReactDOM.render(<Comments />, commentElement);
+export default Comments;

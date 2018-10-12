@@ -1,5 +1,5 @@
 module.exports = {
-  entry: "./comments.jsx",
+  entry: "./src/app.jsx",
   mode: "development",
   module: {
     rules: [
