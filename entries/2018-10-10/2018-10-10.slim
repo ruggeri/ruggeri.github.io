@@ -1,12 +1,11 @@
 markdown:
   # #{meta.title} {id=title}
 
-  Time to try blogging again! You can see the code for the simple setup
-  I'm using [here](https://github.com/ruggeri.gitub.io).
-
   Here's a quick test of my setup.
 
   ## Proof that $\sqrt{2}$ is irrational
+
+  Let's test that MathJax is setup correctly.
 
   Say that $\sqrt{2}$ were rational. We will aim to produce a
   contradiction. Then the definition of rationality implies that:
@@ -61,7 +60,9 @@ markdown:
   possible to write $\sqrt{2}$ as $\frac{a}{b}$, which means $\sqrt{2}$
   was not rational in the first place.
 
-  ## A little code!
+  ## Code highlighting
+  
+  Let's test out code highlighting for some Haskell code.
 
   ```haskell
   qsort :: ArraySlice -> IO ()
@@ -76,7 +77,7 @@ markdown:
         qsort (resliceArraySlice as (pivotIdx + 1) rightLen)
   ```
 
-  Look at that highlighting! Wow oh wow! How about some C++?
+  Look at that! Wow oh wow! How about some C++?
 
   ```cpp
   void sort(std::vector<int>& nums, int start, int len) {
@@ -110,3 +111,5 @@ markdown:
     }
   }
   ```
+
+  Okay, all done! Let's just finally check out some comments!

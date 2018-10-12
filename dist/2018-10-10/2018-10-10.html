@@ -22,10 +22,10 @@ p br:first-child, p br:last-child {
     margin. */
 .card-text :last-child {
   margin-bottom: 0;
-}</style></head><body><div class="container"><div class="row justify-content-center"><div class="col-12 col-md-8"><h1 id="title">2018-10-10: First Post!</h1>
-<p>Time to try blogging again! You can see the code for the simple setup I’m using <a href="https://github.com/ruggeri.gitub.io">here</a>.</p>
+}</style></head><body><div class="container"><div class="row justify-content-center"><div class="col-12 col-md-8"><h1 id="title">2018-10-10: Testing 1, 2, 3!</h1>
 <p>Here’s a quick test of my setup.</p>
 <h2 id="proof-that-sqrt2-is-irrational">Proof that <span class="math inline">$\sqrt{2}$</span> is irrational</h2>
+<p>Let’s test that MathJax is setup correctly.</p>
 <p>Say that <span class="math inline">$\sqrt{2}$</span> were rational. We will aim to produce a contradiction. Then the definition of rationality implies that:</p>
 <p><br /><span class="math display">$$\sqrt{2} = \frac{a}{b}$$</span><br /></p>
 <p>for some <span class="math inline"><em>a</em>, <em>b</em></span> integers. Further, we may assume that the fraction is in lowest terms, which means that <span class="math inline"><em>a</em>, <em>b</em></span> share no factors.</p>
@@ -55,7 +55,8 @@ $$</span><br /></p>
 <p>But note: <span class="math inline">$b^2 = \frac{a^2}{2}$</span>. So therefore <span class="math inline"><em>b</em><sup>2</sup></span> should be divisible by 2. But we already said about prime factors of squares: if 2 divides <span class="math inline"><em>b</em><sup>2</sup></span>, then it must also divide <span class="math inline"><em>b</em></span>.</p>
 <p>That would contradict our choice that <span class="math inline"><em>a</em>, <em>b</em></span> had no common factors.</p>
 <p>Therefore we have established the contradiction. It must not be possible to write <span class="math inline">$\sqrt{2}$</span> as <span class="math inline">$\frac{a}{b}$</span>, which means <span class="math inline">$\sqrt{2}$</span> was not rational in the first place.</p>
-<h2 id="a-little-code">A little code!</h2>
+<h2 id="code-highlighting">Code highlighting</h2>
+<p>Let’s test out code highlighting for some Haskell code.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="ot">qsort ::</span> <span class="dt">ArraySlice</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> ()</a>
 <a class="sourceLine" id="cb1-2" data-line-number="2">qsort as</a>
 <a class="sourceLine" id="cb1-3" data-line-number="3">  <span class="fu">|</span> (asLength as) <span class="fu">==</span> <span class="dv">0</span> <span class="fu">=</span> <span class="kw">do</span></a>
@@ -66,7 +67,7 @@ $$</span><br /></p>
 <a class="sourceLine" id="cb1-8" data-line-number="8">      qsort (resliceArraySlice as <span class="dv">0</span> leftLen)</a>
 <a class="sourceLine" id="cb1-9" data-line-number="9">      <span class="kw">let</span> rightLen <span class="fu">=</span> (asLength as) <span class="fu">-</span> (pivotIdx <span class="fu">+</span> <span class="dv">1</span>)</a>
 <a class="sourceLine" id="cb1-10" data-line-number="10">      qsort (resliceArraySlice as (pivotIdx <span class="fu">+</span> <span class="dv">1</span>) rightLen)</a></code></pre></div>
-<p>Look at that highlighting! Wow oh wow! How about some C++?</p>
+<p>Look at that! Wow oh wow! How about some C++?</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode cpp"><code class="sourceCode cpp"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="dt">void</span> sort(<span class="bu">std::</span>vector&lt;<span class="dt">int</span>&gt;&amp; nums, <span class="dt">int</span> start, <span class="dt">int</span> len) {</a>
 <a class="sourceLine" id="cb2-2" data-line-number="2">  <span class="cf">if</span> (len == <span class="dv">0</span>) {</a>
 <a class="sourceLine" id="cb2-3" data-line-number="3">    <span class="cf">return</span>;</a>
@@ -96,4 +97,5 @@ $$</span><br /></p>
 <a class="sourceLine" id="cb2-27" data-line-number="27">  <span class="cf">if</span> (numRight &gt; <span class="dv">0</span>) {</a>
 <a class="sourceLine" id="cb2-28" data-line-number="28">    sort(nums, pivotIdx + <span class="dv">1</span>, numRight);</a>
 <a class="sourceLine" id="cb2-29" data-line-number="29">  }</a>
-<a class="sourceLine" id="cb2-30" data-line-number="30">}</a></code></pre></div></div></div><div class="row justify-content-center"><div class="col-12 col-md-8" id="comments"><script src="/ui/dist/main.js"></script></div></div></div></body><script>hljs.initHighlightingOnLoad();</script>
+<a class="sourceLine" id="cb2-30" data-line-number="30">}</a></code></pre></div>
+<p>Okay, all done! Let’s just finally check out some comments!</p></div></div><div class="row justify-content-center"><div class="col-12 col-md-8" id="comments"><script src="/ui/dist/main.js"></script></div></div></div></body><script>hljs.initHighlightingOnLoad();</script>
