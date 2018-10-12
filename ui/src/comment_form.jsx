@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import Config from './config.js';
+import API from './api.js';
 import React from 'react';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 
@@ -19,21 +19,7 @@ class CommentForm extends React.Component {
   }
 
   async submitForm(comment) {
-    const payload = {
-      author_name: comment.author_name,
-      entry_id: entryId,
-      text: comment.text,
-    }
-
-    const responseJson = await (await fetch(
-      Config.BASE_URL, {
-        cors: true,
-        headers: { "Content-Type": "application/json; charset=utf-8" },
-        method: "POST",
-        body: JSON.stringify(payload),
-      })
-    ).json();
-    console.log(responseJson);
+    API.submitComment(comment);
   }
 
   render() {

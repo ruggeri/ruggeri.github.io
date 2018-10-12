@@ -1,6 +1,6 @@
 import React from 'react';
 import CommentForm from './comment_form.jsx';
-import Config from './config.js';
+import API from './api.js';
 
 class Comments extends React.Component {
   constructor(props) {
@@ -11,14 +11,18 @@ class Comments extends React.Component {
     };
   }
 
-  async componentDidMount() {
-    const url = `${Config.BASE_URL}?entry_id=${entryId}`;
-    const responseBody = await (await fetch(url, { cors: true })).json();
-    console.log(responseBody)
-    
-    this.setState({
-      comments: responseBody.comments
+  componentDidMount() {
+    API.listenForComments((comments) => {
+      // Copy and sort.
+      comments = comments.slice();
+      comments.sort((a, b) => a.created_at > b.created_at);
+
+      this.setState({
+        comments,
+      });
     });
+
+    API.fetchComments();
   }
 
   render() {
