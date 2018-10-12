@@ -13,14 +13,22 @@ class Comment extends React.PureComponent {
     this.textRef = React.createRef();
   }
 
-  componentDidMount() {
+  highlight() {
     $(this.textRef.current).find('pre code').each(function(i, block) {
       hljs.highlightBlock(block);
     });
   }
 
+  componentDidMount() {
+    this.highlight();
+  }
+
+  componentDidUpdate() {
+    this.highlight();
+  }
+
   render() {
-    const { author_name, text } = this.props.comment;
+    const { author_name, text, created_at } = this.props.comment;
     const html = this.converter.makeHtml(text);
 
     return (
@@ -31,6 +39,8 @@ class Comment extends React.PureComponent {
 
         <div className="card-footer text-muted">
           {xss(author_name)}
+
+          <span className="float-right">{this.props.isPreview ? "(preview)" : created_at }</span>
         </div>
       </div>
     );
