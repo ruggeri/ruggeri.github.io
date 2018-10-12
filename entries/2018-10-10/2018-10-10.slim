@@ -44,17 +44,22 @@ markdown:
     \end{align}
   $$
 
-  Thus, if $p_i$ is a prime factor which divides $a^2$, than in fact we
+  Note first: any prime factor $p_i$ of $a^2$ is also a factor of $a$.
+
+  More, if $p_i$ is a prime factor which divides $a^2$, than in fact we
   must have $p_i^2$ divides $a^2$. And since we know that 2 divides
   $a^2$, then so must $2^2 = 4$. Which allows us to say that
   $\frac{a^2}{2}$ should still be divisible by 2.
 
-  But note: $b = \frac{a^2}{2}$. So therefore $b$ should be divisible by
-  2. That would contradict our choice that $a, b$ had no common factors.
+  But note: $b^2 = \frac{a^2}{2}$. So therefore $b^2$ should be
+  divisible by 2. But we already said about prime factors of squares: if
+  2 divides $b^2$, then it must also divide $b$.
   
-  We have established the contradiction. It must not be possible to
-  write $\sqrt{2}$ as $\frac{a}{b}$, which means $\sqrt{2}$ was not
-  rational in the first place.
+  That would contradict our choice that $a, b$ had no common factors.
+  
+  Therefore we have established the contradiction. It must not be
+  possible to write $\sqrt{2}$ as $\frac{a}{b}$, which means $\sqrt{2}$
+  was not rational in the first place.
 
   ## A little code!
 
