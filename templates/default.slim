@@ -27,31 +27,16 @@ head
       });
   script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" async=true
 
-  / This is because pandoc likes to put brs before math display blocks.
-  css:
-    p {
-      font-family: 'EB Garamond', serif;
-      font-size: 14pt;
-    }
-
-    /* Math in a p tag should still be tex font. */
-    span.math.inline {
-      font-family: 'MJXc-TeX-math-I,MJXc-TeX-math-Ix,MJXc-TeX-math-Iw';
-    }
-
-    /* Hides the br that MathJax puts in front of display mode math. */
-    p br:first-child, p br:last-child {
-      display: none;
-    }
-
-    /* The last p tag in a comment card causes an unpleasant bottom
-        margin. */
-    .card-text :last-child {
-      margin-bottom: 0;
-    }
+  link href="/assets/styles.css" rel="stylesheet"
 
 body
   div class="container"
+    div class="row justify-content-center"
+      div class="col-12 col-md-8"
+        h2.title.display-2.mb-3
+          a href="/"
+            = "blog.self-loop.com"
+
     div class="row justify-content-center"
       div class="col-12 col-md-8"
         == yield
