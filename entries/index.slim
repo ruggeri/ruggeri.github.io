@@ -1,7 +1,40 @@
-h1 Entries
+head
+  meta charset="UTF-8"
+  meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"
+  title
+    = "blog.self-loop.com"
 
-ul
-  - published_entries.each do |e|
-    li
-      a href="./dist/#{e.relative_target_path}"
-        = e.meta.title
+  / Basic styling.
+  link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous"
+  link href="https://fonts.googleapis.com/css?family=EB+Garamond" rel="stylesheet"
+
+  / Math jax configuration and loading.
+  script type="text/x-mathjax-config"
+    |
+      MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [['$', '$']],
+            displayMath: [['$$', '$$']],
+        },
+      });
+  script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" async=true
+
+  link href="/assets/styles.css" rel="stylesheet"
+
+body
+  div class="container"
+    div class="row justify-content-center"
+      div class="col-12 col-md-8"
+        h2.title.display-2
+          a href="/"
+            = "blog.self-loop.com"
+
+    div class="row justify-content-center"
+      div class="col-12 col-md-8"
+        h1 Entries
+
+        ul
+          - published_entries.each do |e|
+            li
+              a href="./dist/#{e.relative_target_path}"
+                = e.meta.title
