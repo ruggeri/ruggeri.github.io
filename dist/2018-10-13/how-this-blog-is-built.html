@@ -4,7 +4,7 @@
       displayMath: [['$$', '$$']],
   },
 });</script><script async="" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"></script><link href="/assets/styles.css" rel="stylesheet" /></head><body><div class="container"><div class="row justify-content-center"><div class="col-12 col-md-8"><h2 class="title display-2 mb-3"><a href="/">blog.self-loop.com</a></h2></div></div><div class="row justify-content-center"><div class="col-12 col-md-8"><h1 class="mb-0">How this blog is built</h1><small class="text-muted">Published: </small><p>I’m pretty happy with how this blog has turned out. I wanted to explain how I built it.</p>
-<h2 id="generating-the-static-content">Generating the static content</h2>
+<h2 id="the-markdown-and-slim-content">The Markdown and Slim content</h2>
 <p>The first step of my blog system is generating the static HTML content. I write most of the blog content in <a href="https://pandoc.org/">Markdown</a> and <a href="http://slim-lang.com/">Slim</a> templates. It looks kinda like this:</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode html"><code class="sourceCode html"><a class="sourceLine" id="cb1-1" data-line-number="1">h1.mb-0</a>
 <a class="sourceLine" id="cb1-2" data-line-number="2">  = meta.title</a>
@@ -16,7 +16,7 @@
 <a class="sourceLine" id="cb1-8" data-line-number="8">  I&#39;m pretty happy with how this blog has turned out. I wanted to</a>
 <a class="sourceLine" id="cb1-9" data-line-number="9">  explain how I built it.</a>
 <a class="sourceLine" id="cb1-10" data-line-number="10"></a>
-<a class="sourceLine" id="cb1-11" data-line-number="11">  ## Generating the static content</a>
+<a class="sourceLine" id="cb1-11" data-line-number="11">  ## The Markdown and Slim content</a>
 <a class="sourceLine" id="cb1-12" data-line-number="12"></a>
 <a class="sourceLine" id="cb1-13" data-line-number="13">  The first step of my blog system is generating the static HTML</a>
 <a class="sourceLine" id="cb1-14" data-line-number="14">  content. I write most of the blog content in</a>
@@ -30,7 +30,8 @@
 <a class="sourceLine" id="cb1-22" data-line-number="22">  small.text-muted</a>
 <a class="sourceLine" id="cb1-23" data-line-number="23">    = &quot;Published: &quot; + meta.publication_time.to_s</a></code></pre></div>
 <p>Did I just inception you? You can see the whole thing <a href="https://github.com/ruggeri/ruggeri.github.io/blob/master/entries/2018-10-13/how-this-blog-is-built.slim">here</a>.</p>
-<p>I have a bunch of Ruby scripts that will turn this Slim/Markdown content into the HTML you see here before you. I won’t bore you with the details of these scripts. You can check them out if you like:</p>
+<h2 id="ruby-scripts-to-generate-html">Ruby scripts to generate HTML</h2>
+<p>I have a bunch of Ruby scripts that will turn this Slim/Markdown content into the HTML you see here before you. I won’t bore you with <em>all</em> the details of these scripts. You can <a href="https://github.com/ruggeri/ruggeri.github.io/tree/master/scripts">check them out if you like</a>:</p>
 <ul>
 <li>A typical entry directory: <a href="https://github.com/ruggeri/ruggeri.github.io/tree/master/entries/2018-10-13">entries/2018-10-13</a>
 <ul>
@@ -42,13 +43,13 @@
 <li>This does all the work of rendering an entry.</li>
 <li>The <code>Entry#full_content</code> method reads and renders the <a href="https://github.com/ruggeri/ruggeri.github.io/blob/master/templates/default.slim">default entry template</a>.</li>
 <li>It calls the <code>Entry#content</code> method to render the entry content itself.</li>
-<li>The final HTML content is then written into a file like <a href="https://github.com/ruggeri/ruggeri.github.io/tree/master/dist/2018-10-13/how-this-blog-is-built.html">dist/2018-10-13/how-this-blog-is-built.html</a>.</li>
+<li>The final HTML content is then written into a file like <a href="https://github.com/ruggeri/ruggeri.github.io/tree/master/dist/2018-10-13/how-this-blog-is-built.html"><code>dist/2018-10-13/how-this-blog-is-built.html</code></a>.</li>
 </ul></li>
 <li><a href="https://github.com/ruggeri/ruggeri.github.io/blob/master/scripts/build_entries.rb"><code>scripts/build_entries.rb</code></a> is the simple script that goes through each entry and builds the HTML for it.</li>
 <li><a href="https://github.com/ruggeri/ruggeri.github.io/blob/master/scripts/serve.rb"><code>scripts/serve.rb</code></a> runs a simple WEBrick HTTP file server on localhost so I can see the content as I write it.</li>
 </ul>
 <h2 id="watching-for-changes-to-rebuild">Watching for changes to rebuild</h2>
-<p>Here’s one part I’m proud of. I don’t want to manually run <code>./scripts/build_entries.rb</code> every time I make a change to an entry’s Markdown. I want to write Markdown in VSCode, save the <code>.slim</code> file, and then view it immediately in Firefox without having to explicitly go to the terminal to run <code>./scripts/build_entries.rb</code>.</p>
+<p>Here’s one part I’m proud of. I don’t want to manually run <code>./scripts/build_entries.rb</code> every time I make a change to an entry’s Markdown content. I want to write Markdown in VSCode, save the <code>.slim</code> file, and then view it immediately in Firefox without having to explicitly go to the terminal to run <code>./scripts/build_entries.rb</code>.</p>
 <p>To solve this problem I wrote a <a href="https://github.com/ruggeri/ruggeri.github.io/blob/master/scripts/watch.rb"><code>scripts/watch.rb</code></a> script. Here it is:</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode ruby"><code class="sourceCode ruby"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="co"># ./scripts/watch.rb</span></a>
 <a class="sourceLine" id="cb2-2" data-line-number="2"><span class="kw">#!/usr/bin/env ruby</span></a>
@@ -65,19 +66,39 @@
 <p>This script uses the <a href="https://docs.ruby-lang.org/en/2.0.0/Open3.html"><code>open3</code></a> lib to start a terminal command called <a href="https://github.com/emcrisostomo/fswatch"><code>fswatch</code></a>. You can give <code>fswatch</code> a list of directories, and it will watch for changes being made to any files in those directories. It will print out the name of any file that changes.</p>
 <p>The inner loop constantly tries to read from the <code>fswatch</code> command. Whenever <code>fswatch</code> does detect a change and output a file name, the <code>scripts/watch.rb</code> script will invoke a rebuild of the blog entries.</p>
 <p>This is somewhat wasteful, because I don’t rebuild the specific entry that has been changed. I rebuild <em>all</em> the entries. At some point this will begin to feel too slow (as I accumulate more blog posts), but for now it is fine.</p>
-<p>This works great because I can type up Markdown. Save. Alt-tab to Firefox and refresh.</p>
+<p>This works great because I can now simply type up Markdown. Save. Alt-tab to Firefox and refresh. Review. Repeat.</p>
 <h2 id="assets">Assets</h2>
 <p>That <a href="https://github.com/ruggeri/ruggeri.github.io/blob/master/templates/default.slim"><code>templates/default.slim</code></a> template shows all the tricks and libraries I use.</p>
 <ul>
 <li>I use <a href="https://getbootstrap.com/docs/4.0/getting-started/introduction/">Bootstrap 4</a>.</li>
 <li>I use <a href="https://fonts.google.com/">Google fonts</a> (EB Garamond for now).</li>
 <li>I use <a href="https://highlightjs.org/">highlight.js</a> to highlight any code blocks on the page.</li>
-<li>I use <a href="https://www.mathjax.org/">MathJax</a> to render equations.</li>
+<li>I use <a href="https://www.mathjax.org/">MathJax</a> to render equations like <a href="https://en.wikipedia.org/wiki/Euler%27s_identity">this cool one</a>: <span class="math inline"><em>e</em><sup><em>π</em><em>i</em></sup> =  − 1</span>.</li>
 <li>I have a few CSS styles in <a href="https://github.com/ruggeri/ruggeri.github.io/blob/master/assets/styles.css">assets/styles.css</a>.</li>
 </ul>
 <p>I do have one last trick, which is the JavaScript I wrote to show you comments. I’ll talk about that later.</p>
+<h2 id="github-pages">Github Pages</h2>
+<p>I’ve shown you a built entry file: <a href="https://github.com/ruggeri/ruggeri.github.io/blob/master/dist/2018-10-13/how-this-blog-is-built.html"><code>dist/2018-10-13/how-this-blog-is-built.html</code></a>. But how are you reaching this HTML file right now?</p>
+<p>I use <a href="https://pages.github.com/">Github Pages</a>. This makes it really easy to host static content like this blog. I simply check in all the <code>dist/</code> files into my repo (along with everything else). I push to the <a href="https://github.com/ruggeri/ruggeri.github.io">github repository</a>.</p>
+<p>In the “Settings” tab for the repository, you can select to publish your repository as a Github page. That means that if <code>dist/2018-10-13/how-this-blog-is-built.html</code> is a file in my repository, then you can access it at <code>ruggeri.github.io/dist/2018-10-13/how-this-blog-is-built.html</code>.</p>
+<p>Github will serve any kind of file checked into the github repo. So it will serve my stylesheets and JavaScript too. You can even access the original Slim templates at <code>ruggeri.github.io/entries/2018-10-13/how-this-blog-is-built.slim</code> if you really want to for some reason.</p>
+<h2 id="setting-up-a-custom-cname">Setting up a custom CNAME</h2>
+<p>If you try to access any of the content on <code>ruggeri.github.io</code> it will push you to the same path but at the URL <code>blog.self-loop.com</code>. I own this domain name.</p>
+<p>I use <a href="https://aws.amazon.com/route53/">AWS Route 53</a> as my domain name host. They have a pretty convenient interface for setting up DNS records. I use a lot of AWS services.</p>
+<p>I setup a <code>CNAME</code> record to tell anyone on the internet that <code>blog.self-loop.com</code> is a synonym for <code>ruggeri.github.io</code>. So when your browser looks up the domain <code>blog.self-loop.com</code>, it is told that it should lookup the IP address for <code>ruggeri.github.io</code>, and use that as the IP address also for <code>blog.self-loop.com</code>.</p>
+<p>Github runs the webserver that is responding to your HTTP request. It looks for the <code>Host: blog.self-loop.com</code> HTTP request header. If so, it serves the content.</p>
+<p>If instead you were to try to go directly to <code>ruggeri.github.io</code>, then the header would read <code>Host: ruggeri.github.io</code>. Github would see this and issue a redirect to <code>blog.self-loop.com</code>.</p>
+<p>Setup note: Github will want you to create a special <code>CNAME</code> file in the root of your repository so that it knows what domain name you will use for your website. You can see mine <a href="https://github.com/ruggeri/ruggeri.github.io/blob/master/CNAME">here</a>.</p>
+<h2 id="next-time-commenting">Next time: commenting!</h2>
+<p>This post is getting long, so I’ll dedicate another post to the only <em>dynamic</em> part of this website: the comments. This is maybe the most exciting part. I’ll give you a preview:</p>
+<ul>
+<li>I store the comments in AWS DynamoDB (a NoSQL, schemaless database).</li>
+<li>I use AWS Lamdba to run some Python code that fetches/stores comments.</li>
+<li>I use AWS API Gateway to create some HTTP endpoints that invoke the Lambda code.</li>
+<li>I wrote some React code to fetch and display the comments. Also I use the <a href="https://github.com/jaredpalmer/formik">Formik</a> library for the React comment form.</li>
+<li>Last, I Webpack to compile all my JavaScript code. The compiled JavaScript gets checked into Github like everything else.</li>
+</ul>
 <h2 id="todo">TODO</h2>
 <ul>
-<li>Github Pages</li>
 <li>Comments: lambdas, webpack.</li>
 </ul></div></div><div class="row justify-content-center"><div class="col-12 col-md-8" id="comments"><script src="/ui/dist/main.js"></script></div></div></div></body><script>hljs.initHighlightingOnLoad();</script>

@@ -8,7 +8,7 @@ markdown:
   I'm pretty happy with how this blog has turned out. I wanted to
   explain how I built it.
 
-  ## Generating the static content
+  ## The Markdown and Slim content
 
   The first step of my blog system is generating the static HTML
   content. I write most of the blog content in
@@ -26,7 +26,7 @@ markdown:
     I'm pretty happy with how this blog has turned out. I wanted to
     explain how I built it.
 
-    ## Generating the static content
+    ## The Markdown and Slim content
 
     The first step of my blog system is generating the static HTML
     content. I write most of the blog content in
@@ -45,19 +45,24 @@ markdown:
 
   [slim-content]: https://github.com/ruggeri/ruggeri.github.io/blob/master/entries/2018-10-13/how-this-blog-is-built.slim
 
+  ## Ruby scripts to generate HTML
+
   I have a bunch of Ruby scripts that will turn this Slim/Markdown
   content into the HTML you see here before you. I won't bore you with
-  the details of these scripts. You can check them out if you like:
+  *all* the details of these scripts. You can [check them out if you
+  like][scripts-dir]:
 
-  * A typical entry directory: [entries/2018-10-13](https://github.com/ruggeri/ruggeri.github.io/tree/master/entries/2018-10-13)
+  * A typical entry directory: [entries/2018-10-13][entries-2018-10-13]
     * The `.slim` file is the content
     * The `.yaml` is metadata about the blog entry: the title, the
       publication date, et cetera.
-  * [`src/entry.rb`](https://github.com/ruggeri/ruggeri.github.io/blob/master/src/entry.rb)
+  * [`src/entry.rb`][src-entry-rb]
     * This does all the work of rendering an entry.
-    * The `Entry#full_content` method reads and renders the [default entry template](https://github.com/ruggeri/ruggeri.github.io/blob/master/templates/default.slim).
+    * The `Entry#full_content` method reads and renders the
+      [default entry template][templates-default-slim].
     * It calls the `Entry#content` method to render the entry content itself.
-    * The final HTML content is then written into a file like [dist/2018-10-13/how-this-blog-is-built.html](https://github.com/ruggeri/ruggeri.github.io/tree/master/dist/2018-10-13/how-this-blog-is-built.html).
+    * The final HTML content is then written into a file like
+      [`dist/2018-10-13/how-this-blog-is-built.html`][dist-file].
   * [`scripts/build_entries.rb`](https://github.com/ruggeri/ruggeri.github.io/blob/master/scripts/build_entries.rb)
     is the simple script that goes through each entry and builds the
     HTML for it.
@@ -65,13 +70,19 @@ markdown:
     runs a simple WEBrick HTTP file server on localhost so I can see the
     content as I write it.
 
+  [scripts-dir]: https://github.com/ruggeri/ruggeri.github.io/tree/master/scripts
+  [entries-2018-10-13]: https://github.com/ruggeri/ruggeri.github.io/tree/master/entries/2018-10-13
+  [src-entry-rb]: https://github.com/ruggeri/ruggeri.github.io/blob/master/src/entry.rb
+  [templates-default-slim]: https://github.com/ruggeri/ruggeri.github.io/blob/master/templates/default.slim
+  [dist-file]: https://github.com/ruggeri/ruggeri.github.io/tree/master/dist/2018-10-13/how-this-blog-is-built.html
+
   ## Watching for changes to rebuild
 
   Here's one part I'm proud of. I don't want to manually run
   `./scripts/build_entries.rb` every time I make a change to an entry's
-  Markdown. I want to write Markdown in VSCode, save the `.slim` file,
-  and then view it immediately in Firefox without having to explicitly
-  go to the terminal to run `./scripts/build_entries.rb`.
+  Markdown content. I want to write Markdown in VSCode, save the `.slim`
+  file, and then view it immediately in Firefox without having to
+  explicitly go to the terminal to run `./scripts/build_entries.rb`.
 
   To solve this problem I wrote a
   [`scripts/watch.rb`](https://github.com/ruggeri/ruggeri.github.io/blob/master/scripts/watch.rb)
@@ -107,8 +118,8 @@ markdown:
   will begin to feel too slow (as I accumulate more blog posts), but for
   now it is fine.
 
-  This works great because I can type up Markdown. Save. Alt-tab to
-  Firefox and refresh.
+  This works great because I can now simply type up Markdown. Save.
+  Alt-tab to Firefox and refresh. Review. Repeat.
 
   [open3]: https://docs.ruby-lang.org/en/2.0.0/Open3.html
   [fswatch]: https://github.com/emcrisostomo/fswatch
@@ -122,7 +133,8 @@ markdown:
   * I use [Google fonts][google-fonts] (EB Garamond for now).
   * I use [highlight.js][highlightjs] to highlight any code blocks on
     the page.
-  * I use [MathJax][mathjax] to render equations.
+  * I use [MathJax][mathjax] to render equations like
+    [this cool one][eulers-identity]: $e^{\pi i} = -1$.
   * I have a few CSS styles in [assets/styles.css][assets-styles-css].
 
   I do have one last trick, which is the JavaScript I wrote to show you
@@ -133,9 +145,85 @@ markdown:
   [google-fonts]: https://fonts.google.com/
   [highlightjs]: https://highlightjs.org/
   [mathjax]: https://www.mathjax.org/
+  [eulers-identity]: https://en.wikipedia.org/wiki/Euler%27s_identity
   [assets-styles-css]: https://github.com/ruggeri/ruggeri.github.io/blob/master/assets/styles.css
+
+  ## Github Pages
+
+  I've shown you a built entry file:
+  [`dist/2018-10-13/how-this-blog-is-built.html`][dist-file-example].
+  But how are you reaching this HTML file right now?
+
+  I use [Github Pages][github-pages]. This makes it really easy to host
+  static content like this blog. I simply check in all the `dist/` files
+  into my repo (along with everything else). I push to the [github
+  repository][blog-repo].
+
+  In the "Settings" tab for the repository, you can select to publish
+  your repository as a Github page. That means that if
+  `dist/2018-10-13/how-this-blog-is-built.html` is a file in my
+  repository, then you can access it at
+  `ruggeri.github.io/dist/2018-10-13/how-this-blog-is-built.html`.
+
+  Github will serve any kind of file checked into the github repo. So it
+  will serve my stylesheets and JavaScript too. You can even access the
+  original Slim templates at
+  `ruggeri.github.io/entries/2018-10-13/how-this-blog-is-built.slim` if
+  you really want to for some reason.
+
+  [dist-file-example]: https://github.com/ruggeri/ruggeri.github.io/blob/master/dist/2018-10-13/how-this-blog-is-built.html
+  [github-pages]: https://pages.github.com/
+  [blog-repo]: https://github.com/ruggeri/ruggeri.github.io
+
+  ## Setting up a custom CNAME
+
+  If you try to access any of the content on `ruggeri.github.io` it will
+  push you to the same path but at the URL `blog.self-loop.com`. I own
+  this domain name.
+
+  I use [AWS Route 53][route53] as my domain name host. They have a
+  pretty convenient interface for setting up DNS records. I use a lot of
+  AWS services.
+
+  I setup a `CNAME` record to tell anyone on the internet that
+  `blog.self-loop.com` is a synonym for `ruggeri.github.io`. So when
+  your browser looks up the domain `blog.self-loop.com`, it is told that
+  it should lookup the IP address for `ruggeri.github.io`, and use that
+  as the IP address also for `blog.self-loop.com`.
+
+  Github runs the webserver that is responding to your HTTP request. It
+  looks for the `Host: blog.self-loop.com` HTTP request header. If so,
+  it serves the content.
+
+  If instead you were to try to go directly to `ruggeri.github.io`, then
+  the header would read `Host: ruggeri.github.io`. Github would see this
+  and issue a redirect to `blog.self-loop.com`.
+
+  Setup note: Github will want you to create a special `CNAME` file in
+  the root of your repository so that it knows what domain name you will
+  use for your website. You can see mine [here][github-cname-file].
+
+  [route53]: https://aws.amazon.com/route53/
+  [github-cname-file]: https://github.com/ruggeri/ruggeri.github.io/blob/master/CNAME
+
+  ## Next time: commenting!
+
+  This post is getting long, so I'll dedicate another post to the only
+  *dynamic* part of this website: the comments. This is maybe the most
+  exciting part. I'll give you a preview:
+
+  * I store the comments in AWS DynamoDB (a NoSQL, schemaless database).
+  * I use AWS Lamdba to run some Python code that fetches/stores
+    comments.
+  * I use AWS API Gateway to create some HTTP endpoints that invoke the
+    Lambda code.
+  * I wrote some React code to fetch and display the comments. Also I
+    use the [Formik][formik] library for the React comment form.
+  * Last, I Webpack to compile all my JavaScript code. The compiled
+    JavaScript gets checked into Github like everything else.
+
+  [formik]: https://github.com/jaredpalmer/formik
 
   ## TODO
 
-  * Github Pages
   * Comments: lambdas, webpack.
