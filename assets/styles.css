@@ -1,8 +1,9 @@
-p {
+p, ul {
   font-family: 'EB Garamond', serif;
   font-size: 14pt;
 }
-/* Math in a p tag should still be tex font. */
+
+/* Math in a p or ul tag should still be Tex font. */
 span.math.inline {
   font-family: 'MJXc-TeX-math-I,MJXc-TeX-math-Ix,MJXc-TeX-math-Iw';
 }
