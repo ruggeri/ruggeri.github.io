@@ -18,13 +18,8 @@ if File.exist?(slim_fname) || File.exist?(yaml_fname)
 end
 
 `mkdir -p #{entry_dir}`
-File.open(slim_fname, "w") do |f|
-  f.puts "markdown:"
-  # Weird, but Pandoc will generate an id randomly and give
-  # non-deterministic output??
-  f.puts "  # #\{meta.title\} {id=title}"
-  f.puts "  Your fabulous content goes here!"
-end
+`cp templates/blank_entry.slim #{slim_fname}`
+
 File.open(yaml_fname, "w") do |f|
   f.puts ({
             "title" => basename,

@@ -1,6 +1,12 @@
-markdown:
-  # #{meta.title} {id=title}
+<h1 class="mb-0">
+  = meta.title
+</h1>
 
+<small class="text-muted">
+  = "Published: " + meta.publication_time.to_s
+</small>
+
+markdown:
   Here's a quick test of my setup.
 
   ## Proof that $\sqrt{2}$ is irrational
@@ -26,7 +32,7 @@ markdown:
   $$
 
   This implies that 2 is a factor of $a^2$.
-  
+
   Note that, if the prime factorization of $a$ is:
 
   $$
@@ -34,7 +40,7 @@ markdown:
       a = p_1^{k_1} p_2^{k_2} \cdots p_n^{k_n}
     \end{align}
   $$
-  
+
   then this implies
 
   $$
@@ -53,15 +59,15 @@ markdown:
   But note: $b^2 = \frac{a^2}{2}$. So therefore $b^2$ should be
   divisible by 2. But we already said about prime factors of squares: if
   2 divides $b^2$, then it must also divide $b$.
-  
+
   That would contradict our choice that $a, b$ had no common factors.
-  
+
   Therefore we have established the contradiction. It must not be
   possible to write $\sqrt{2}$ as $\frac{a}{b}$, which means $\sqrt{2}$
   was not rational in the first place.
 
   ## Code highlighting
-  
+
   Let's test out code highlighting for some Haskell code.
 
   ```haskell
