@@ -2,7 +2,9 @@
 
 require_relative '../src/entry'
 
-Entry.published.each do |e|
+Entry.all.each do |e|
+  # Even build the unpublished ones (so I can see them as I write).
+
   puts "Building: #{e.full_target_path}"
   e.build!
 end
