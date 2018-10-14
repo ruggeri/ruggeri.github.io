@@ -37,4 +37,5 @@ body
           - published_entries.each do |e|
             li
               a href="./dist/#{e.relative_target_path}"
+                = e.meta.publication_time.strftime("%Y-%m-%d") + ": "
                 = e.meta.title
