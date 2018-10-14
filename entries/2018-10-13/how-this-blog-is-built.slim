@@ -1,10 +1,141 @@
-<h1 class="mb-0">
+h1.mb-0
   = meta.title
-</h1>
 
-<small class="text-muted">
+small.text-muted
   = "Published: " + meta.publication_time.to_s
-</small>
 
 markdown:
-  Your fabulous content goes here!
+  I'm pretty happy with how this blog has turned out. I wanted to
+  explain how I built it.
+
+  ## Generating the static content
+
+  The first step of my blog system is generating the static HTML
+  content. I write most of the blog content in
+  [Markdown](https://pandoc.org/) and [Slim](http://slim-lang.com/)
+  templates. It looks kinda like this:
+
+  ````html
+  h1.mb-0
+    = meta.title
+
+  small.text-muted
+    = "Published: " + meta.publication_time.to_s
+
+  markdown:
+    I'm pretty happy with how this blog has turned out. I wanted to
+    explain how I built it.
+
+    ## Generating the static content
+
+    The first step of my blog system is generating the static HTML
+    content. I write most of the blog content in
+    [Markdown](https://en.wikipedia.org/wiki/Markdown) and
+    [Slim](http://slim-lang.com/) templates. It looks kinda like this:
+
+    ```html
+    h1.mb-0
+      = meta.title
+
+    small.text-muted
+      = "Published: " + meta.publication_time.to_s
+  ````
+
+  Did I just inception you? You can see the whole thing [here][slim-content].
+
+  [slim-content]: https://github.com/ruggeri/ruggeri.github.io/blob/master/entries/2018-10-13/how-this-blog-is-built.slim
+
+  I have a bunch of Ruby scripts that will turn this Slim/Markdown
+  content into the HTML you see here before you. I won't bore you with
+  the details of these scripts. You can check them out if you like:
+
+  * A typical entry directory: [entries/2018-10-13](https://github.com/ruggeri/ruggeri.github.io/tree/master/entries/2018-10-13)
+    * The `.slim` file is the content
+    * The `.yaml` is metadata about the blog entry: the title, the
+      publication date, et cetera.
+  * [`src/entry.rb`](https://github.com/ruggeri/ruggeri.github.io/blob/master/src/entry.rb)
+    * This does all the work of rendering an entry.
+    * The `Entry#full_content` method reads and renders the [default entry template](https://github.com/ruggeri/ruggeri.github.io/blob/master/templates/default.slim).
+    * It calls the `Entry#content` method to render the entry content itself.
+    * The final HTML content is then written into a file like [dist/2018-10-13/how-this-blog-is-built.html](https://github.com/ruggeri/ruggeri.github.io/tree/master/dist/2018-10-13/how-this-blog-is-built.html).
+  * [`scripts/build_entries.rb`](https://github.com/ruggeri/ruggeri.github.io/blob/master/scripts/build_entries.rb)
+    is the simple script that goes through each entry and builds the
+    HTML for it.
+  * [`scripts/serve.rb`](https://github.com/ruggeri/ruggeri.github.io/blob/master/scripts/serve.rb)
+    runs a simple WEBrick HTTP file server on localhost so I can see the
+    content as I write it.
+
+  ## Watching for changes to rebuild
+
+  Here's one part I'm proud of. I don't want to manually run
+  `./scripts/build_entries.rb` every time I make a change to an entry's
+  Markdown. I want to write Markdown in VSCode, save the `.slim` file,
+  and then view it immediately in Firefox without having to explicitly
+  go to the terminal to run `./scripts/build_entries.rb`.
+
+  To solve this problem I wrote a
+  [`scripts/watch.rb`](https://github.com/ruggeri/ruggeri.github.io/blob/master/scripts/watch.rb)
+  script. Here it is:
+
+  ```ruby
+  # ./scripts/watch.rb
+  #!/usr/bin/env ruby
+
+  require 'open3'
+
+  `./scripts/build_all.rb`
+  Open3.popen3("fswatch ./entries ./templates") do |stdin, stdout, stderr, status, thread|
+    while changed_fname = stdout.gets
+      puts "Changed: \#{changed_fname}"
+      `./scripts/build_all.rb`
+    end
+  end
+  ```
+
+  This script uses the [`open3`][open3] lib to start a terminal command
+  called [`fswatch`][fswatch]. You can give `fswatch` a list of
+  directories, and it will watch for changes being made to any files in
+  those directories. It will print out the name of any file that
+  changes.
+
+  The inner loop constantly tries to read from the `fswatch` command.
+  Whenever `fswatch` does detect a change and output a file name, the
+  `scripts/watch.rb` script will invoke a rebuild of the blog entries.
+
+  This is somewhat wasteful, because I don't rebuild the specific entry
+  that has been changed. I rebuild *all* the entries. At some point this
+  will begin to feel too slow (as I accumulate more blog posts), but for
+  now it is fine.
+
+  This works great because I can type up Markdown. Save. Alt-tab to
+  Firefox and refresh.
+
+  [open3]: https://docs.ruby-lang.org/en/2.0.0/Open3.html
+  [fswatch]: https://github.com/emcrisostomo/fswatch
+
+  ## Assets
+
+  That [`templates/default.slim`][templates-default] template shows all
+  the tricks and libraries I use.
+
+  * I use [Bootstrap 4][bootstrap].
+  * I use [Google fonts][google-fonts] (EB Garamond for now).
+  * I use [highlight.js][highlightjs] to highlight any code blocks on
+    the page.
+  * I use [MathJax][mathjax] to render equations.
+  * I have a few CSS styles in [assets/styles.css][assets-styles-css].
+
+  I do have one last trick, which is the JavaScript I wrote to show you
+  comments. I'll talk about that later.
+
+  [templates-default]: https://github.com/ruggeri/ruggeri.github.io/blob/master/templates/default.slim
+  [bootstrap]: https://getbootstrap.com/docs/4.0/getting-started/introduction/
+  [google-fonts]: https://fonts.google.com/
+  [highlightjs]: https://highlightjs.org/
+  [mathjax]: https://www.mathjax.org/
+  [assets-styles-css]: https://github.com/ruggeri/ruggeri.github.io/blob/master/assets/styles.css
+
+  ## TODO
+
+  * Github Pages
+  * Comments: lambdas, webpack.

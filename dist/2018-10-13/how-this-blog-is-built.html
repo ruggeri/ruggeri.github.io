@@ -1,6 +1,83 @@
-<head><meta charset="UTF-8" /><meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport" /><title>how-this-blog-is-built</title><link crossorigin="anonymous" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" rel="stylesheet" /><link href="https://fonts.googleapis.com/css?family=EB+Garamond" rel="stylesheet" /><script src="/assets/highlight.pack.js"></script><link href="/assets/hybrid.css" rel="stylesheet" /><script>const entryId = "109f5cafdd7516567171773da7da5784"</script><script type="text/x-mathjax-config">MathJax.Hub.Config({
+<head><meta charset="UTF-8" /><meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport" /><title>How this blog is built</title><link crossorigin="anonymous" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" rel="stylesheet" /><link href="https://fonts.googleapis.com/css?family=EB+Garamond" rel="stylesheet" /><script src="/assets/highlight.pack.js"></script><link href="/assets/hybrid.css" rel="stylesheet" /><script>const entryId = "109f5cafdd7516567171773da7da5784"</script><script type="text/x-mathjax-config">MathJax.Hub.Config({
   tex2jax: {
       inlineMath: [['$', '$']],
       displayMath: [['$$', '$$']],
   },
-});</script><script async="" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"></script><link href="/assets/styles.css" rel="stylesheet" /></head><body><div class="container"><div class="row justify-content-center"><div class="col-12 col-md-8"><h2 class="title display-2 mb-3"><a href="/">blog.self-loop.com</a></h2></div></div><div class="row justify-content-center"><div class="col-12 col-md-8"><h1 class="mb-0">how-this-blog-is-built</h1><small class="text-muted">Published: </small><p>Your fabulous content goes here!</p></div></div><div class="row justify-content-center"><div class="col-12 col-md-8" id="comments"><script src="/ui/dist/main.js"></script></div></div></div></body><script>hljs.initHighlightingOnLoad();</script>
+});</script><script async="" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"></script><link href="/assets/styles.css" rel="stylesheet" /></head><body><div class="container"><div class="row justify-content-center"><div class="col-12 col-md-8"><h2 class="title display-2 mb-3"><a href="/">blog.self-loop.com</a></h2></div></div><div class="row justify-content-center"><div class="col-12 col-md-8"><h1 class="mb-0">How this blog is built</h1><small class="text-muted">Published: </small><p>I’m pretty happy with how this blog has turned out. I wanted to explain how I built it.</p>
+<h2 id="generating-the-static-content">Generating the static content</h2>
+<p>The first step of my blog system is generating the static HTML content. I write most of the blog content in <a href="https://pandoc.org/">Markdown</a> and <a href="http://slim-lang.com/">Slim</a> templates. It looks kinda like this:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode html"><code class="sourceCode html"><a class="sourceLine" id="cb1-1" data-line-number="1">h1.mb-0</a>
+<a class="sourceLine" id="cb1-2" data-line-number="2">  = meta.title</a>
+<a class="sourceLine" id="cb1-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb1-4" data-line-number="4">small.text-muted</a>
+<a class="sourceLine" id="cb1-5" data-line-number="5">  = &quot;Published: &quot; + meta.publication_time.to_s</a>
+<a class="sourceLine" id="cb1-6" data-line-number="6"></a>
+<a class="sourceLine" id="cb1-7" data-line-number="7">markdown:</a>
+<a class="sourceLine" id="cb1-8" data-line-number="8">  I&#39;m pretty happy with how this blog has turned out. I wanted to</a>
+<a class="sourceLine" id="cb1-9" data-line-number="9">  explain how I built it.</a>
+<a class="sourceLine" id="cb1-10" data-line-number="10"></a>
+<a class="sourceLine" id="cb1-11" data-line-number="11">  ## Generating the static content</a>
+<a class="sourceLine" id="cb1-12" data-line-number="12"></a>
+<a class="sourceLine" id="cb1-13" data-line-number="13">  The first step of my blog system is generating the static HTML</a>
+<a class="sourceLine" id="cb1-14" data-line-number="14">  content. I write most of the blog content in</a>
+<a class="sourceLine" id="cb1-15" data-line-number="15">  [Markdown](https://en.wikipedia.org/wiki/Markdown) and</a>
+<a class="sourceLine" id="cb1-16" data-line-number="16">  [Slim](http://slim-lang.com/) templates. It looks kinda like this:</a>
+<a class="sourceLine" id="cb1-17" data-line-number="17"></a>
+<a class="sourceLine" id="cb1-18" data-line-number="18">  ```html</a>
+<a class="sourceLine" id="cb1-19" data-line-number="19">  h1.mb-0</a>
+<a class="sourceLine" id="cb1-20" data-line-number="20">    = meta.title</a>
+<a class="sourceLine" id="cb1-21" data-line-number="21"></a>
+<a class="sourceLine" id="cb1-22" data-line-number="22">  small.text-muted</a>
+<a class="sourceLine" id="cb1-23" data-line-number="23">    = &quot;Published: &quot; + meta.publication_time.to_s</a></code></pre></div>
+<p>Did I just inception you? You can see the whole thing <a href="https://github.com/ruggeri/ruggeri.github.io/blob/master/entries/2018-10-13/how-this-blog-is-built.slim">here</a>.</p>
+<p>I have a bunch of Ruby scripts that will turn this Slim/Markdown content into the HTML you see here before you. I won’t bore you with the details of these scripts. You can check them out if you like:</p>
+<ul>
+<li>A typical entry directory: <a href="https://github.com/ruggeri/ruggeri.github.io/tree/master/entries/2018-10-13">entries/2018-10-13</a>
+<ul>
+<li>The <code>.slim</code> file is the content</li>
+<li>The <code>.yaml</code> is metadata about the blog entry: the title, the publication date, et cetera.</li>
+</ul></li>
+<li><a href="https://github.com/ruggeri/ruggeri.github.io/blob/master/src/entry.rb"><code>src/entry.rb</code></a>
+<ul>
+<li>This does all the work of rendering an entry.</li>
+<li>The <code>Entry#full_content</code> method reads and renders the <a href="https://github.com/ruggeri/ruggeri.github.io/blob/master/templates/default.slim">default entry template</a>.</li>
+<li>It calls the <code>Entry#content</code> method to render the entry content itself.</li>
+<li>The final HTML content is then written into a file like <a href="https://github.com/ruggeri/ruggeri.github.io/tree/master/dist/2018-10-13/how-this-blog-is-built.html">dist/2018-10-13/how-this-blog-is-built.html</a>.</li>
+</ul></li>
+<li><a href="https://github.com/ruggeri/ruggeri.github.io/blob/master/scripts/build_entries.rb"><code>scripts/build_entries.rb</code></a> is the simple script that goes through each entry and builds the HTML for it.</li>
+<li><a href="https://github.com/ruggeri/ruggeri.github.io/blob/master/scripts/serve.rb"><code>scripts/serve.rb</code></a> runs a simple WEBrick HTTP file server on localhost so I can see the content as I write it.</li>
+</ul>
+<h2 id="watching-for-changes-to-rebuild">Watching for changes to rebuild</h2>
+<p>Here’s one part I’m proud of. I don’t want to manually run <code>./scripts/build_entries.rb</code> every time I make a change to an entry’s Markdown. I want to write Markdown in VSCode, save the <code>.slim</code> file, and then view it immediately in Firefox without having to explicitly go to the terminal to run <code>./scripts/build_entries.rb</code>.</p>
+<p>To solve this problem I wrote a <a href="https://github.com/ruggeri/ruggeri.github.io/blob/master/scripts/watch.rb"><code>scripts/watch.rb</code></a> script. Here it is:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode ruby"><code class="sourceCode ruby"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="co"># ./scripts/watch.rb</span></a>
+<a class="sourceLine" id="cb2-2" data-line-number="2"><span class="kw">#!/usr/bin/env ruby</span></a>
+<a class="sourceLine" id="cb2-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb2-4" data-line-number="4">require <span class="st">&#39;open3&#39;</span></a>
+<a class="sourceLine" id="cb2-5" data-line-number="5"></a>
+<a class="sourceLine" id="cb2-6" data-line-number="6"><span class="st">`./scripts/build_all.rb`</span></a>
+<a class="sourceLine" id="cb2-7" data-line-number="7"><span class="dt">Open3</span>.popen3(<span class="st">&quot;fswatch ./entries ./templates&quot;</span>) <span class="kw">do</span> |stdin, stdout, stderr, status, thread|</a>
+<a class="sourceLine" id="cb2-8" data-line-number="8">  <span class="kw">while</span> changed_fname = stdout.gets</a>
+<a class="sourceLine" id="cb2-9" data-line-number="9">    puts <span class="st">&quot;Changed: </span><span class="ot">#{</span>changed_fname<span class="ot">}</span><span class="st">&quot;</span></a>
+<a class="sourceLine" id="cb2-10" data-line-number="10">    <span class="st">`./scripts/build_all.rb`</span></a>
+<a class="sourceLine" id="cb2-11" data-line-number="11">  <span class="kw">end</span></a>
+<a class="sourceLine" id="cb2-12" data-line-number="12"><span class="kw">end</span></a></code></pre></div>
+<p>This script uses the <a href="https://docs.ruby-lang.org/en/2.0.0/Open3.html"><code>open3</code></a> lib to start a terminal command called <a href="https://github.com/emcrisostomo/fswatch"><code>fswatch</code></a>. You can give <code>fswatch</code> a list of directories, and it will watch for changes being made to any files in those directories. It will print out the name of any file that changes.</p>
+<p>The inner loop constantly tries to read from the <code>fswatch</code> command. Whenever <code>fswatch</code> does detect a change and output a file name, the <code>scripts/watch.rb</code> script will invoke a rebuild of the blog entries.</p>
+<p>This is somewhat wasteful, because I don’t rebuild the specific entry that has been changed. I rebuild <em>all</em> the entries. At some point this will begin to feel too slow (as I accumulate more blog posts), but for now it is fine.</p>
+<p>This works great because I can type up Markdown. Save. Alt-tab to Firefox and refresh.</p>
+<h2 id="assets">Assets</h2>
+<p>That <a href="https://github.com/ruggeri/ruggeri.github.io/blob/master/templates/default.slim"><code>templates/default.slim</code></a> template shows all the tricks and libraries I use.</p>
+<ul>
+<li>I use <a href="https://getbootstrap.com/docs/4.0/getting-started/introduction/">Bootstrap 4</a>.</li>
+<li>I use <a href="https://fonts.google.com/">Google fonts</a> (EB Garamond for now).</li>
+<li>I use <a href="https://highlightjs.org/">highlight.js</a> to highlight any code blocks on the page.</li>
+<li>I use <a href="https://www.mathjax.org/">MathJax</a> to render equations.</li>
+<li>I have a few CSS styles in <a href="https://github.com/ruggeri/ruggeri.github.io/blob/master/assets/styles.css">assets/styles.css</a>.</li>
+</ul>
+<p>I do have one last trick, which is the JavaScript I wrote to show you comments. I’ll talk about that later.</p>
+<h2 id="todo">TODO</h2>
+<ul>
+<li>Github Pages</li>
+<li>Comments: lambdas, webpack.</li>
+</ul></div></div><div class="row justify-content-center"><div class="col-12 col-md-8" id="comments"><script src="/ui/dist/main.js"></script></div></div></div></body><script>hljs.initHighlightingOnLoad();</script>
