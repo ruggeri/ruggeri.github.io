@@ -6,16 +6,16 @@ small.text-muted
 
 markdown:
   I'm pretty happy with how this blog has turned out. I wanted to
-  explain how I built it.
+  explain how I built it. Maybe you'll find my approach interesting :-)
 
   ## The Markdown and Slim content
 
   The first step of my blog system is generating the static HTML
   content. I write most of the blog content in
-  [Markdown](https://pandoc.org/) and [Slim](http://slim-lang.com/)
-  templates. It looks kinda like this:
+  [Markdown](https://en.wikipedia.org/wiki/Markdown) and
+  [Slim](http://slim-lang.com/) templates. It looks kinda like this:
 
-  ````html
+  ````markdown
   h1.mb-0
     = meta.title
 
@@ -24,7 +24,7 @@ markdown:
 
   markdown:
     I'm pretty happy with how this blog has turned out. I wanted to
-    explain how I built it.
+    explain how I built it. Maybe you'll find my approach interesting :-)
 
     ## The Markdown and Slim content
 
@@ -33,12 +33,16 @@ markdown:
     [Markdown](https://en.wikipedia.org/wiki/Markdown) and
     [Slim](http://slim-lang.com/) templates. It looks kinda like this:
 
-    ```html
+    ```markdown
     h1.mb-0
       = meta.title
 
     small.text-muted
       = "Published: " + meta.publication_time.to_s
+
+    markdown:
+      I'm pretty happy with how this blog has turned out. I wanted to
+      explain how I built it. Maybe you'll find my approach interesting :-)
   ````
 
   Did I just inception you? You can see the whole thing [here][slim-content].
@@ -49,11 +53,13 @@ markdown:
 
   I have a bunch of Ruby scripts that will turn this Slim/Markdown
   content into the HTML you see here before you. I won't bore you with
-  *all* the details of these scripts. You can [check them out if you
-  like][scripts-dir]:
+  *all* the details of these scripts. They're checked into my `scripts/`
+  directory: you can [read them if you like][scripts-dir].
+
+  Here's a summary though:
 
   * A typical entry directory: [entries/2018-10-13][entries-2018-10-13]
-    * The `.slim` file is the content
+    * The `.slim` file is the content.
     * The `.yaml` is metadata about the blog entry: the title, the
       publication date, et cetera.
   * [`src/entry.rb`][src-entry-rb]
@@ -63,10 +69,10 @@ markdown:
     * It calls the `Entry#content` method to render the entry content itself.
     * The final HTML content is then written into a file like
       [`dist/2018-10-13/how-this-blog-is-built.html`][dist-file].
-  * [`scripts/build_entries.rb`](https://github.com/ruggeri/ruggeri.github.io/blob/master/scripts/build_entries.rb)
+  * [`scripts/build_entries.rb`][build-entries]
     is the simple script that goes through each entry and builds the
     HTML for it.
-  * [`scripts/serve.rb`](https://github.com/ruggeri/ruggeri.github.io/blob/master/scripts/serve.rb)
+  * [`scripts/serve.rb`][scripts-serve]
     runs a simple WEBrick HTTP file server on localhost so I can see the
     content as I write it.
 
@@ -75,6 +81,8 @@ markdown:
   [src-entry-rb]: https://github.com/ruggeri/ruggeri.github.io/blob/master/src/entry.rb
   [templates-default-slim]: https://github.com/ruggeri/ruggeri.github.io/blob/master/templates/default.slim
   [dist-file]: https://github.com/ruggeri/ruggeri.github.io/tree/master/dist/2018-10-13/how-this-blog-is-built.html
+  [build-entries]: https://github.com/ruggeri/ruggeri.github.io/blob/master/scripts/build_entries.rb
+  [scripts-serve]: https://github.com/ruggeri/ruggeri.github.io/blob/master/scripts/serve.rb
 
   ## Watching for changes to rebuild
 
@@ -84,8 +92,12 @@ markdown:
   file, and then view it immediately in Firefox without having to
   explicitly go to the terminal to run `./scripts/build_entries.rb`.
 
-  To solve this problem I wrote a
-  [`scripts/watch.rb`](https://github.com/ruggeri/ruggeri.github.io/blob/master/scripts/watch.rb)
+  This is like in Rails or with Webpack, where you can change some code,
+  then go to the browser and hit refresh. I want that. In the past, when
+  I had a similar blog setup, I didn't have this functionality. It was a
+  *major* pain point.
+
+  To solve this problem I wrote a [`scripts/watch.rb`][scripts-watch]
   script. Here it is:
 
   ```ruby
@@ -107,20 +119,23 @@ markdown:
   called [`fswatch`][fswatch]. You can give `fswatch` a list of
   directories, and it will watch for changes being made to any files in
   those directories. It will print out the name of any file that
-  changes.
+  changes. It will keep doing this until you kill `fswatch`.
 
-  The inner loop constantly tries to read from the `fswatch` command.
-  Whenever `fswatch` does detect a change and output a file name, the
-  `scripts/watch.rb` script will invoke a rebuild of the blog entries.
+  The inner loop of my Ruby script constantly tries to read from the
+  `fswatch` command. Whenever `fswatch` does detect a change and output
+  a file name, the `scripts/watch.rb` script will invoke a rebuild of
+  the blog entries.
 
-  This is somewhat wasteful, because I don't rebuild the specific entry
-  that has been changed. I rebuild *all* the entries. At some point this
-  will begin to feel too slow (as I accumulate more blog posts), but for
-  now it is fine.
+  This is somewhat wasteful, because I don't rebuild only the specific
+  entry that has been changed. I rebuild *all* the entries. At some
+  point this will begin to feel too slow (as I accumulate more blog
+  posts), but for now it is fine.
 
-  This works great because I can now simply type up Markdown. Save.
-  Alt-tab to Firefox and refresh. Review. Repeat.
+  I'm super happy with this system. I can now simply type up Markdown.
+  Save. Command-tab to Firefox and refresh. Review my blog entry.
+  Repeat.
 
+  [scripts-watch]: https://github.com/ruggeri/ruggeri.github.io/blob/master/scripts/watch.rb
   [open3]: https://docs.ruby-lang.org/en/2.0.0/Open3.html
   [fswatch]: https://github.com/emcrisostomo/fswatch
 
@@ -135,10 +150,11 @@ markdown:
     the page.
   * I use [MathJax][mathjax] to render equations like
     [this cool one][eulers-identity]: $e^{\pi i} = -1$.
-  * I have a few CSS styles in [assets/styles.css][assets-styles-css].
+  * I have a few custom CSS styles in
+    [assets/styles.css][assets-styles-css].
 
-  I do have one last trick, which is the JavaScript I wrote to show you
-  comments. I'll talk about that later.
+  I do have one last trick, which is the JavaScript I wrote to let you
+  write me comments. I'll talk about that later!
 
   [templates-default]: https://github.com/ruggeri/ruggeri.github.io/blob/master/templates/default.slim
   [bootstrap]: https://getbootstrap.com/docs/4.0/getting-started/introduction/
@@ -169,13 +185,18 @@ markdown:
   will serve my stylesheets and JavaScript too. You can even access the
   original Slim templates at
   `ruggeri.github.io/entries/2018-10-13/how-this-blog-is-built.slim` if
-  you really want to for some reason.
+  you really wanted to for some reason.
+
+  The principle is simple: if it's checked into the Githbub repository,
+  it's being served by a Github HTTP server.
 
   [dist-file-example]: https://github.com/ruggeri/ruggeri.github.io/blob/master/dist/2018-10-13/how-this-blog-is-built.html
   [github-pages]: https://pages.github.com/
   [blog-repo]: https://github.com/ruggeri/ruggeri.github.io
 
   ## Setting up a custom CNAME
+
+  This website is `blog.self-loop.com`. Not `ruggeri.github.io`.
 
   If you try to access any of the content on `ruggeri.github.io` it will
   push you to the same path but at the URL `blog.self-loop.com`. I own
@@ -192,38 +213,81 @@ markdown:
   as the IP address also for `blog.self-loop.com`.
 
   Github runs the webserver that is responding to your HTTP request. It
-  looks for the `Host: blog.self-loop.com` HTTP request header. If so,
-  it serves the content.
+  looks for the `Host: blog.self-loop.com` HTTP request header. If it
+  sees this `Host` header, Github serves the content.
 
   If instead you were to try to go directly to `ruggeri.github.io`, then
   the header would read `Host: ruggeri.github.io`. Github would see this
-  and issue a redirect to `blog.self-loop.com`.
+  and issue a redirect to the appropriate path on `blog.self-loop.com`.
+
+  This is nice of Github. I kinda expected that Github would treat both
+  domains equally, because that seems simpler. It's nice to know that
+  everything will work fine if someone goes to `ruggeri.github.io`, AND
+  that they will be told about the preferred domain name
+  (`blog.self-loop.com`).
+
+  [route53]: https://aws.amazon.com/route53/
+
+  ## Special `CNAME` file: Domain name resolution!
 
   Setup note: Github will want you to create a special `CNAME` file in
   the root of your repository so that it knows what domain name you will
-  use for your website. You can see mine [here][github-cname-file].
+  use for your website. You can see mine [here][github-cname-file]. Why
+  do you need this `CNAME` file?
 
-  [route53]: https://aws.amazon.com/route53/
+  Github probably is serving lots of Github Pages from the same server.
+  That is: the IP address for `ruggeri.github.io` is not unique to me.
+  Lots of people have Github Pages hosted by the same web server on the
+  same IP address. Therefore, the `Host` header is *necessary
+  information* for disambiguating whether a client is asking for
+  user `ruggeri`'s Page, or for user `markov`'s page or whoever.
+
+  If someone makes a request with the host `ruggeri.github.io`, Github's
+  server knows this means the repository
+  `github.com/ruggeri/ruggeri.github.io`.
+
+  But unless I tell Github that I am using `blog.self-loop.com`, it
+  won't know that people asking for `Host: blog.self-loop.com` want the
+  `github.com/ruggeri/ruggeri.github.io` content.
+
+  Let's work backward through the *domain name resolution* process.
+
+  The client is contacting Github's server on Github's IP address. They
+  found this IP address because of an `A` record for
+  `ruggeri.github.io`. (An `A` record maps a domain name to an IP
+  address). The client looked up the `A` record because they had
+  previously tried to resolve `blog.self-loop.com`. They had found the
+  `CNAME` record that told the client to lookup `ruggeri.github.io`.
+
+  This is how the client learns the IP address to contact. But when the
+  client contacts Github's HTTP server, they don't say anything about
+  *how* they found Github's IP address (via the `ruggeri.github.io` `A`
+  record). The client only gives the `Host: blog.self-loop.com` header.
+
+  And this is why you need to tell Github about your domain name
+  `blog.self-loop.com`. You can't only create the `CNAME` record with
+  AWS Route 53.
+
   [github-cname-file]: https://github.com/ruggeri/ruggeri.github.io/blob/master/CNAME
 
-  ## Next time: commenting!
+  ## Next time: commenting
 
   This post is getting long, so I'll dedicate another post to the only
   *dynamic* part of this website: the comments. This is maybe the most
   exciting part. I'll give you a preview:
 
   * I store the comments in AWS DynamoDB (a NoSQL, schemaless database).
-  * I use AWS Lamdba to run some Python code that fetches/stores
-    comments.
+  * I use AWS Lamdba to run some very simple Python code that
+    fetches and stores comments from DynamoDB.
   * I use AWS API Gateway to create some HTTP endpoints that invoke the
     Lambda code.
-  * I wrote some React code to fetch and display the comments. Also I
-    use the [Formik][formik] library for the React comment form.
+  * I wrote some React code to fetch and display the comments. I use
+    the [Formik][formik] library for the React comment form.
   * Last, I Webpack to compile all my JavaScript code. The compiled
     JavaScript gets checked into Github like everything else.
 
   [formik]: https://github.com/jaredpalmer/formik
 
-  ## TODO
+  ## The end!
 
-  * Comments: lambdas, webpack.
+  Thanks for reading all this! I hope it was fun :-)

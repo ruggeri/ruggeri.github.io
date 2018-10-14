@@ -3,10 +3,10 @@
       inlineMath: [['$', '$']],
       displayMath: [['$$', '$$']],
   },
-});</script><script async="" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"></script><link href="/assets/styles.css" rel="stylesheet" /></head><body><div class="container"><div class="row justify-content-center"><div class="col-12 col-md-8"><h2 class="title display-2 mb-3"><a href="/">blog.self-loop.com</a></h2></div></div><div class="row justify-content-center"><div class="col-12 col-md-8"><h1 class="mb-0">How this blog is built</h1><small class="text-muted">Published: </small><p>I’m pretty happy with how this blog has turned out. I wanted to explain how I built it.</p>
+});</script><script async="" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"></script><link href="/assets/styles.css" rel="stylesheet" /></head><body><div class="container"><div class="row justify-content-center"><div class="col-12 col-md-8"><h2 class="title display-2 mb-3"><a href="/">blog.self-loop.com</a></h2></div></div><div class="row justify-content-center"><div class="col-12 col-md-8"><h1 class="mb-0">How this blog is built</h1><small class="text-muted">Published: </small><p>I’m pretty happy with how this blog has turned out. I wanted to explain how I built it. Maybe you’ll find my approach interesting :-)</p>
 <h2 id="the-markdown-and-slim-content">The Markdown and Slim content</h2>
-<p>The first step of my blog system is generating the static HTML content. I write most of the blog content in <a href="https://pandoc.org/">Markdown</a> and <a href="http://slim-lang.com/">Slim</a> templates. It looks kinda like this:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode html"><code class="sourceCode html"><a class="sourceLine" id="cb1-1" data-line-number="1">h1.mb-0</a>
+<p>The first step of my blog system is generating the static HTML content. I write most of the blog content in <a href="https://en.wikipedia.org/wiki/Markdown">Markdown</a> and <a href="http://slim-lang.com/">Slim</a> templates. It looks kinda like this:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode markdown"><code class="sourceCode markdown"><a class="sourceLine" id="cb1-1" data-line-number="1">h1.mb-0</a>
 <a class="sourceLine" id="cb1-2" data-line-number="2">  = meta.title</a>
 <a class="sourceLine" id="cb1-3" data-line-number="3"></a>
 <a class="sourceLine" id="cb1-4" data-line-number="4">small.text-muted</a>
@@ -14,28 +14,33 @@
 <a class="sourceLine" id="cb1-6" data-line-number="6"></a>
 <a class="sourceLine" id="cb1-7" data-line-number="7">markdown:</a>
 <a class="sourceLine" id="cb1-8" data-line-number="8">  I&#39;m pretty happy with how this blog has turned out. I wanted to</a>
-<a class="sourceLine" id="cb1-9" data-line-number="9">  explain how I built it.</a>
+<a class="sourceLine" id="cb1-9" data-line-number="9">  explain how I built it. Maybe you&#39;ll find my approach interesting :-)</a>
 <a class="sourceLine" id="cb1-10" data-line-number="10"></a>
 <a class="sourceLine" id="cb1-11" data-line-number="11">  ## The Markdown and Slim content</a>
 <a class="sourceLine" id="cb1-12" data-line-number="12"></a>
 <a class="sourceLine" id="cb1-13" data-line-number="13">  The first step of my blog system is generating the static HTML</a>
 <a class="sourceLine" id="cb1-14" data-line-number="14">  content. I write most of the blog content in</a>
-<a class="sourceLine" id="cb1-15" data-line-number="15">  [Markdown](https://en.wikipedia.org/wiki/Markdown) and</a>
-<a class="sourceLine" id="cb1-16" data-line-number="16">  [Slim](http://slim-lang.com/) templates. It looks kinda like this:</a>
+<a class="sourceLine" id="cb1-15" data-line-number="15">  <span class="ot">[Markdown](https://en.wikipedia.org/wiki/Markdown)</span> and</a>
+<a class="sourceLine" id="cb1-16" data-line-number="16">  <span class="ot">[Slim](http://slim-lang.com/)</span> templates. It looks kinda like this:</a>
 <a class="sourceLine" id="cb1-17" data-line-number="17"></a>
-<a class="sourceLine" id="cb1-18" data-line-number="18">  ```html</a>
-<a class="sourceLine" id="cb1-19" data-line-number="19">  h1.mb-0</a>
-<a class="sourceLine" id="cb1-20" data-line-number="20">    = meta.title</a>
+<a class="sourceLine" id="cb1-18" data-line-number="18">  <span class="bn">```markdown</span></a>
+<a class="sourceLine" id="cb1-19" data-line-number="19"><span class="bn">  h1.mb-0</span></a>
+<a class="sourceLine" id="cb1-20" data-line-number="20"><span class="bn">    = meta.title</span></a>
 <a class="sourceLine" id="cb1-21" data-line-number="21"></a>
-<a class="sourceLine" id="cb1-22" data-line-number="22">  small.text-muted</a>
-<a class="sourceLine" id="cb1-23" data-line-number="23">    = &quot;Published: &quot; + meta.publication_time.to_s</a></code></pre></div>
+<a class="sourceLine" id="cb1-22" data-line-number="22"><span class="bn">  small.text-muted</span></a>
+<a class="sourceLine" id="cb1-23" data-line-number="23"><span class="bn">    = &quot;Published: &quot; + meta.publication_time.to_s</span></a>
+<a class="sourceLine" id="cb1-24" data-line-number="24"></a>
+<a class="sourceLine" id="cb1-25" data-line-number="25"><span class="bn">  markdown:</span></a>
+<a class="sourceLine" id="cb1-26" data-line-number="26"><span class="bn">    I&#39;m pretty happy with how this blog has turned out. I wanted to</span></a>
+<a class="sourceLine" id="cb1-27" data-line-number="27"><span class="bn">    explain how I built it. Maybe you&#39;ll find my approach interesting :-)</span></a></code></pre></div>
 <p>Did I just inception you? You can see the whole thing <a href="https://github.com/ruggeri/ruggeri.github.io/blob/master/entries/2018-10-13/how-this-blog-is-built.slim">here</a>.</p>
 <h2 id="ruby-scripts-to-generate-html">Ruby scripts to generate HTML</h2>
-<p>I have a bunch of Ruby scripts that will turn this Slim/Markdown content into the HTML you see here before you. I won’t bore you with <em>all</em> the details of these scripts. You can <a href="https://github.com/ruggeri/ruggeri.github.io/tree/master/scripts">check them out if you like</a>:</p>
+<p>I have a bunch of Ruby scripts that will turn this Slim/Markdown content into the HTML you see here before you. I won’t bore you with <em>all</em> the details of these scripts. They’re checked into my <code>scripts/</code> directory: you can <a href="https://github.com/ruggeri/ruggeri.github.io/tree/master/scripts">read them if you like</a>.</p>
+<p>Here’s a summary though:</p>
 <ul>
 <li>A typical entry directory: <a href="https://github.com/ruggeri/ruggeri.github.io/tree/master/entries/2018-10-13">entries/2018-10-13</a>
 <ul>
-<li>The <code>.slim</code> file is the content</li>
+<li>The <code>.slim</code> file is the content.</li>
 <li>The <code>.yaml</code> is metadata about the blog entry: the title, the publication date, et cetera.</li>
 </ul></li>
 <li><a href="https://github.com/ruggeri/ruggeri.github.io/blob/master/src/entry.rb"><code>src/entry.rb</code></a>
@@ -50,6 +55,7 @@
 </ul>
 <h2 id="watching-for-changes-to-rebuild">Watching for changes to rebuild</h2>
 <p>Here’s one part I’m proud of. I don’t want to manually run <code>./scripts/build_entries.rb</code> every time I make a change to an entry’s Markdown content. I want to write Markdown in VSCode, save the <code>.slim</code> file, and then view it immediately in Firefox without having to explicitly go to the terminal to run <code>./scripts/build_entries.rb</code>.</p>
+<p>This is like in Rails or with Webpack, where you can change some code, then go to the browser and hit refresh. I want that. In the past, when I had a similar blog setup, I didn’t have this functionality. It was a <em>major</em> pain point.</p>
 <p>To solve this problem I wrote a <a href="https://github.com/ruggeri/ruggeri.github.io/blob/master/scripts/watch.rb"><code>scripts/watch.rb</code></a> script. Here it is:</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode ruby"><code class="sourceCode ruby"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="co"># ./scripts/watch.rb</span></a>
 <a class="sourceLine" id="cb2-2" data-line-number="2"><span class="kw">#!/usr/bin/env ruby</span></a>
@@ -63,10 +69,10 @@
 <a class="sourceLine" id="cb2-10" data-line-number="10">    <span class="st">`./scripts/build_all.rb`</span></a>
 <a class="sourceLine" id="cb2-11" data-line-number="11">  <span class="kw">end</span></a>
 <a class="sourceLine" id="cb2-12" data-line-number="12"><span class="kw">end</span></a></code></pre></div>
-<p>This script uses the <a href="https://docs.ruby-lang.org/en/2.0.0/Open3.html"><code>open3</code></a> lib to start a terminal command called <a href="https://github.com/emcrisostomo/fswatch"><code>fswatch</code></a>. You can give <code>fswatch</code> a list of directories, and it will watch for changes being made to any files in those directories. It will print out the name of any file that changes.</p>
-<p>The inner loop constantly tries to read from the <code>fswatch</code> command. Whenever <code>fswatch</code> does detect a change and output a file name, the <code>scripts/watch.rb</code> script will invoke a rebuild of the blog entries.</p>
-<p>This is somewhat wasteful, because I don’t rebuild the specific entry that has been changed. I rebuild <em>all</em> the entries. At some point this will begin to feel too slow (as I accumulate more blog posts), but for now it is fine.</p>
-<p>This works great because I can now simply type up Markdown. Save. Alt-tab to Firefox and refresh. Review. Repeat.</p>
+<p>This script uses the <a href="https://docs.ruby-lang.org/en/2.0.0/Open3.html"><code>open3</code></a> lib to start a terminal command called <a href="https://github.com/emcrisostomo/fswatch"><code>fswatch</code></a>. You can give <code>fswatch</code> a list of directories, and it will watch for changes being made to any files in those directories. It will print out the name of any file that changes. It will keep doing this until you kill <code>fswatch</code>.</p>
+<p>The inner loop of my Ruby script constantly tries to read from the <code>fswatch</code> command. Whenever <code>fswatch</code> does detect a change and output a file name, the <code>scripts/watch.rb</code> script will invoke a rebuild of the blog entries.</p>
+<p>This is somewhat wasteful, because I don’t rebuild only the specific entry that has been changed. I rebuild <em>all</em> the entries. At some point this will begin to feel too slow (as I accumulate more blog posts), but for now it is fine.</p>
+<p>I’m super happy with this system. I can now simply type up Markdown. Save. Command-tab to Firefox and refresh. Review my blog entry. Repeat.</p>
 <h2 id="assets">Assets</h2>
 <p>That <a href="https://github.com/ruggeri/ruggeri.github.io/blob/master/templates/default.slim"><code>templates/default.slim</code></a> template shows all the tricks and libraries I use.</p>
 <ul>
@@ -74,31 +80,40 @@
 <li>I use <a href="https://fonts.google.com/">Google fonts</a> (EB Garamond for now).</li>
 <li>I use <a href="https://highlightjs.org/">highlight.js</a> to highlight any code blocks on the page.</li>
 <li>I use <a href="https://www.mathjax.org/">MathJax</a> to render equations like <a href="https://en.wikipedia.org/wiki/Euler%27s_identity">this cool one</a>: <span class="math inline"><em>e</em><sup><em>π</em><em>i</em></sup> =  − 1</span>.</li>
-<li>I have a few CSS styles in <a href="https://github.com/ruggeri/ruggeri.github.io/blob/master/assets/styles.css">assets/styles.css</a>.</li>
+<li>I have a few custom CSS styles in <a href="https://github.com/ruggeri/ruggeri.github.io/blob/master/assets/styles.css">assets/styles.css</a>.</li>
 </ul>
-<p>I do have one last trick, which is the JavaScript I wrote to show you comments. I’ll talk about that later.</p>
+<p>I do have one last trick, which is the JavaScript I wrote to let you write me comments. I’ll talk about that later!</p>
 <h2 id="github-pages">Github Pages</h2>
 <p>I’ve shown you a built entry file: <a href="https://github.com/ruggeri/ruggeri.github.io/blob/master/dist/2018-10-13/how-this-blog-is-built.html"><code>dist/2018-10-13/how-this-blog-is-built.html</code></a>. But how are you reaching this HTML file right now?</p>
 <p>I use <a href="https://pages.github.com/">Github Pages</a>. This makes it really easy to host static content like this blog. I simply check in all the <code>dist/</code> files into my repo (along with everything else). I push to the <a href="https://github.com/ruggeri/ruggeri.github.io">github repository</a>.</p>
 <p>In the “Settings” tab for the repository, you can select to publish your repository as a Github page. That means that if <code>dist/2018-10-13/how-this-blog-is-built.html</code> is a file in my repository, then you can access it at <code>ruggeri.github.io/dist/2018-10-13/how-this-blog-is-built.html</code>.</p>
-<p>Github will serve any kind of file checked into the github repo. So it will serve my stylesheets and JavaScript too. You can even access the original Slim templates at <code>ruggeri.github.io/entries/2018-10-13/how-this-blog-is-built.slim</code> if you really want to for some reason.</p>
+<p>Github will serve any kind of file checked into the github repo. So it will serve my stylesheets and JavaScript too. You can even access the original Slim templates at <code>ruggeri.github.io/entries/2018-10-13/how-this-blog-is-built.slim</code> if you really wanted to for some reason.</p>
+<p>The principle is simple: if it’s checked into the Githbub repository, it’s being served by a Github HTTP server.</p>
 <h2 id="setting-up-a-custom-cname">Setting up a custom CNAME</h2>
+<p>This website is <code>blog.self-loop.com</code>. Not <code>ruggeri.github.io</code>.</p>
 <p>If you try to access any of the content on <code>ruggeri.github.io</code> it will push you to the same path but at the URL <code>blog.self-loop.com</code>. I own this domain name.</p>
 <p>I use <a href="https://aws.amazon.com/route53/">AWS Route 53</a> as my domain name host. They have a pretty convenient interface for setting up DNS records. I use a lot of AWS services.</p>
 <p>I setup a <code>CNAME</code> record to tell anyone on the internet that <code>blog.self-loop.com</code> is a synonym for <code>ruggeri.github.io</code>. So when your browser looks up the domain <code>blog.self-loop.com</code>, it is told that it should lookup the IP address for <code>ruggeri.github.io</code>, and use that as the IP address also for <code>blog.self-loop.com</code>.</p>
-<p>Github runs the webserver that is responding to your HTTP request. It looks for the <code>Host: blog.self-loop.com</code> HTTP request header. If so, it serves the content.</p>
-<p>If instead you were to try to go directly to <code>ruggeri.github.io</code>, then the header would read <code>Host: ruggeri.github.io</code>. Github would see this and issue a redirect to <code>blog.self-loop.com</code>.</p>
-<p>Setup note: Github will want you to create a special <code>CNAME</code> file in the root of your repository so that it knows what domain name you will use for your website. You can see mine <a href="https://github.com/ruggeri/ruggeri.github.io/blob/master/CNAME">here</a>.</p>
-<h2 id="next-time-commenting">Next time: commenting!</h2>
+<p>Github runs the webserver that is responding to your HTTP request. It looks for the <code>Host: blog.self-loop.com</code> HTTP request header. If it sees this <code>Host</code> header, Github serves the content.</p>
+<p>If instead you were to try to go directly to <code>ruggeri.github.io</code>, then the header would read <code>Host: ruggeri.github.io</code>. Github would see this and issue a redirect to the appropriate path on <code>blog.self-loop.com</code>.</p>
+<p>This is nice of Github. I kinda expected that Github would treat both domains equally, because that seems simpler. It’s nice to know that everything will work fine if someone goes to <code>ruggeri.github.io</code>, AND that they will be told about the preferred domain name (<code>blog.self-loop.com</code>).</p>
+<h2 id="special-cname-file-domain-name-resolution">Special <code>CNAME</code> file: Domain name resolution!</h2>
+<p>Setup note: Github will want you to create a special <code>CNAME</code> file in the root of your repository so that it knows what domain name you will use for your website. You can see mine <a href="https://github.com/ruggeri/ruggeri.github.io/blob/master/CNAME">here</a>. Why do you need this <code>CNAME</code> file?</p>
+<p>Github probably is serving lots of Github Pages from the same server. That is: the IP address for <code>ruggeri.github.io</code> is not unique to me. Lots of people have Github Pages hosted by the same web server on the same IP address. Therefore, the <code>Host</code> header is <em>necessary information</em> for disambiguating whether a client is asking for user <code>ruggeri</code>’s Page, or for user <code>markov</code>’s page or whoever.</p>
+<p>If someone makes a request with the host <code>ruggeri.github.io</code>, Github’s server knows this means the repository <code>github.com/ruggeri/ruggeri.github.io</code>.</p>
+<p>But unless I tell Github that I am using <code>blog.self-loop.com</code>, it won’t know that people asking for <code>Host: blog.self-loop.com</code> want the <code>github.com/ruggeri/ruggeri.github.io</code> content.</p>
+<p>Let’s work backward through the <em>domain name resolution</em> process.</p>
+<p>The client is contacting Github’s server on Github’s IP address. They found this IP address because of an <code>A</code> record for <code>ruggeri.github.io</code>. (An <code>A</code> record maps a domain name to an IP address). The client looked up the <code>A</code> record because they had previously tried to resolve <code>blog.self-loop.com</code>. They had found the <code>CNAME</code> record that told the client to lookup <code>ruggeri.github.io</code>.</p>
+<p>This is how the client learns the IP address to contact. But when the client contacts Github’s HTTP server, they don’t say anything about <em>how</em> they found Github’s IP address (via the <code>ruggeri.github.io</code> <code>A</code> record). The client only gives the <code>Host: blog.self-loop.com</code> header.</p>
+<p>And this is why you need to tell Github about your domain name <code>blog.self-loop.com</code>. You can’t only create the <code>CNAME</code> record with AWS Route 53.</p>
+<h2 id="next-time-commenting">Next time: commenting</h2>
 <p>This post is getting long, so I’ll dedicate another post to the only <em>dynamic</em> part of this website: the comments. This is maybe the most exciting part. I’ll give you a preview:</p>
 <ul>
 <li>I store the comments in AWS DynamoDB (a NoSQL, schemaless database).</li>
-<li>I use AWS Lamdba to run some Python code that fetches/stores comments.</li>
+<li>I use AWS Lamdba to run some very simple Python code that fetches and stores comments from DynamoDB.</li>
 <li>I use AWS API Gateway to create some HTTP endpoints that invoke the Lambda code.</li>
-<li>I wrote some React code to fetch and display the comments. Also I use the <a href="https://github.com/jaredpalmer/formik">Formik</a> library for the React comment form.</li>
+<li>I wrote some React code to fetch and display the comments. I use the <a href="https://github.com/jaredpalmer/formik">Formik</a> library for the React comment form.</li>
 <li>Last, I Webpack to compile all my JavaScript code. The compiled JavaScript gets checked into Github like everything else.</li>
 </ul>
-<h2 id="todo">TODO</h2>
-<ul>
-<li>Comments: lambdas, webpack.</li>
-</ul></div></div><div class="row justify-content-center"><div class="col-12 col-md-8" id="comments"><script src="/ui/dist/main.js"></script></div></div></div></body><script>hljs.initHighlightingOnLoad();</script>
+<h2 id="the-end">The end!</h2>
+<p>Thanks for reading all this! I hope it was fun :-)</p></div></div><div class="row justify-content-center"><div class="col-12 col-md-8" id="comments"><script src="/ui/dist/main.js"></script></div></div></div></body><script>hljs.initHighlightingOnLoad();</script>
