@@ -18,4 +18,4 @@ meta["publication_time"] = Time.now
 File.open(meta_path, "w") { |f| f.puts meta.to_yaml }
 
 # Because why force me to rebuild manually
-`./scripts/build_all.rb`
+`./bin/build_all.rb`
