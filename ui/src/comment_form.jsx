@@ -5,48 +5,38 @@ import TextareaAutosize from 'react-autosize-textarea';
 import API from './api.js';
 import Comment from './comment.jsx';
 
-
-const PLACEHOLDER_NAMES = [
-  "Leonhard Euler",
-  "Emmy Noether",
-  "Srinivasa Ramanujan",
-];
-
 class CommentForm extends React.Component {
   constructor(props) {
     super(props);
-
-    this.state = {
-      placeholderName: PLACEHOLDER_NAMES[Math.floor(Math.random() * PLACEHOLDER_NAMES.length)],
-    }
   }
 
-  async submitForm(comment) {
-    API.submitComment(comment);
+  async submitForm(formValues) {
+    API.submitComment(formValues.commentText);
   }
 
-  renderPreview(comment) {
-    comment = Object.assign({}, comment);
+  renderPreview(formValues) {
+    let previewComment = {
+      author_github_login: this.props.user.githubLogin,
+      author_github_name: this.props.user.githubName,
+      text: formValues.commentText,
+    };
 
-    if (!comment.text) {
+    if (!previewComment.text) {
       return null;
     }
 
-    return <Comment comment={comment} isPreview/>;
+    return <Comment comment={previewComment} isPreview/>;
   }
 
   render() {
     return (
       <Formik
-        initialValues={{ author_name: "", text: "" }}
+        initialValues={{ commentText: "" }}
 
         validate={values => {
           let errors = {};
-          if (!values.author_name) {
-            errors.author_name = "Please provide an author name.";
-          }
-          if (values.text.length < 5) {
-            errors.text = "Please provide a longer comment text.";
+          if (values.commentText.length < 5) {
+            errors.commentText = "Please provide a longer comment text.";
           }
 
           return errors;
@@ -62,22 +52,12 @@ class CommentForm extends React.Component {
           <div>
             <Form>
               <div className="form-group">
-                <label htmlFor="author_name" className="form-control-label">Author Name</label>
-                <Field
-                  type="text"
-                  name="author_name"
-                  className={classNames({ "form-control": true, "is-invalid": errors.author_name && touched.author_name })}
-                  placeholder={this.state.placeholderName} />
-                <ErrorMessage name="author_name" component="div" className="invalid-feedback"/>
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="text" className="form-control-label">Comment Text</label>
+                <label htmlFor="commentText" className="form-control-label">Comment Text</label>
                 <Field
                   component={CustomTextareaComponent}
-                  name="text"
-                  className={classNames({"form-control": true, "is-invalid": errors.text && touched.text })} />
-                <ErrorMessage name="text" component="div" className="invalid-feedback"/>
+                  name="commentText"
+                  className={classNames({"form-control": true, "is-invalid": errors.commentText && touched.commentText })} />
+                <ErrorMessage name="commentText" component="div" className="invalid-feedback"/>
               </div>
 
               <button

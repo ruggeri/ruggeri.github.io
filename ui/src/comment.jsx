@@ -1,8 +1,8 @@
 import $ from 'jquery';
 import { DateTime } from 'luxon';
-import xss from 'xss';
 import React from 'react';
 import showdown from 'showdown';
+import xss from 'xss';
 
 // Relies on highlight.js being loaded on the side.
 
@@ -29,7 +29,9 @@ class Comment extends React.PureComponent {
   }
 
   render() {
-    const { author_name, text, created_at } = this.props.comment;
+    const { author_github_name, author_github_login, text, created_at } = this.props.comment;
+    const author_name = author_github_login ? author_github_name : author_github_login;
+
     const html = this.converter.makeHtml(text);
 
     const datestring = DateTime.fromISO(created_at).toLocal().toFormat("ccc, d LLL yyyy hh:mm a");

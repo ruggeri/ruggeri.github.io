@@ -33,7 +33,9 @@ function maybeFinishLogin() {
 function getUserFromParams() {
   let params = (new URL(document.location)).searchParams;
   let user = {
-    login: params.get("login"),
+    githubId: params.get("github_id"),
+    githubLogin: params.get("github_login"),
+    githubName: params.get("github_name"),
     secretCode: params.get("secret_code"),
   };
 
@@ -42,35 +44,61 @@ function getUserFromParams() {
   return user;
 }
 
+function logoutUser() {
+  Cookies.remove("githubLogin");
+  Cookies.remove("secretCode");
+
+  // Trigger reload of the page now that there is no user.
+  window.location.reload();
+}
+
 function setUserToCookies(user) {
-  Cookies.set("login", user.login);
+  Cookies.set("githubId", user.githubId);
+  Cookies.set("githubLogin", user.githubLogin);
+  Cookies.set("githubName", user.githubName);
   Cookies.set("secretCode", user.secretCode);
 }
 
 function validateUser(user) {
-  if (!user.login) {
-    throw "Expected github login in params";
+  if (!user.githubId) {
+    throw "Expected github id for user";
+  }
+  if (!user.githubLogin) {
+    throw "Expected github login for user";
+  }
+  if (!('githubName' in user)) {
+    throw "Expected github name to be at least a key for user";
   }
   if (!user.secretCode) {
-    throw "Expected secret code in params";
+    throw "Expected secret code for user";
   }
 }
 
 let cachedCookiesUser = null;
 function getUserFromCookies() {
-  if (!cachedCookiesUser) {
-    cachedCookiesUser = {
-      login: Cookies.get("login"),
-      secretCode: Cookies.get("secretCode"),
-    };
+  if (cachedCookiesUser) {
+    return cachedCookiesUser;
   }
 
-  validateUser(cachedCookiesUser);
+  let user = {
+    githubId: Cookies.get("githubId"),
+    githubLogin: Cookies.get("githubLogin"),
+    githubName: Cookies.get("githubName"),
+    secretCode: Cookies.get("secretCode"),
+  };
+
+  if ((!user.githubId) || (!user.githubLogin) || (!user.secretCode)) {
+    return null;
+  }
+
+  cachedCookiesUser = user;
   return cachedCookiesUser;
 }
 
 export default {
   beginLogin,
   getUserFromCookies,
+  logoutUser,
   maybeFinishLogin,
+  setUserToCookies,
 }

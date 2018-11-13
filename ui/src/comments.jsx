@@ -1,7 +1,9 @@
 import React from 'react';
-import Comment from './/comment.jsx';
-import CommentForm from './comment_form.jsx';
 import API from './api.js';
+import Comment from './comment.jsx';
+import CommentForm from './comment_form.jsx';
+import LoginForm from './login_form.jsx';
+import User from './user.js';
 
 class Comments extends React.Component {
   constructor(props) {
@@ -35,6 +37,9 @@ class Comments extends React.Component {
   }
 
   render() {
+    const user = User.getUserFromCookies();
+    const commentOrLoginForm = user ? <CommentForm user={user}/> : <LoginForm />
+
     const commentEls = this.state.comments.map(
       c => <Comment comment={c} key={c.comment_id} />
     );
@@ -43,7 +48,7 @@ class Comments extends React.Component {
       <div>
         <h1>Comments</h1>
 
-        <CommentForm />
+        {commentOrLoginForm}
 
         <div>
           {commentEls}
