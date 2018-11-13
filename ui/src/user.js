@@ -25,8 +25,10 @@ function maybeFinishLogin() {
     throw "Expected oauth redirect url; got none?";
   }
 
+  Cookies.remove('oauth_redirect_url');
   window.location = oauth_redirect_url;
 
+  // Should never even get here.
   return true;
 }
 
