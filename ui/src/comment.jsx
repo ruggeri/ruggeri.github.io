@@ -30,7 +30,7 @@ class Comment extends React.PureComponent {
 
   render() {
     const { author_github_name, author_github_login, text, created_at } = this.props.comment;
-    const author_name = author_github_login ? author_github_name : author_github_login;
+    const author_name = author_github_name ? author_github_name : author_github_login;
 
     const html = this.converter.makeHtml(text);
 
