@@ -14,7 +14,7 @@ async function submitComment(commentText) {
 
   const payload = {
     github_id: user.githubId,
-    user_secret_code: user.secretCode,
+    secret_code: user.secretCode,
     entry_id: entryId,
     comment_text: commentText,
   }
