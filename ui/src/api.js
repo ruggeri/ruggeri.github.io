@@ -13,8 +13,8 @@ async function submitComment(commentText) {
   }
 
   const payload = {
-    github_id: user.githubId,
-    secret_code: user.secretCode,
+    author_github_id: user.githubId,
+    author_secret_code: user.secretCode,
     entry_id: entryId,
     comment_text: commentText,
   }
