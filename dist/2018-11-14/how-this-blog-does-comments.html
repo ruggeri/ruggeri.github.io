@@ -1,0 +1,237 @@
+<head><meta charset="UTF-8" /><meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport" /><title>How This Blog Does Comments</title><link crossorigin="anonymous" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" rel="stylesheet" /><link href="https://fonts.googleapis.com/css?family=EB+Garamond" rel="stylesheet" /><script src="/assets/highlight.pack.js"></script><link href="/assets/hybrid.css" rel="stylesheet" /><script>const entryId = "c86b47d0d8a48f31581744d160b3dbdd"</script><script type="text/x-mathjax-config">MathJax.Hub.Config({
+  tex2jax: {
+      inlineMath: [['$', '$']],
+      displayMath: [['$$', '$$']],
+  },
+});</script><script async="" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"></script><link href="/assets/styles.css" rel="stylesheet" /></head><body><div class="container"><div class="row justify-content-center"><div class="col-12 col-md-8"><h2 class="title display-2 mb-3"><a href="/">self-loop</a></h2></div></div><div class="row justify-content-center"><div class="col-12 col-md-8"><h1 class="mb-0">How This Blog Does Comments</h1><small class="text-muted">Published: </small><p>Rather than use a system like Disqus, I wrote my own logic to handle commenting on this blog. Storing comments means the comments need to be stored somewhere, so this blog needs to be more than just statically generated content stored on Github Pages.</p>
+<h3 id="dynamodb-stores-the-comments">DynamoDB Stores The Comments</h3>
+<p>To store the comments, I use Amazon DynamoDB. I have two tables: <code>users</code> and <code>comments</code>. In general, DynamoDB is “schemaless”, each row is like a JSON blob, and the keys in one row don’t have to match up with the keys in the next row. However, it is typical that all rows follow some common format. Here are the schemas for the two tables:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode yaml"><code class="sourceCode yaml"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="fu">comments:</span></a>
+<a class="sourceLine" id="cb1-2" data-line-number="2">  entry_id, <span class="co"># the blog post you are leaving a comment on,</span></a>
+<a class="sourceLine" id="cb1-3" data-line-number="3">  comment_id, <span class="co"># unique for each comment</span></a>
+<a class="sourceLine" id="cb1-4" data-line-number="4">  author_name,</a>
+<a class="sourceLine" id="cb1-5" data-line-number="5">  created_at,</a>
+<a class="sourceLine" id="cb1-6" data-line-number="6">  text,</a>
+<a class="sourceLine" id="cb1-7" data-line-number="7"></a>
+<a class="sourceLine" id="cb1-8" data-line-number="8"><span class="fu">users:</span></a>
+<a class="sourceLine" id="cb1-9" data-line-number="9">  github_id, <span class="co"># unique for each user</span></a>
+<a class="sourceLine" id="cb1-10" data-line-number="10">  github_name, <span class="co"># Their name as recorded on Github; not everyone has this</span></a>
+<a class="sourceLine" id="cb1-11" data-line-number="11">  github_login, <span class="co"># Their Github login name; this can change,</span></a>
+<a class="sourceLine" id="cb1-12" data-line-number="12">  json_user_payload, <span class="co"># A dump of Github&#39;s JSON representation of the user</span></a>
+<a class="sourceLine" id="cb1-13" data-line-number="13">  secret_code, <span class="co"># An authentication token stored in the users&#39; cookies</span></a></code></pre></div>
+<h3 id="primary-partition-vs-primary-sort-keys">Primary Partition vs Primary Sort Keys</h3>
+<p>DynamoDB has two kinds of key: <em>primary partition key</em> and <em>primary sort key</em>. DynamoDB is a partitioned database, which means it splits up the rows in a table across different DynamoDB machines.</p>
+<p><strong>Primary Partition Key</strong></p>
+<p>DynamoDB chooses which machine to store a new row on by looking at the <em>primary partition key</em>. For instance: if DynamoDB runs 10 machines for your database, and you insert a row with primary partition key value “Gizmo”, then DynamoDB will store this row on the machine numbered <code>hash(&quot;Gizmo&quot;) % 10</code>. This should relatively evenly (but deterministically) split up the rows across machines.</p>
+<p>It is important that the splitting up is done deterministically, because later, when you look up your data, you will need to specify the primary partition key so that DynamoDB knows where that row is stored.</p>
+<p><strong>Aside: Partitioning and Scaling Out</strong></p>
+<p>In fact DynamoDB does something slightly more complicated that what I described about hashing. To see why the above strategy might be not the best, consider if we wanted to increase the number of machines from 10 to 11. When we increase the number of machines to handle more load, that is called <em>scaling out</em>. Under the scheme I suggested, each row should now live on machine numbered <code>hash(primary_partition_key_value) % 11</code>. But that means almost every row is going to be shuffled to a new machine.</p>
+<p>This is similar to what happens when a hash map resizes and doubles the number of buckets. Increasing the <em>modulus</em> by (or doubling) throws everything off, so that almost everything belongs in a different bucket number. For instance, if <code>hash(key) == 50</code>, this belongs in bucket number 0 when there are ten buckets, but bucket number ten when there are twenty buckets.</p>
+<p>Returning to the scenario of partitioning, it would be good if when an 11th machine is added, we do not reshuffle almost all the data. Transmitting data to other machines can be very slow. Instead, an ideal would be if each of ten machines gave <span class="math inline">$\frac{1}{11}$</span> of their data to the 11th server. This is ideal because (1) the rows are perfectly balanced, (2) the minimum amount of rows are transfered.</p>
+<p>There are several ways to approach this ideal, and maybe I can talk about it in a future blog post. One of the innovations of <a href="https://www.allthingsdistributed.com/files/amazon-dynamo-sosp2007.pdf">Amazon’s Dynamo whitepaper</a> is how it solves this issue.</p>
+<p><strong>Primary Sort Key</strong></p>
+<p>In my <code>comments</code> table, the primary partition key is <code>entry_id</code>. This might seem somewhat odd, beacuse there can easily be multiple <code>comment</code> records for a single blog post. In a SQL DB, the primary key would probably be the <code>comment_id</code>.</p>
+<p>A common query is to fetch all comments for a given blog post. Therefore, it is desirable that all these comments live on the same machine. That means the query can be answered by talking to a single machine. That is why I have selected <code>entry_id</code> as the primary partition key.</p>
+<p>To reflect that <code>entry_id</code> is not itself a full primary key, I have also specified a <em>primary sort key</em> which is <code>comment_id</code>. That means it is allowed for there be multiple rows for one <code>entry_id</code> <em>if</em> they have different <code>comment_id</code>s.</p>
+<p>Note: I cannot easily lookup a comment by its <code>comment_id</code> alone. The <code>comment_id</code> does not tell me on which machine that comment lives. I need also the <code>entry_id</code>. Without the <code>entry_id</code> DynamoDB wouldn’t know even what machine to look in. To look up a single comment I need the <em>pair</em> <code>(entry_id, comment_id)</code>.</p>
+<p>As a bonus, the comments will be sorted, <em>per machine</em>, in order of <code>(entry_id, comment_id)</code>. That first means that all comments for a given <code>entry_id</code> will live “next” to each other in storage. That means that reading comments for a single entry should involve reading one disk block.</p>
+<p>In my scenario, it’s not a very useful property that, within a given <code>entry_id</code>, that comments are further sorted by <code>comment_id</code>. That <em>could</em> help if I wanted to look up a single comment by <code>(entry_id, comment_id)</code>. Within the block of comments for <code>entry_id</code>, I could do binary search to find the comment with the given <code>comment_id</code>.</p>
+<p>But I don’t want to retrieve comments one-by-one this way: I want to receive all the comments. Still, if I allowed you to update your comments, then it might be nice that the DB can so quickly find a specified comment.</p>
+<p><strong>Evaluation of DynamoDB</strong></p>
+<p>I liked using DynamoDB. You can setup DynamoDB database with a few clicks. You don’t need to specify a schema; you can change your schema at will. Adding tables is easy. I love that I don’t have to do anything to make sure that the DB stays online and that AWS does all the work.</p>
+<p>DynamoDB costs very little at my usage level. The cost is proportional to the request rate that you want to support. Things that go into the cost calculation are:</p>
+<ul>
+<li>The number of reads and writes per seconds.</li>
+<li>The size of the data you are fetching/storing.</li>
+</ul>
+<p>Becaue this blog is so seldom read, and comments are not that long, I can use the minimum amount of read resources. For me the cost is about $1/mo.</p>
+<h3 id="aws-lambda">AWS Lambda</h3>
+<p>Now that I have somewhere to store comments, I need to write server logic to do things like:</p>
+<ul>
+<li>Fetch comments</li>
+<li>Store a new comment from an logged in user.</li>
+<li>Log in a user.</li>
+</ul>
+<p>To do this I use AWS Lambda. Lambda lets you write code (called <em>Lambda functions</em>) that gets executed when an incoming event is fired. For instance, events can be fired when someone makes an API request.</p>
+<p>Basically, you can treat Lambda functions as a simple place to write backend web request “controller” logic.</p>
+<p>The nice thing is that AWS takes care of deploying your Lambda functions. You don’t have to rent a server box on EC2, you don’t have to install any software, you don’t have to configure a web server on the EC2 machine, you don’t have to to setup something like Passenger to run your web application.</p>
+<p>Also, AWS Lambda will only charge you when your Lambda function is executed. You get 1MM requests free. My blog has 820 requests for comments. So I pay Amazon nothing for Lambda. (Lambda function execution is time limited, so no cheating by doing hours of bitcoin mining for free in a Lambda function!)</p>
+<p>Let’s see some Lambda code</p>
+<p><strong>Fetching Comments</strong></p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb2-1" data-line-number="1">dynamodb <span class="op">=</span> boto3.resource(<span class="st">&#39;dynamodb&#39;</span>)</a>
+<a class="sourceLine" id="cb2-2" data-line-number="2">comments_table <span class="op">=</span> dynamodb.Table(<span class="st">&#39;comments&#39;</span>)</a>
+<a class="sourceLine" id="cb2-3" data-line-number="3">users_table <span class="op">=</span> dynamodb.Table(<span class="st">&#39;users&#39;</span>)</a>
+<a class="sourceLine" id="cb2-4" data-line-number="4"></a>
+<a class="sourceLine" id="cb2-5" data-line-number="5"><span class="kw">def</span> get_comments(event, context):</a>
+<a class="sourceLine" id="cb2-6" data-line-number="6">    entry_id <span class="op">=</span> event[<span class="st">&quot;entry_id&quot;</span>]</a>
+<a class="sourceLine" id="cb2-7" data-line-number="7">    response <span class="op">=</span> comments_table.query(</a>
+<a class="sourceLine" id="cb2-8" data-line-number="8">        KeyConditionExpression<span class="op">=</span>Key(<span class="st">&#39;entry_id&#39;</span>).eq(entry_id)</a>
+<a class="sourceLine" id="cb2-9" data-line-number="9">    )</a>
+<a class="sourceLine" id="cb2-10" data-line-number="10"></a>
+<a class="sourceLine" id="cb2-11" data-line-number="11">    comments <span class="op">=</span> response[<span class="st">&#39;Items&#39;</span>]</a>
+<a class="sourceLine" id="cb2-12" data-line-number="12"></a>
+<a class="sourceLine" id="cb2-13" data-line-number="13">    <span class="cf">return</span> {</a>
+<a class="sourceLine" id="cb2-14" data-line-number="14">        <span class="st">&quot;statusCode&quot;</span>: <span class="dv">200</span>,</a>
+<a class="sourceLine" id="cb2-15" data-line-number="15">        <span class="st">&quot;comments&quot;</span>: comments</a>
+<a class="sourceLine" id="cb2-16" data-line-number="16">    }</a></code></pre></div>
+<p>This code is relatively self-explanatory. <code>boto3</code> is a library that Amazon provides to interact with AWS services. I say I want to use the <code>comments</code> and (later on in other event handlers) <code>users</code> tables.</p>
+<p>The <code>get_comments</code> function will be fired when someone makes a request for comments. They will specify the <code>entry_id</code>, which will be passed to us inside the <code>event</code> object (which contains the params of the request).</p>
+<p>We submit a query to the <code>comments_table</code>, asking for all records that meet the expressed requirement that <code>entry_id</code> equal the specified value.</p>
+<p>Last, the function returns a dictionary specifying the JSON response.</p>
+<p>Simple!</p>
+<p><strong>Creating Comments</strong></p>
+<p>Here’s the code for posting a new comment. In a moment I’ll break it down:</p>
+<pre><code>def create_comment(event, context):
+  entry_id, text, author_github_id, author_secret_code = (
+      event[&quot;payload&quot;][&quot;entry_id&quot;],
+      event[&quot;payload&quot;][&quot;comment_text&quot;],
+      event[&quot;payload&quot;][&quot;author_github_id&quot;],
+      event[&quot;payload&quot;][&quot;author_secret_code&quot;],
+  )
+
+  author_user = users_table.get_item(Key={&quot;github_id&quot;: author_github_id})[&#39;Item&#39;]
+  print(author_user)
+
+  if author_user == None:
+      return {
+          &quot;statusCode&quot;: 404,
+          &quot;message&quot;: f&quot;No user found for this github_id: {author_github_id}.&quot;,
+      }
+
+  if author_user[&#39;secret_code&#39;] != author_secret_code:
+      return {
+          &quot;statusCode&quot;: 403,
+          &quot;message&quot;: f&quot;That is the wrong secret_code for this github_id: {author_github_id}.&quot;,
+          &quot;submittedUserSecretCode&quot;: author_secret_code,
+      }
+
+  author_github_login, author_github_name = author_user[&#39;github_login&#39;], author_user[&#39;github_name&#39;]
+  comment_id = str(binascii.b2a_hex(os.urandom(15)), &quot;ascii&quot;)
+  created_at = datetime.now(timezone.utc)
+
+  comment = {
+      &quot;entry_id&quot;: entry_id,
+      &quot;comment_id&quot;: comment_id,
+      &quot;created_at&quot;: created_at.isoformat(),
+      &quot;author_github_id&quot;: author_github_id,
+      &quot;author_github_login&quot;: author_github_login,
+      &quot;author_github_name&quot;: author_github_name,
+      &quot;text&quot;: text,
+  }
+
+  comments_table.put_item(Item=comment)
+
+  return {
+      &quot;statusCode&quot;: 200,
+      &quot;comment&quot;: comment,
+  }</code></pre>
+<p>First thing first: getting the params of the request:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb4-1" data-line-number="1">entry_id, text, author_github_id, author_secret_code <span class="op">=</span> (</a>
+<a class="sourceLine" id="cb4-2" data-line-number="2">  event[<span class="st">&quot;payload&quot;</span>][<span class="st">&quot;entry_id&quot;</span>],</a>
+<a class="sourceLine" id="cb4-3" data-line-number="3">  event[<span class="st">&quot;payload&quot;</span>][<span class="st">&quot;comment_text&quot;</span>],</a>
+<a class="sourceLine" id="cb4-4" data-line-number="4">  event[<span class="st">&quot;payload&quot;</span>][<span class="st">&quot;author_github_id&quot;</span>],</a>
+<a class="sourceLine" id="cb4-5" data-line-number="5">  event[<span class="st">&quot;payload&quot;</span>][<span class="st">&quot;author_secret_code&quot;</span>],</a>
+<a class="sourceLine" id="cb4-6" data-line-number="6">)</a></code></pre></div>
+<p>The user needs to specify what entry they are posting a comment for, and the text of that comment. They need to specify who they are; the primary key for the <code>users</code> table is <code>github_id</code>. A user’s Github ID uniquely and permanently identifies a user.</p>
+<p>When a user logs in, they are given a <code>secret_code</code>. This is how, when they make requests to create a comment with a given <code>github_id</code>, we can verify they are who they say. Let’s do that now:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb5-1" data-line-number="1">author_user <span class="op">=</span> users_table.get_item(Key<span class="op">=</span>{<span class="st">&quot;github_id&quot;</span>: author_github_id})[<span class="st">&#39;Item&#39;</span>]</a>
+<a class="sourceLine" id="cb5-2" data-line-number="2"><span class="bu">print</span>(author_user)</a>
+<a class="sourceLine" id="cb5-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb5-4" data-line-number="4"><span class="cf">if</span> author_user <span class="op">==</span> <span class="va">None</span>:</a>
+<a class="sourceLine" id="cb5-5" data-line-number="5">    <span class="cf">return</span> {</a>
+<a class="sourceLine" id="cb5-6" data-line-number="6">        <span class="st">&quot;statusCode&quot;</span>: <span class="dv">404</span>,</a>
+<a class="sourceLine" id="cb5-7" data-line-number="7">        <span class="st">&quot;message&quot;</span>: <span class="ss">f&quot;No user found for this github_id: </span><span class="sc">{</span>author_github_id<span class="sc">}</span><span class="ss">.&quot;</span>,</a>
+<a class="sourceLine" id="cb5-8" data-line-number="8">    }</a>
+<a class="sourceLine" id="cb5-9" data-line-number="9"></a>
+<a class="sourceLine" id="cb5-10" data-line-number="10"><span class="cf">if</span> author_user[<span class="st">&#39;secret_code&#39;</span>] <span class="op">!=</span> author_secret_code:</a>
+<a class="sourceLine" id="cb5-11" data-line-number="11">    <span class="cf">return</span> {</a>
+<a class="sourceLine" id="cb5-12" data-line-number="12">        <span class="st">&quot;statusCode&quot;</span>: <span class="dv">403</span>,</a>
+<a class="sourceLine" id="cb5-13" data-line-number="13">        <span class="st">&quot;message&quot;</span>: <span class="ss">f&quot;That is the wrong secret_code for this github_id: </span><span class="sc">{</span>author_github_id<span class="sc">}</span><span class="ss">.&quot;</span>,</a>
+<a class="sourceLine" id="cb5-14" data-line-number="14">        <span class="st">&quot;submittedUserSecretCode&quot;</span>: author_secret_code,</a>
+<a class="sourceLine" id="cb5-15" data-line-number="15">    }</a></code></pre></div>
+<p>In this code, I lookup the user in DynamoDB. Just in case there was never any user stored for the given <code>github_id</code>, I check that.</p>
+<p>Next, I check that the submitted <code>author_secret_code</code> matches the <code>secret_code</code> I stored in the users table. If not, I tell the user that they are not authorized.</p>
+<p>In those anomolous cases, I return a 404 or a 403 (Not Authorized) as necessary. I only proceed with the function if all is well.</p>
+<p><strong>Storing the Comment</strong></p>
+<p>Last up is storing the comment in DynamoDB.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb6-1" data-line-number="1">author_github_login, author_github_name <span class="op">=</span> author_user[<span class="st">&#39;github_login&#39;</span>], author_user[<span class="st">&#39;github_name&#39;</span>]</a>
+<a class="sourceLine" id="cb6-2" data-line-number="2">comment_id <span class="op">=</span> <span class="bu">str</span>(binascii.b2a_hex(os.urandom(<span class="dv">15</span>)), <span class="st">&quot;ascii&quot;</span>)</a>
+<a class="sourceLine" id="cb6-3" data-line-number="3">created_at <span class="op">=</span> datetime.now(timezone.utc)</a>
+<a class="sourceLine" id="cb6-4" data-line-number="4"></a>
+<a class="sourceLine" id="cb6-5" data-line-number="5">comment <span class="op">=</span> {</a>
+<a class="sourceLine" id="cb6-6" data-line-number="6">    <span class="st">&quot;entry_id&quot;</span>: entry_id,</a>
+<a class="sourceLine" id="cb6-7" data-line-number="7">    <span class="st">&quot;comment_id&quot;</span>: comment_id,</a>
+<a class="sourceLine" id="cb6-8" data-line-number="8">    <span class="st">&quot;created_at&quot;</span>: created_at.isoformat(),</a>
+<a class="sourceLine" id="cb6-9" data-line-number="9">    <span class="st">&quot;author_github_id&quot;</span>: author_github_id,</a>
+<a class="sourceLine" id="cb6-10" data-line-number="10">    <span class="st">&quot;author_github_login&quot;</span>: author_github_login,</a>
+<a class="sourceLine" id="cb6-11" data-line-number="11">    <span class="st">&quot;author_github_name&quot;</span>: author_github_name,</a>
+<a class="sourceLine" id="cb6-12" data-line-number="12">    <span class="st">&quot;text&quot;</span>: text,</a>
+<a class="sourceLine" id="cb6-13" data-line-number="13">}</a>
+<a class="sourceLine" id="cb6-14" data-line-number="14"></a>
+<a class="sourceLine" id="cb6-15" data-line-number="15">comments_table.put_item(Item<span class="op">=</span>comment)</a>
+<a class="sourceLine" id="cb6-16" data-line-number="16"></a>
+<a class="sourceLine" id="cb6-17" data-line-number="17"><span class="cf">return</span> {</a>
+<a class="sourceLine" id="cb6-18" data-line-number="18">    <span class="st">&quot;statusCode&quot;</span>: <span class="dv">200</span>,</a>
+<a class="sourceLine" id="cb6-19" data-line-number="19">    <span class="st">&quot;comment&quot;</span>: comment,</a>
+<a class="sourceLine" id="cb6-20" data-line-number="20">}</a></code></pre></div>
+<p>I first pull out a couple fields of the user: <code>github_login</code> (their login name), <code>github_name</code> (their human name, if provided).</p>
+<p>Next, I randomly generate a hex string for the <code>comment_id</code> value. <code>os.urandom(15)</code> generates 15 bytes of random data, while <code>binascii.b2a_hex</code> will convert a string of bytes to a string of ASCII letters. Each byte can be translated to two hexadecimal digits, since</p>
+<p><br /><span class="math display">$$
+\begin{align}
+2^8 = 2^4 \cdot 2^4 = 16 \cdot 16
+\end{align}
+$$</span><br /></p>
+<p><strong>A Birthday Problem Aside</strong></p>
+<p>The <code>comment_id</code> is selected without first looking at the <code>comment_id</code> values that exist in DynamoDB. Is this safe? What if I reuse a <code>comment_id</code> that has already been used?</p>
+<p>If I reuse a <code>comment_id</code>, this new comment will clober the old comment; essentially I will lose the old comment. But this is very unlikely.</p>
+<p>How many unique hex strings are there? Well, there are 15 bytes, which means there are <span class="math inline">2<sup>15 * 8</sup> = 2<sup>120</sup></span> possible strings. Given that there are <span class="math inline">2<sup>120</sup></span> possible values, what is the probability that, if I have generated <span class="math inline"><em>n</em></span> <code>comment_id</code>s that any two will have clashed?</p>
+<p>The answer is the same as to the <a href="https://en.wikipedia.org/wiki/Birthday_problem#Cast_as_a_collision_problem">Birthday Problem</a>. The probability of <em>no</em> collisions with <span class="math inline"><em>n</em></span> ids is <em>approximately</em>:</p>
+<p><br /><span class="math display">$$
+\begin{align}
+  \Big(\frac{2^{120} - 1}{2^{120}}\Big)^{n(n - 1)/2}
+\end{align}
+$$</span><br /></p>
+<p>How might I have come up with this equation? Well, if there are no collisions, then every pair of <code>comment_id</code>s should be different. There are <span class="math inline">$\frac{n(n-1)}{2}$</span> pairs of <span class="math inline"><em>n</em></span> items. That’s the exponent in the equation.</p>
+<p>The base of the exponent is $<code>. This is the probability that a pair of</code>comment_id`s will be <em>different</em>.</p>
+<p>We raise this probability to the exponent <span class="math inline">$\frac{n(n-1)}{2}$</span> because we want <em>every</em> pair to be non-colliding. This <em>approximation</em> uses the principle that, if an event has a probability <span class="math inline"><em>p</em></span> of occuring, then the probability that it happens every time out of <span class="math inline"><em>k</em></span> trials is <span class="math inline"><em>p</em><sup><em>k</em></sup></span>. That equation is based on the assumption that each “trial” is <em>independent</em> and unreleated to the prior trials.</p>
+<p>The reason this is only our Birthday formulat is only an approximation comes from the fact that our “trials” are not independent. Consider if we’re thinking about <em>three</em> samples: <span class="math inline"><em>a</em>, <em>b</em>, <em>c</em></span>. The probability that <span class="math inline"><em>a</em></span> and <span class="math inline"><em>b</em></span> do not collide is indeed:</p>
+<p><br /><span class="math display">$$
+\begin{align}
+  \frac{2^{120} - 1}{2^{120}}
+\end{align}
+$$</span><br /></p>
+<p>And also the same is true for <span class="math inline"><em>a</em></span> and <span class="math inline"><em>c</em></span>! But here is the crux: what is the probability that <span class="math inline"><em>a</em></span> and <span class="math inline"><em>c</em></span> do not collide, <em>given</em> that:</p>
+<ol type="1">
+<li><span class="math inline"><em>a</em></span> and <span class="math inline"><em>b</em></span> do not collide</li>
+<li>AND <span class="math inline"><em>b</em></span> and <span class="math inline"><em>c</em></span> do not collide.</li>
+</ol>
+<p>This <em>conditional</em> probability is slightly higher. It is:</p>
+<p><br /><span class="math display">$$
+\begin{align}
+  \frac{2^{120} - 2}{2^{120} - 1}
+\end{align}
+$$</span><br /></p>
+<p>The reason is as follows. Since <span class="math inline"><em>c</em> ≠ <em>b</em></span>, that means that <span class="math inline"><em>c</em></span> must be one of <span class="math inline">2<sup>120</sup> − 1</span> remaining values. And since we’ve said that <span class="math inline"><em>a</em> ≠ <em>b</em></span>, it must <em>also</em> be amongst those <span class="math inline">2<sup>120</sup> − 1</span> values. So that means that, since that <span class="math inline"><em>a</em></span> is amongst that reduced set, there are <span class="math inline">2<sup>120</sup> − 2</span> ways to choose <span class="math inline"><em>c</em></span> such that <span class="math inline"><em>a</em> ≠ <em>c</em></span>.</p>
+<p>More generally: if <span class="math inline"><em>a</em></span> and <span class="math inline"><em>b</em></span> <em>both</em> do not collide with the set of <span class="math inline"><em>n</em> − 2</span> other numbers, then they are both in a set of size <span class="math inline">2<sup>120</sup> − (<em>n</em> − 2)</span>. Thus, the probability that <span class="math inline"><em>a</em></span> and <span class="math inline"><em>b</em></span> do not collide is:</p>
+<p><br /><span class="math display">$$
+\begin{align}
+  \frac{2^{120} - (n - 3)}{2^{120} - (n - 2)}
+\end{align}
+$$</span><br /></p>
+<p>This shows that always using the probability <span class="math inline">$\frac{2^120 - 1}{2^{120}}$</span> as our base is overly optimistic. Hopefully, however, if <span class="math inline"><em>n</em></span> is such that:</p>
+<p><br /><span class="math display">$$
+\begin{align}
+  \frac{2^{120} - (n - 3)}{2^{120} - (n - 2)}
+  \approx
+  \frac{2^{120} - 1}{2^{120}}
+\end{align}
+$$</span><br /></p>
+<p>then everything should be okay. Alternatively, we may use</p>
+<p><br /><span class="math display">$$
+\begin{align}
+  \Big(\frac{2^{120} - (n - 3)}{2^{120} - (n - 2)}\Big)
+  ^
+  {n(n-1)/2}
+\end{align}
+$$</span><br /></p>
+<p>as a guaranteed <strong>pessimistic</strong> approximation.</p></div></div><div class="row justify-content-center"><div class="col-12 col-md-8" id="comments"><script src="/ui/dist/main.js"></script></div></div></div></body><script>hljs.initHighlightingOnLoad();</script>

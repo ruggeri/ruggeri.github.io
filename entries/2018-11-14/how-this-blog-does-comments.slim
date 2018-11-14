@@ -1,0 +1,469 @@
+<h1 class="mb-0">
+  = meta.title
+</h1>
+
+<small class="text-muted">
+  = "Published: " + meta.publication_time.to_s
+</small>
+
+markdown:
+  Rather than use a system like Disqus, I wrote my own logic to handle
+  commenting on this blog. Storing comments means the comments need to
+  be stored somewhere, so this blog needs to be more than just
+  statically generated content stored on Github Pages.
+
+  ### DynamoDB Stores The Comments
+
+  To store the comments, I use Amazon DynamoDB. I have two tables:
+  `users` and `comments`. In general, DynamoDB is "schemaless", each row
+  is like a JSON blob, and the keys in one row don't have to match up
+  with the keys in the next row. However, it is typical that all rows
+  follow some common format. Here are the schemas for the two tables:
+
+  ```yaml
+  comments:
+    entry_id, # the blog post you are leaving a comment on,
+    comment_id, # unique for each comment
+    author_name,
+    created_at,
+    text,
+
+  users:
+    github_id, # unique for each user
+    github_name, # Their name as recorded on Github; not everyone has this
+    github_login, # Their Github login name; this can change,
+    json_user_payload, # A dump of Github's JSON representation of the user
+    secret_code, # An authentication token stored in the users' cookies
+  ```
+
+  ### Primary Partition vs Primary Sort Keys
+
+  DynamoDB has two kinds of key: *primary partition key* and *primary
+  sort key*. DynamoDB is a partitioned database, which means it splits
+  up the rows in a table across different DynamoDB machines.
+
+  **Primary Partition Key**
+
+  DynamoDB chooses which machine to store a new row on by looking at the
+  *primary partition key*. For instance: if DynamoDB runs 10 machines
+  for your database, and you insert a row with primary partition key
+  value "Gizmo", then DynamoDB will store this row on the machine
+  numbered `hash("Gizmo") % 10`. This should relatively evenly (but
+  deterministically) split up the rows across machines.
+
+  It is important that the splitting up is done deterministically,
+  because later, when you look up your data, you will need to specify
+  the primary partition key so that DynamoDB knows where that row is
+  stored.
+
+  **Aside: Partitioning and Scaling Out**
+
+  In fact DynamoDB does something slightly more complicated that what I
+  described about hashing. To see why the above strategy might be not
+  the best, consider if we wanted to increase the number of machines
+  from 10 to 11. When we increase the number of machines to handle more
+  load, that is called *scaling out*. Under the scheme I suggested, each
+  row should now live on machine numbered
+  `hash(primary_partition_key_value) % 11`. But that means almost every
+  row is going to be shuffled to a new machine.
+
+  This is similar to what happens when a hash map resizes and doubles
+  the number of buckets. Increasing the *modulus* by (or doubling)
+  throws everything off, so that almost everything belongs in a
+  different bucket number. For instance, if `hash(key) == 50`, this
+  belongs in bucket number 0 when there are ten buckets, but bucket
+  number ten when there are twenty buckets.
+
+  Returning to the scenario of partitioning, it would be good if when an
+  11th machine is added, we do not reshuffle almost all the data.
+  Transmitting data to other machines can be very slow. Instead, an
+  ideal would be if each of ten machines gave $\frac{1}{11}$ of their
+  data to the 11th server. This is ideal because (1) the rows are
+  perfectly balanced, (2) the minimum amount of rows are transfered.
+
+  There are several ways to approach this ideal, and maybe I can talk
+  about it in a future blog post. One of the innovations of [Amazon's
+  Dynamo whitepaper][dynamo-whitepaper] is how it solves this issue.
+
+  [dynamo-whitepaper]: https://www.allthingsdistributed.com/files/amazon-dynamo-sosp2007.pdf
+
+  **Primary Sort Key**
+
+  In my `comments` table, the primary partition key is `entry_id`. This
+  might seem somewhat odd, beacuse there can easily be multiple
+  `comment` records for a single blog post. In a SQL DB, the primary key
+  would probably be the `comment_id`.
+
+  A common query is to fetch all comments for a given blog post.
+  Therefore, it is desirable that all these comments live on the same
+  machine. That means the query can be answered by talking to a single
+  machine. That is why I have selected `entry_id` as the primary
+  partition key.
+
+  To reflect that `entry_id` is not itself a full primary key, I have
+  also specified a *primary sort key* which is `comment_id`. That means
+  it is allowed for there be multiple rows for one `entry_id` *if* they
+  have different `comment_id`s.
+
+  Note: I cannot easily lookup a comment by its `comment_id` alone. The
+  `comment_id` does not tell me on which machine that comment lives. I
+  need also the `entry_id`. Without the `entry_id` DynamoDB wouldn't
+  know even what machine to look in. To look up a single comment I need
+  the *pair* `(entry_id, comment_id)`.
+
+  As a bonus, the comments will be sorted, *per machine*, in order of
+  `(entry_id, comment_id)`. That first means that all comments for a
+  given `entry_id` will live "next" to each other in storage. That means
+  that reading comments for a single entry should involve reading one
+  disk block.
+
+  In my scenario, it's not a very useful property that, within a given
+  `entry_id`, that comments are further sorted by `comment_id`. That
+  *could* help if I wanted to look up a single comment by `(entry_id,
+  comment_id)`. Within the block of comments for `entry_id`, I could do
+  binary search to find the comment with the given `comment_id`.
+
+  But I don't want to retrieve comments one-by-one this way: I want to
+  receive all the comments. Still, if I allowed you to update your
+  comments, then it might be nice that the DB can so quickly find a
+  specified comment.
+
+  **Evaluation of DynamoDB**
+
+  I liked using DynamoDB. You can setup DynamoDB database with a few
+  clicks. You don't need to specify a schema; you can change your schema
+  at will. Adding tables is easy. I love that I don't have to do
+  anything to make sure that the DB stays online and that AWS does all
+  the work.
+
+  DynamoDB costs very little at my usage level. The cost is proportional
+  to the request rate that you want to support. Things that go into the
+  cost calculation are:
+
+  * The number of reads and writes per seconds.
+  * The size of the data you are fetching/storing.
+
+  Becaue this blog is so seldom read, and comments are not that long, I
+  can use the minimum amount of read resources. For me the cost is about
+  $1/mo.
+
+  ### AWS Lambda
+
+  Now that I have somewhere to store comments, I need to write server
+  logic to do things like:
+
+  * Fetch comments
+  * Store a new comment from an logged in user.
+  * Log in a user.
+
+  To do this I use AWS Lambda. Lambda lets you write code (called
+  *Lambda functions*) that gets executed when an incoming event is
+  fired. For instance, events can be fired when someone makes an API
+  request.
+
+  Basically, you can treat Lambda functions as a simple place to write
+  backend web request "controller" logic.
+
+  The nice thing is that AWS takes care of deploying your Lambda
+  functions. You don't have to rent a server box on EC2, you don't have
+  to install any software, you don't have to configure a web server on
+  the EC2 machine, you don't have to to setup something like Passenger
+  to run your web application.
+
+  Also, AWS Lambda will only charge you when your Lambda function is
+  executed. You get 1MM requests free. My blog has 820 requests for
+  comments. So I pay Amazon nothing for Lambda. (Lambda function
+  execution is time limited, so no cheating by doing hours of bitcoin
+  mining for free in a Lambda function!)
+
+  Let's see some Lambda code
+
+  **Fetching Comments**
+
+  ```python
+  dynamodb = boto3.resource('dynamodb')
+  comments_table = dynamodb.Table('comments')
+  users_table = dynamodb.Table('users')
+
+  def get_comments(event, context):
+      entry_id = event["entry_id"]
+      response = comments_table.query(
+          KeyConditionExpression=Key('entry_id').eq(entry_id)
+      )
+
+      comments = response['Items']
+
+      return {
+          "statusCode": 200,
+          "comments": comments
+      }
+  ```
+
+  This code is relatively self-explanatory. `boto3` is a library that
+  Amazon provides to interact with AWS services. I say I want to use the
+  `comments` and (later on in other event handlers) `users` tables.
+
+  The `get_comments` function will be fired when someone makes a request
+  for comments. They will specify the `entry_id`, which will be passed
+  to us inside the `event` object (which contains the params of the
+  request).
+
+  We submit a query to the `comments_table`, asking for all records that
+  meet the expressed requirement that `entry_id` equal the specified
+  value.
+
+  Last, the function returns a dictionary specifying the JSON response.
+
+  Simple!
+
+  **Creating Comments**
+
+  Here's the code for posting a new comment. In a moment I'll break it
+  down:
+
+  ```
+  def create_comment(event, context):
+    entry_id, text, author_github_id, author_secret_code = (
+        event["payload"]["entry_id"],
+        event["payload"]["comment_text"],
+        event["payload"]["author_github_id"],
+        event["payload"]["author_secret_code"],
+    )
+
+    author_user = users_table.get_item(Key={"github_id": author_github_id})['Item']
+    print(author_user)
+
+    if author_user == None:
+        return {
+            "statusCode": 404,
+            "message": f"No user found for this github_id: {author_github_id}.",
+        }
+
+    if author_user['secret_code'] != author_secret_code:
+        return {
+            "statusCode": 403,
+            "message": f"That is the wrong secret_code for this github_id: {author_github_id}.",
+            "submittedUserSecretCode": author_secret_code,
+        }
+
+    author_github_login, author_github_name = author_user['github_login'], author_user['github_name']
+    comment_id = str(binascii.b2a_hex(os.urandom(15)), "ascii")
+    created_at = datetime.now(timezone.utc)
+
+    comment = {
+        "entry_id": entry_id,
+        "comment_id": comment_id,
+        "created_at": created_at.isoformat(),
+        "author_github_id": author_github_id,
+        "author_github_login": author_github_login,
+        "author_github_name": author_github_name,
+        "text": text,
+    }
+
+    comments_table.put_item(Item=comment)
+
+    return {
+        "statusCode": 200,
+        "comment": comment,
+    }
+  ```
+
+  First thing first: getting the params of the request:
+
+  ```python
+  entry_id, text, author_github_id, author_secret_code = (
+    event["payload"]["entry_id"],
+    event["payload"]["comment_text"],
+    event["payload"]["author_github_id"],
+    event["payload"]["author_secret_code"],
+  )
+  ```
+
+  The user needs to specify what entry they are posting a comment for,
+  and the text of that comment. They need to specify who they are; the
+  primary key for the `users` table is `github_id`. A user's Github ID
+  uniquely and permanently identifies a user.
+
+  When a user logs in, they are given a `secret_code`. This is how,
+  when they make requests to create a comment with a given
+  `github_id`, we can verify they are who they say. Let's do that now:
+
+  ```python
+  author_user = users_table.get_item(Key={"github_id": author_github_id})['Item']
+  print(author_user)
+
+  if author_user == None:
+      return {
+          "statusCode": 404,
+          "message": f"No user found for this github_id: {author_github_id}.",
+      }
+
+  if author_user['secret_code'] != author_secret_code:
+      return {
+          "statusCode": 403,
+          "message": f"That is the wrong secret_code for this github_id: {author_github_id}.",
+          "submittedUserSecretCode": author_secret_code,
+      }
+  ```
+
+  In this code, I lookup the user in DynamoDB. Just in case there was
+  never any user stored for the given `github_id`, I check that.
+
+  Next, I check that the submitted `author_secret_code` matches the
+  `secret_code` I stored in the users table. If not, I tell the user
+  that they are not authorized.
+
+  In those anomolous cases, I return a 404 or a 403 (Not Authorized)
+  as necessary.  I only proceed with the function if all is well.
+
+  **Storing the Comment**
+
+  Last up is storing the comment in DynamoDB.
+
+  ```python
+  author_github_login, author_github_name = author_user['github_login'], author_user['github_name']
+  comment_id = str(binascii.b2a_hex(os.urandom(15)), "ascii")
+  created_at = datetime.now(timezone.utc)
+
+  comment = {
+      "entry_id": entry_id,
+      "comment_id": comment_id,
+      "created_at": created_at.isoformat(),
+      "author_github_id": author_github_id,
+      "author_github_login": author_github_login,
+      "author_github_name": author_github_name,
+      "text": text,
+  }
+
+  comments_table.put_item(Item=comment)
+
+  return {
+      "statusCode": 200,
+      "comment": comment,
+  }
+  ```
+
+  I first pull out a couple fields of the user: `github_login` (their
+  login name), `github_name` (their human name, if provided).
+
+  Next, I randomly generate a hex string for the `comment_id` value.
+  `os.urandom(15)` generates 15 bytes of random data, while
+  `binascii.b2a_hex` will convert a string of bytes to a string of
+  ASCII letters. Each byte can be translated to two hexadecimal
+  digits, since
+
+  $$
+  \begin{align}
+  2^8 = 2^4 \cdot 2^4 = 16 \cdot 16
+  \end{align}
+  $$
+
+  **A Birthday Problem Aside**
+
+  The `comment_id` is selected without first looking at the
+  `comment_id` values that exist in DynamoDB. Is this safe? What if I
+  reuse a `comment_id` that has already been used?
+
+  If I reuse a `comment_id`, this new comment will clober the old
+  comment; essentially I will lose the old comment. But this is very
+  unlikely.
+
+  How many unique hex strings are there? Well, there are 15 bytes,
+  which means there are $2^{15*8} = 2^{120}$ possible strings. Given
+  that there are $2^{120}$ possible values, what is the probability
+  that, if I have generated $n$ `comment_id`s that any two will have
+  clashed?
+
+  The answer is the same as to the [Birthday
+  Problem][birthday-problem-wiki]. The probability of *no* collisions
+  with $n$ ids is *approximately*:
+
+  $$
+  \begin{align}
+    \Big(\frac{2^{120} - 1}{2^{120}}\Big)^{n(n - 1)/2}
+  \end{align}
+  $$
+
+  [birthday-problem-wiki]: https://en.wikipedia.org/wiki/Birthday_problem#Cast_as_a_collision_problem
+
+  How might I have come up with this equation? Well, if there are no
+  collisions, then every pair of `comment_id`s should be
+  different. There are $\frac{n(n-1)}{2}$ pairs of $n$ items. That's
+  the exponent in the equation.
+
+  The base of the exponent is $\frac{2^{120} - 1}{2^120}`. This is the
+  probability that a pair of `comment_id`s will be *different*.
+
+  We raise this probability to the exponent $\frac{n(n-1)}{2}$ because
+  we want *every* pair to be non-colliding. This *approximation* uses
+  the principle that, if an event has a probability $p$ of occuring,
+  then the probability that it happens every time out of $k$ trials is
+  $p^k$. That equation is based on the assumption that each "trial" is
+  *independent* and unreleated to the prior trials.
+
+  The reason this is only our Birthday formulat is only an
+  approximation comes from the fact that our "trials" are not
+  independent. Consider if we're thinking about *three* samples: $a,
+  b, c$. The probability that $a$ and $b$ do not collide is indeed:
+
+  $$
+  \begin{align}
+    \frac{2^{120} - 1}{2^{120}}
+  \end{align}
+  $$
+
+  And also the same is true for $a$ and $c$! But here is the crux:
+  what is the probability that $a$ and $c$ do not collide, *given*
+  that:
+
+  1. $a$ and $b$ do not collide
+  2. AND $b$ and $c$ do not collide.
+
+  This *conditional* probability is slightly higher. It is:
+
+  $$
+  \begin{align}
+    \frac{2^{120} - 2}{2^{120} - 1}
+  \end{align}
+  $$
+
+  The reason is as follows. Since $c \ne b$, that means that $c$ must
+  be one of $2^{120} - 1$ remaining values. And since we've said that
+  $a \ne b$, it must *also* be amongst those $2^{120} - 1$ values. So
+  that means that, since that $a$ is amongst that reduced set, there
+  are $2^{120} - 2$ ways to choose $c$ such that $a \ne c$.
+
+  More generally: if $a$ and $b$ *both* do not collide with the set of
+  $n-2$ other numbers, then they are both in a set of size $2^{120} -
+  (n - 2)$. Thus, the probability that $a$ and $b$ do not collide is:
+
+  $$
+  \begin{align}
+    \frac{2^{120} - (n - 3)}{2^{120} - (n - 2)}
+  \end{align}
+  $$
+
+  This shows that always using the probability $\frac{2^120 -
+  1}{2^{120}}$ as our base is overly optimistic. Hopefully, however,
+  if $n$ is such that:
+
+  $$
+  \begin{align}
+    \frac{2^{120} - (n - 3)}{2^{120} - (n - 2)}
+    \approx
+    \frac{2^{120} - 1}{2^{120}}
+  \end{align}
+  $$
+
+  then everything should be okay. Alternatively, we may use
+
+
+  $$
+  \begin{align}
+    \Big(\frac{2^{120} - (n - 3)}{2^{120} - (n - 2)}\Big)
+    ^
+    {n(n-1)/2}
+  \end{align}
+  $$
+
+  as a guaranteed **pessimistic** approximation.
