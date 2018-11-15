@@ -68,18 +68,18 @@ markdown:
   row is going to be shuffled to a new machine.
 
   This is similar to what happens when a hash map resizes and doubles
-  the number of buckets. Increasing the *modulus* by (or doubling)
-  throws everything off, so that almost everything belongs in a
-  different bucket number. For instance, if `hash(key) == 50`, this
-  belongs in bucket number 0 when there are ten buckets, but bucket
-  number ten when there are twenty buckets.
+  the number of buckets. Increasing the *modulus* throws everything
+  off, so that almost everything belongs in a different bucket
+  number. For instance, if `hash(key) == 50`, this belongs in bucket
+  number 0 when there are ten buckets, but bucket number ten when
+  there are twenty buckets.
 
-  Returning to the scenario of partitioning, it would be good if when an
-  11th machine is added, we do not reshuffle almost all the data.
+  Returning to the scenario of partitioning, it would be good if when
+  an 11th machine is added, we do not reshuffle almost all the data.
   Transmitting data to other machines can be very slow. Instead, an
   ideal would be if each of ten machines gave $\frac{1}{11}$ of their
   data to the 11th server. This is ideal because (1) the rows are
-  perfectly balanced, (2) the minimum amount of rows are transfered.
+  perfectly balanced, (2) the minimum number of rows are transfered.
 
   There are several ways to approach this ideal, and maybe I can talk
   about it in a future blog post. One of the innovations of [Amazon's
@@ -105,17 +105,17 @@ markdown:
   it is allowed for there be multiple rows for one `entry_id` *if* they
   have different `comment_id`s.
 
-  Note: I cannot easily lookup a comment by its `comment_id` alone. The
-  `comment_id` does not tell me on which machine that comment lives. I
-  need also the `entry_id`. Without the `entry_id` DynamoDB wouldn't
-  know even what machine to look in. To look up a single comment I need
-  the *pair* `(entry_id, comment_id)`.
+  Note: I cannot easily lookup a comment by its `comment_id`
+  alone. The `comment_id` does not tell me on which machine that
+  comment lives. I need also the `entry_id`. Without the `entry_id`
+  DynamoDB wouldn't know what machine to look in. To look up a single
+  comment I need the *pair* `(entry_id, comment_id)`.
 
-  As a bonus, the comments will be sorted, *per machine*, in order of
+  As a bonus, the comments will be sorted on each machine in order of
   `(entry_id, comment_id)`. That first means that all comments for a
-  given `entry_id` will live "next" to each other in storage. That means
-  that reading comments for a single entry should involve reading one
-  disk block.
+  given `entry_id` will live "next" to each other in storage. That
+  means that reading comments for a single entry should involve
+  reading one disk block.
 
   In my scenario, it's not a very useful property that, within a given
   `entry_id`, that comments are further sorted by `comment_id`. That
@@ -123,18 +123,18 @@ markdown:
   comment_id)`. Within the block of comments for `entry_id`, I could do
   binary search to find the comment with the given `comment_id`.
 
-  But I don't want to retrieve comments one-by-one this way: I want to
-  receive all the comments. Still, if I allowed you to update your
-  comments, then it might be nice that the DB can so quickly find a
-  specified comment.
+  But I don't want to retrieve comments one-by-one this way: I always
+  want to retrieve all the comments. Still, if I allowed you to update
+  a previously posted comment, then it might be nice that the DB can
+  so quickly find a specified comment.
 
   **Evaluation of DynamoDB**
 
-  I liked using DynamoDB. You can setup DynamoDB database with a few
-  clicks. You don't need to specify a schema; you can change your schema
-  at will. Adding tables is easy. I love that I don't have to do
-  anything to make sure that the DB stays online and that AWS does all
-  the work.
+  I liked using DynamoDB. You can setup a DynamoDB database with a few
+  clicks. You don't need to specify a schema; you can change the
+  structure of your stored data at will. Adding tables is easy. I love
+  that I don't have to do anything to make sure that the DB stays
+  online and operational.
 
   DynamoDB costs very little at my usage level. The cost is proportional
   to the request rate that you want to support. Things that go into the
@@ -145,7 +145,7 @@ markdown:
 
   Becaue this blog is so seldom read, and comments are not that long, I
   can use the minimum amount of read resources. For me the cost is about
-  $1/mo.
+  $1/month.
 
   ### AWS Lambda
 
@@ -156,27 +156,32 @@ markdown:
   * Store a new comment from an logged in user.
   * Log in a user.
 
-  To do this I use AWS Lambda. Lambda lets you write code (called
-  *Lambda functions*) that gets executed when an incoming event is
-  fired. For instance, events can be fired when someone makes an API
-  request.
+  To do this I use AWS Lambda. Lambda lets you write code (which they
+  call a *Lambda function*) that gets executed when an incoming event
+  is fired. For instance, events can be fired when someone makes an
+  API request. AWS offers a product called *API Gateway* which allows
+  you to connect API endpoints to Lambda functions.
 
-  Basically, you can treat Lambda functions as a simple place to write
+  (BTW, "Lambda" here doesn't really share a meaning with the Lambda
+  Calculus or the `lambda` keyword in Python or Ruby. Sometimes this
+  kind of service is called *functions as a service*.)
+
+  In short, you can treat Lambda functions as a simple place to write
   backend web request "controller" logic.
 
   The nice thing is that AWS takes care of deploying your Lambda
   functions. You don't have to rent a server box on EC2, you don't have
   to install any software, you don't have to configure a web server on
   the EC2 machine, you don't have to to setup something like Passenger
-  to run your web application.
+  to run your web application...
 
   Also, AWS Lambda will only charge you when your Lambda function is
-  executed. You get 1MM requests free. My blog has 820 requests for
-  comments. So I pay Amazon nothing for Lambda. (Lambda function
-  execution is time limited, so no cheating by doing hours of bitcoin
-  mining for free in a Lambda function!)
+  executed. You get 1,000,000 requests free. My blog has 820 requests
+  for comments this past month. So I pay Amazon nothing for
+  Lambda. (Lambda function execution is time limited, so no cheating
+  by doing hours of bitcoin mining for free in a Lambda function!)
 
-  Let's see some Lambda code
+  So let's see some Lambda code.
 
   **Fetching Comments**
 
@@ -284,8 +289,9 @@ markdown:
   primary key for the `users` table is `github_id`. A user's Github ID
   uniquely and permanently identifies a user.
 
-  When a user logs in, they are given a `secret_code`. This is how,
-  when they make requests to create a comment with a given
+  When a user logs in, they are given a `secret_code`. This is stored
+  in the user's cookie, and also in `users` row in DynamoDB. This is
+  how, when the user makes a request to create a comment with a given
   `github_id`, we can verify they are who they say. Let's do that now:
 
   ```python
@@ -314,7 +320,8 @@ markdown:
   that they are not authorized.
 
   In those anomolous cases, I return a 404 or a 403 (Not Authorized)
-  as necessary.  I only proceed with the function if all is well.
+  status as necessary. I only proceed with the function if all is
+  well.
 
   **Storing the Comment**
 
@@ -358,112 +365,102 @@ markdown:
   \end{align}
   $$
 
-  **A Birthday Problem Aside**
-
   The `comment_id` is selected without first looking at the
   `comment_id` values that exist in DynamoDB. Is this safe? What if I
   reuse a `comment_id` that has already been used?
 
-  If I reuse a `comment_id`, this new comment will clober the old
-  comment; essentially I will lose the old comment. But this is very
-  unlikely.
+  If I do reuse a `comment_id`, this new comment will clober the old
+  comment. Essentially, I will lose the old comment. But this is very
+  unlikely given the number of comments I am likely to receive on this
+  blog, and the huge size of the ID space ($2^{120}$). Regardless, the
+  worst case scenario is that I lose one old comment.
 
-  How many unique hex strings are there? Well, there are 15 bytes,
-  which means there are $2^{15*8} = 2^{120}$ possible strings. Given
-  that there are $2^{120}$ possible values, what is the probability
-  that, if I have generated $n$ `comment_id`s that any two will have
-  clashed?
+  **Author Data Is Denormalized Into The Comments**
 
-  The answer is the same as to the [Birthday
-  Problem][birthday-problem-wiki]. The probability of *no* collisions
-  with $n$ ids is *approximately*:
+  You may ask: instead of storing the `author_github_name` and
+  `author_github_login` in the `comments` table, why isn't it
+  sufficient to store the `author_github_id`, which is primary key
+  into the `users` table? I can always look up a user given an
+  `author_github_id`.
 
-  $$
-  \begin{align}
-    \Big(\frac{2^{120} - 1}{2^{120}}\Big)^{n(n - 1)/2}
-  \end{align}
-  $$
+  The reason I have *denormalized* some of the user's data is as
+  follows. DynamoDB is a partitioned database, and as such, you
+  typically want to avoid logic that requires querying data across
+  partitions. For instance, we know that because of the `entry_id`
+  partition key, all comments for blog entry number 123 are stored on
+  the same DynamoDB machine.
 
-  [birthday-problem-wiki]: https://en.wikipedia.org/wiki/Birthday_problem#Cast_as_a_collision_problem
+  Say there are 100 comments for blog entry number 123. If the
+  comments do not contain the user's information like login or name,
+  that information should be fetched from the `users` table. But each
+  of the 100 comments that are authored could be written by a
+  different user, with a different `github_id`. So the row for that
+  user could live on *any* partition. We might have to query as many
+  as 100 partitions of the `users` table to get information about 100
+  users.
 
-  How might I have come up with this equation? Well, if there are no
-  collisions, then every pair of `comment_id`s should be
-  different. There are $\frac{n(n-1)}{2}$ pairs of $n$ items. That's
-  the exponent in the equation.
+  This will have low performance. Thus the denormalization. If all the
+  needed user data is stored directly in the `comments` rows, then
+  there is no need to write the join logic.
 
-  The base of the exponent is $\frac{2^{120} - 1}{2^120}`. This is the
-  probability that a pair of `comment_id`s will be *different*.
+  **Denormalization Slows Down Name Changes**
 
-  We raise this probability to the exponent $\frac{n(n-1)}{2}$ because
-  we want *every* pair to be non-colliding. This *approximation* uses
-  the principle that, if an event has a probability $p$ of occuring,
-  then the probability that it happens every time out of $k$ trials is
-  $p^k$. That equation is based on the assumption that each "trial" is
-  *independent* and unreleated to the prior trials.
+  The *downside* to this denormalization happens when a user (say,
+  Markov) goes to change their name (say to "Markov The Great"). In a
+  relational database, we would change the name in one location:
+  Markov's record in the `users` table. In the denormalized model, we
+  must update Markov's name in every comment Markov has ever written.
 
-  The reason this is only our Birthday formulat is only an
-  approximation comes from the fact that our "trials" are not
-  independent. Consider if we're thinking about *three* samples: $a,
-  b, c$. The probability that $a$ and $b$ do not collide is indeed:
+  Since the comments are not partitioned by `github_login_id`, the
+  comments for Markov are likely to be spread across the DynamoDB
+  machines. Therefore, we would have to scan *all* the partitions,
+  looking for comments written by Markov. Whenever we find one, we
+  must update Markov's name.
 
-  $$
-  \begin{align}
-    \frac{2^{120} - 1}{2^{120}}
-  \end{align}
-  $$
+  Now back to this blog. Whenever you login from Github, I will store
+  in the `users` table the latest version of your name. However, I
+  will *not* go back and change your name in old comments. In
+  principle I could, but I am lazy and don't want to.
 
-  And also the same is true for $a$ and $c$! But here is the crux:
-  what is the probability that $a$ and $c$ do not collide, *given*
-  that:
+  ### AWS API Gateway
 
-  1. $a$ and $b$ do not collide
-  2. AND $b$ and $c$ do not collide.
+  I have shown you all these Lambda functions (except how to login a
+  user). How do they ever get invoked.
 
-  This *conditional* probability is slightly higher. It is:
+  AWS provides a service called *API Gateway*. In API Gateway, you can
+  map API routes to Lambda functions. For instance, you can say that
+  `GET /comments` maps to `get_comments`, `POST /comments` maps to
+  `create_comment`.
 
-  $$
-  \begin{align}
-    \frac{2^{120} - 2}{2^{120} - 1}
-  \end{align}
-  $$
+  AWS will provide you a domain name (mine is
+  `https://7n5x5r84kc.execute-api.us-west-2.amazonaws.com/production`)
+  where the endpoints live. So you can get this blog' entries comments
+  by visiting:
 
-  The reason is as follows. Since $c \ne b$, that means that $c$ must
-  be one of $2^{120} - 1$ remaining values. And since we've said that
-  $a \ne b$, it must *also* be amongst those $2^{120} - 1$ values. So
-  that means that, since that $a$ is amongst that reduced set, there
-  are $2^{120} - 2$ ways to choose $c$ such that $a \ne c$.
+      https://7n5x5r84kc.execute-api.us-west-2.amazonaws.com/production/comments?entry_id=c86b47d0d8a48f31581744d160b3dbdd
 
-  More generally: if $a$ and $b$ *both* do not collide with the set of
-  $n-2$ other numbers, then they are both in a set of size $2^{120} -
-  (n - 2)$. Thus, the probability that $a$ and $b$ do not collide is:
+  If anyone leaves a comment, you should start seeing data there!
 
-  $$
-  \begin{align}
-    \frac{2^{120} - (n - 3)}{2^{120} - (n - 2)}
-  \end{align}
-  $$
+  If you like, you can configure API Gateway to serve your API under a
+  domain you own. For simplicity, I just used the default they gave
+  me. Because that means my users make cross-site AJAX requests from
+  `blog.self-loop.com`, I also had to configure [CORS][wiki-cors]. API
+  Gateway makes that relatively simple.
 
-  This shows that always using the probability $\frac{2^120 -
-  1}{2^{120}}$ as our base is overly optimistic. Hopefully, however,
-  if $n$ is such that:
+  I found API Gateway to be a bit of a pain in the ass to
+  configure. Sometimes not all the request parameters I wanted would
+  be passed through properly by API Gateway to the Lambda
+  functions. But in the final analysis though, API Gateway is quite
+  simple, and paired with Lambda is quite nice.
 
-  $$
-  \begin{align}
-    \frac{2^{120} - (n - 3)}{2^{120} - (n - 2)}
-    \approx
-    \frac{2^{120} - 1}{2^{120}}
-  \end{align}
-  $$
+  [wiki-cors]: https://en.wikipedia.org/wiki/Cross-origin_resource_sharing
 
-  then everything should be okay. Alternatively, we may use
+  ### Future Blog Posts:
 
+  I still want to talk about the React code I wrote. In the meantime
+  you can [read the on Github][github-ui-code].
 
-  $$
-  \begin{align}
-    \Big(\frac{2^{120} - (n - 3)}{2^{120} - (n - 2)}\Big)
-    ^
-    {n(n-1)/2}
-  \end{align}
-  $$
+  Also, I wanted to talk a little about how I do Github OAuth. But
+  that will have to wait too!
 
-  as a guaranteed **pessimistic** approximation.
+  [github-ui-code]: https://github.com/ruggeri/ruggeri.github.io/tree/master/ui

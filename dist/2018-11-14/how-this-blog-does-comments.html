@@ -26,25 +26,25 @@
 <p>It is important that the splitting up is done deterministically, because later, when you look up your data, you will need to specify the primary partition key so that DynamoDB knows where that row is stored.</p>
 <p><strong>Aside: Partitioning and Scaling Out</strong></p>
 <p>In fact DynamoDB does something slightly more complicated that what I described about hashing. To see why the above strategy might be not the best, consider if we wanted to increase the number of machines from 10 to 11. When we increase the number of machines to handle more load, that is called <em>scaling out</em>. Under the scheme I suggested, each row should now live on machine numbered <code>hash(primary_partition_key_value) % 11</code>. But that means almost every row is going to be shuffled to a new machine.</p>
-<p>This is similar to what happens when a hash map resizes and doubles the number of buckets. Increasing the <em>modulus</em> by (or doubling) throws everything off, so that almost everything belongs in a different bucket number. For instance, if <code>hash(key) == 50</code>, this belongs in bucket number 0 when there are ten buckets, but bucket number ten when there are twenty buckets.</p>
-<p>Returning to the scenario of partitioning, it would be good if when an 11th machine is added, we do not reshuffle almost all the data. Transmitting data to other machines can be very slow. Instead, an ideal would be if each of ten machines gave <span class="math inline">$\frac{1}{11}$</span> of their data to the 11th server. This is ideal because (1) the rows are perfectly balanced, (2) the minimum amount of rows are transfered.</p>
+<p>This is similar to what happens when a hash map resizes and doubles the number of buckets. Increasing the <em>modulus</em> throws everything off, so that almost everything belongs in a different bucket number. For instance, if <code>hash(key) == 50</code>, this belongs in bucket number 0 when there are ten buckets, but bucket number ten when there are twenty buckets.</p>
+<p>Returning to the scenario of partitioning, it would be good if when an 11th machine is added, we do not reshuffle almost all the data. Transmitting data to other machines can be very slow. Instead, an ideal would be if each of ten machines gave <span class="math inline">$\frac{1}{11}$</span> of their data to the 11th server. This is ideal because (1) the rows are perfectly balanced, (2) the minimum number of rows are transfered.</p>
 <p>There are several ways to approach this ideal, and maybe I can talk about it in a future blog post. One of the innovations of <a href="https://www.allthingsdistributed.com/files/amazon-dynamo-sosp2007.pdf">Amazon’s Dynamo whitepaper</a> is how it solves this issue.</p>
 <p><strong>Primary Sort Key</strong></p>
 <p>In my <code>comments</code> table, the primary partition key is <code>entry_id</code>. This might seem somewhat odd, beacuse there can easily be multiple <code>comment</code> records for a single blog post. In a SQL DB, the primary key would probably be the <code>comment_id</code>.</p>
 <p>A common query is to fetch all comments for a given blog post. Therefore, it is desirable that all these comments live on the same machine. That means the query can be answered by talking to a single machine. That is why I have selected <code>entry_id</code> as the primary partition key.</p>
 <p>To reflect that <code>entry_id</code> is not itself a full primary key, I have also specified a <em>primary sort key</em> which is <code>comment_id</code>. That means it is allowed for there be multiple rows for one <code>entry_id</code> <em>if</em> they have different <code>comment_id</code>s.</p>
-<p>Note: I cannot easily lookup a comment by its <code>comment_id</code> alone. The <code>comment_id</code> does not tell me on which machine that comment lives. I need also the <code>entry_id</code>. Without the <code>entry_id</code> DynamoDB wouldn’t know even what machine to look in. To look up a single comment I need the <em>pair</em> <code>(entry_id, comment_id)</code>.</p>
-<p>As a bonus, the comments will be sorted, <em>per machine</em>, in order of <code>(entry_id, comment_id)</code>. That first means that all comments for a given <code>entry_id</code> will live “next” to each other in storage. That means that reading comments for a single entry should involve reading one disk block.</p>
+<p>Note: I cannot easily lookup a comment by its <code>comment_id</code> alone. The <code>comment_id</code> does not tell me on which machine that comment lives. I need also the <code>entry_id</code>. Without the <code>entry_id</code> DynamoDB wouldn’t know what machine to look in. To look up a single comment I need the <em>pair</em> <code>(entry_id, comment_id)</code>.</p>
+<p>As a bonus, the comments will be sorted on each machine in order of <code>(entry_id, comment_id)</code>. That first means that all comments for a given <code>entry_id</code> will live “next” to each other in storage. That means that reading comments for a single entry should involve reading one disk block.</p>
 <p>In my scenario, it’s not a very useful property that, within a given <code>entry_id</code>, that comments are further sorted by <code>comment_id</code>. That <em>could</em> help if I wanted to look up a single comment by <code>(entry_id, comment_id)</code>. Within the block of comments for <code>entry_id</code>, I could do binary search to find the comment with the given <code>comment_id</code>.</p>
-<p>But I don’t want to retrieve comments one-by-one this way: I want to receive all the comments. Still, if I allowed you to update your comments, then it might be nice that the DB can so quickly find a specified comment.</p>
+<p>But I don’t want to retrieve comments one-by-one this way: I always want to retrieve all the comments. Still, if I allowed you to update a previously posted comment, then it might be nice that the DB can so quickly find a specified comment.</p>
 <p><strong>Evaluation of DynamoDB</strong></p>
-<p>I liked using DynamoDB. You can setup DynamoDB database with a few clicks. You don’t need to specify a schema; you can change your schema at will. Adding tables is easy. I love that I don’t have to do anything to make sure that the DB stays online and that AWS does all the work.</p>
+<p>I liked using DynamoDB. You can setup a DynamoDB database with a few clicks. You don’t need to specify a schema; you can change the structure of your stored data at will. Adding tables is easy. I love that I don’t have to do anything to make sure that the DB stays online and operational.</p>
 <p>DynamoDB costs very little at my usage level. The cost is proportional to the request rate that you want to support. Things that go into the cost calculation are:</p>
 <ul>
 <li>The number of reads and writes per seconds.</li>
 <li>The size of the data you are fetching/storing.</li>
 </ul>
-<p>Becaue this blog is so seldom read, and comments are not that long, I can use the minimum amount of read resources. For me the cost is about $1/mo.</p>
+<p>Becaue this blog is so seldom read, and comments are not that long, I can use the minimum amount of read resources. For me the cost is about $1/month.</p>
 <h3 id="aws-lambda">AWS Lambda</h3>
 <p>Now that I have somewhere to store comments, I need to write server logic to do things like:</p>
 <ul>
@@ -52,11 +52,12 @@
 <li>Store a new comment from an logged in user.</li>
 <li>Log in a user.</li>
 </ul>
-<p>To do this I use AWS Lambda. Lambda lets you write code (called <em>Lambda functions</em>) that gets executed when an incoming event is fired. For instance, events can be fired when someone makes an API request.</p>
-<p>Basically, you can treat Lambda functions as a simple place to write backend web request “controller” logic.</p>
-<p>The nice thing is that AWS takes care of deploying your Lambda functions. You don’t have to rent a server box on EC2, you don’t have to install any software, you don’t have to configure a web server on the EC2 machine, you don’t have to to setup something like Passenger to run your web application.</p>
-<p>Also, AWS Lambda will only charge you when your Lambda function is executed. You get 1MM requests free. My blog has 820 requests for comments. So I pay Amazon nothing for Lambda. (Lambda function execution is time limited, so no cheating by doing hours of bitcoin mining for free in a Lambda function!)</p>
-<p>Let’s see some Lambda code</p>
+<p>To do this I use AWS Lambda. Lambda lets you write code (which they call a <em>Lambda function</em>) that gets executed when an incoming event is fired. For instance, events can be fired when someone makes an API request. AWS offers a product called <em>API Gateway</em> which allows you to connect API endpoints to Lambda functions.</p>
+<p>(BTW, “Lambda” here doesn’t really share a meaning with the Lambda Calculus or the <code>lambda</code> keyword in Python or Ruby. Sometimes this kind of service is called <em>functions as a service</em>.)</p>
+<p>In short, you can treat Lambda functions as a simple place to write backend web request “controller” logic.</p>
+<p>The nice thing is that AWS takes care of deploying your Lambda functions. You don’t have to rent a server box on EC2, you don’t have to install any software, you don’t have to configure a web server on the EC2 machine, you don’t have to to setup something like Passenger to run your web application…</p>
+<p>Also, AWS Lambda will only charge you when your Lambda function is executed. You get 1,000,000 requests free. My blog has 820 requests for comments this past month. So I pay Amazon nothing for Lambda. (Lambda function execution is time limited, so no cheating by doing hours of bitcoin mining for free in a Lambda function!)</p>
+<p>So let’s see some Lambda code.</p>
 <p><strong>Fetching Comments</strong></p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb2-1" data-line-number="1">dynamodb <span class="op">=</span> boto3.resource(<span class="st">&#39;dynamodb&#39;</span>)</a>
 <a class="sourceLine" id="cb2-2" data-line-number="2">comments_table <span class="op">=</span> dynamodb.Table(<span class="st">&#39;comments&#39;</span>)</a>
@@ -133,7 +134,7 @@
 <a class="sourceLine" id="cb4-5" data-line-number="5">  event[<span class="st">&quot;payload&quot;</span>][<span class="st">&quot;author_secret_code&quot;</span>],</a>
 <a class="sourceLine" id="cb4-6" data-line-number="6">)</a></code></pre></div>
 <p>The user needs to specify what entry they are posting a comment for, and the text of that comment. They need to specify who they are; the primary key for the <code>users</code> table is <code>github_id</code>. A user’s Github ID uniquely and permanently identifies a user.</p>
-<p>When a user logs in, they are given a <code>secret_code</code>. This is how, when they make requests to create a comment with a given <code>github_id</code>, we can verify they are who they say. Let’s do that now:</p>
+<p>When a user logs in, they are given a <code>secret_code</code>. This is stored in the user’s cookie, and also in <code>users</code> row in DynamoDB. This is how, when the user makes a request to create a comment with a given <code>github_id</code>, we can verify they are who they say. Let’s do that now:</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb5-1" data-line-number="1">author_user <span class="op">=</span> users_table.get_item(Key<span class="op">=</span>{<span class="st">&quot;github_id&quot;</span>: author_github_id})[<span class="st">&#39;Item&#39;</span>]</a>
 <a class="sourceLine" id="cb5-2" data-line-number="2"><span class="bu">print</span>(author_user)</a>
 <a class="sourceLine" id="cb5-3" data-line-number="3"></a>
@@ -151,7 +152,7 @@
 <a class="sourceLine" id="cb5-15" data-line-number="15">    }</a></code></pre></div>
 <p>In this code, I lookup the user in DynamoDB. Just in case there was never any user stored for the given <code>github_id</code>, I check that.</p>
 <p>Next, I check that the submitted <code>author_secret_code</code> matches the <code>secret_code</code> I stored in the users table. If not, I tell the user that they are not authorized.</p>
-<p>In those anomolous cases, I return a 404 or a 403 (Not Authorized) as necessary. I only proceed with the function if all is well.</p>
+<p>In those anomolous cases, I return a 404 or a 403 (Not Authorized) status as necessary. I only proceed with the function if all is well.</p>
 <p><strong>Storing the Comment</strong></p>
 <p>Last up is storing the comment in DynamoDB.</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb6-1" data-line-number="1">author_github_login, author_github_name <span class="op">=</span> author_user[<span class="st">&#39;github_login&#39;</span>], author_user[<span class="st">&#39;github_name&#39;</span>]</a>
@@ -181,57 +182,25 @@
 2^8 = 2^4 \cdot 2^4 = 16 \cdot 16
 \end{align}
 $$</span><br /></p>
-<p><strong>A Birthday Problem Aside</strong></p>
 <p>The <code>comment_id</code> is selected without first looking at the <code>comment_id</code> values that exist in DynamoDB. Is this safe? What if I reuse a <code>comment_id</code> that has already been used?</p>
-<p>If I reuse a <code>comment_id</code>, this new comment will clober the old comment; essentially I will lose the old comment. But this is very unlikely.</p>
-<p>How many unique hex strings are there? Well, there are 15 bytes, which means there are <span class="math inline">2<sup>15 * 8</sup> = 2<sup>120</sup></span> possible strings. Given that there are <span class="math inline">2<sup>120</sup></span> possible values, what is the probability that, if I have generated <span class="math inline"><em>n</em></span> <code>comment_id</code>s that any two will have clashed?</p>
-<p>The answer is the same as to the <a href="https://en.wikipedia.org/wiki/Birthday_problem#Cast_as_a_collision_problem">Birthday Problem</a>. The probability of <em>no</em> collisions with <span class="math inline"><em>n</em></span> ids is <em>approximately</em>:</p>
-<p><br /><span class="math display">$$
-\begin{align}
-  \Big(\frac{2^{120} - 1}{2^{120}}\Big)^{n(n - 1)/2}
-\end{align}
-$$</span><br /></p>
-<p>How might I have come up with this equation? Well, if there are no collisions, then every pair of <code>comment_id</code>s should be different. There are <span class="math inline">$\frac{n(n-1)}{2}$</span> pairs of <span class="math inline"><em>n</em></span> items. That’s the exponent in the equation.</p>
-<p>The base of the exponent is $<code>. This is the probability that a pair of</code>comment_id`s will be <em>different</em>.</p>
-<p>We raise this probability to the exponent <span class="math inline">$\frac{n(n-1)}{2}$</span> because we want <em>every</em> pair to be non-colliding. This <em>approximation</em> uses the principle that, if an event has a probability <span class="math inline"><em>p</em></span> of occuring, then the probability that it happens every time out of <span class="math inline"><em>k</em></span> trials is <span class="math inline"><em>p</em><sup><em>k</em></sup></span>. That equation is based on the assumption that each “trial” is <em>independent</em> and unreleated to the prior trials.</p>
-<p>The reason this is only our Birthday formulat is only an approximation comes from the fact that our “trials” are not independent. Consider if we’re thinking about <em>three</em> samples: <span class="math inline"><em>a</em>, <em>b</em>, <em>c</em></span>. The probability that <span class="math inline"><em>a</em></span> and <span class="math inline"><em>b</em></span> do not collide is indeed:</p>
-<p><br /><span class="math display">$$
-\begin{align}
-  \frac{2^{120} - 1}{2^{120}}
-\end{align}
-$$</span><br /></p>
-<p>And also the same is true for <span class="math inline"><em>a</em></span> and <span class="math inline"><em>c</em></span>! But here is the crux: what is the probability that <span class="math inline"><em>a</em></span> and <span class="math inline"><em>c</em></span> do not collide, <em>given</em> that:</p>
-<ol type="1">
-<li><span class="math inline"><em>a</em></span> and <span class="math inline"><em>b</em></span> do not collide</li>
-<li>AND <span class="math inline"><em>b</em></span> and <span class="math inline"><em>c</em></span> do not collide.</li>
-</ol>
-<p>This <em>conditional</em> probability is slightly higher. It is:</p>
-<p><br /><span class="math display">$$
-\begin{align}
-  \frac{2^{120} - 2}{2^{120} - 1}
-\end{align}
-$$</span><br /></p>
-<p>The reason is as follows. Since <span class="math inline"><em>c</em> ≠ <em>b</em></span>, that means that <span class="math inline"><em>c</em></span> must be one of <span class="math inline">2<sup>120</sup> − 1</span> remaining values. And since we’ve said that <span class="math inline"><em>a</em> ≠ <em>b</em></span>, it must <em>also</em> be amongst those <span class="math inline">2<sup>120</sup> − 1</span> values. So that means that, since that <span class="math inline"><em>a</em></span> is amongst that reduced set, there are <span class="math inline">2<sup>120</sup> − 2</span> ways to choose <span class="math inline"><em>c</em></span> such that <span class="math inline"><em>a</em> ≠ <em>c</em></span>.</p>
-<p>More generally: if <span class="math inline"><em>a</em></span> and <span class="math inline"><em>b</em></span> <em>both</em> do not collide with the set of <span class="math inline"><em>n</em> − 2</span> other numbers, then they are both in a set of size <span class="math inline">2<sup>120</sup> − (<em>n</em> − 2)</span>. Thus, the probability that <span class="math inline"><em>a</em></span> and <span class="math inline"><em>b</em></span> do not collide is:</p>
-<p><br /><span class="math display">$$
-\begin{align}
-  \frac{2^{120} - (n - 3)}{2^{120} - (n - 2)}
-\end{align}
-$$</span><br /></p>
-<p>This shows that always using the probability <span class="math inline">$\frac{2^120 - 1}{2^{120}}$</span> as our base is overly optimistic. Hopefully, however, if <span class="math inline"><em>n</em></span> is such that:</p>
-<p><br /><span class="math display">$$
-\begin{align}
-  \frac{2^{120} - (n - 3)}{2^{120} - (n - 2)}
-  \approx
-  \frac{2^{120} - 1}{2^{120}}
-\end{align}
-$$</span><br /></p>
-<p>then everything should be okay. Alternatively, we may use</p>
-<p><br /><span class="math display">$$
-\begin{align}
-  \Big(\frac{2^{120} - (n - 3)}{2^{120} - (n - 2)}\Big)
-  ^
-  {n(n-1)/2}
-\end{align}
-$$</span><br /></p>
-<p>as a guaranteed <strong>pessimistic</strong> approximation.</p></div></div><div class="row justify-content-center"><div class="col-12 col-md-8" id="comments"><script src="/ui/dist/main.js"></script></div></div></div></body><script>hljs.initHighlightingOnLoad();</script>
+<p>If I do reuse a <code>comment_id</code>, this new comment will clober the old comment. Essentially, I will lose the old comment. But this is very unlikely given the number of comments I am likely to receive on this blog, and the huge size of the ID space (<span class="math inline">2<sup>120</sup></span>). Regardless, the worst case scenario is that I lose one old comment.</p>
+<p><strong>Author Data Is Denormalized Into The Comments</strong></p>
+<p>You may ask: instead of storing the <code>author_github_name</code> and <code>author_github_login</code> in the <code>comments</code> table, why isn’t it sufficient to store the <code>author_github_id</code>, which is primary key into the <code>users</code> table? I can always look up a user given an <code>author_github_id</code>.</p>
+<p>The reason I have <em>denormalized</em> some of the user’s data is as follows. DynamoDB is a partitioned database, and as such, you typically want to avoid logic that requires querying data across partitions. For instance, we know that because of the <code>entry_id</code> partition key, all comments for blog entry number 123 are stored on the same DynamoDB machine.</p>
+<p>Say there are 100 comments for blog entry number 123. If the comments do not contain the user’s information like login or name, that information should be fetched from the <code>users</code> table. But each of the 100 comments that are authored could be written by a different user, with a different <code>github_id</code>. So the row for that user could live on <em>any</em> partition. We might have to query as many as 100 partitions of the <code>users</code> table to get information about 100 users.</p>
+<p>This will have low performance. Thus the denormalization. If all the needed user data is stored directly in the <code>comments</code> rows, then there is no need to write the join logic.</p>
+<p><strong>Denormalization Slows Down Name Changes</strong></p>
+<p>The <em>downside</em> to this denormalization happens when a user (say, Markov) goes to change their name (say to “Markov The Great”). In a relational database, we would change the name in one location: Markov’s record in the <code>users</code> table. In the denormalized model, we must update Markov’s name in every comment Markov has ever written.</p>
+<p>Since the comments are not partitioned by <code>github_login_id</code>, the comments for Markov are likely to be spread across the DynamoDB machines. Therefore, we would have to scan <em>all</em> the partitions, looking for comments written by Markov. Whenever we find one, we must update Markov’s name.</p>
+<p>Now back to this blog. Whenever you login from Github, I will store in the <code>users</code> table the latest version of your name. However, I will <em>not</em> go back and change your name in old comments. In principle I could, but I am lazy and don’t want to.</p>
+<h3 id="aws-api-gateway">AWS API Gateway</h3>
+<p>I have shown you all these Lambda functions (except how to login a user). How do they ever get invoked.</p>
+<p>AWS provides a service called <em>API Gateway</em>. In API Gateway, you can map API routes to Lambda functions. For instance, you can say that <code>GET /comments</code> maps to <code>get_comments</code>, <code>POST /comments</code> maps to <code>create_comment</code>.</p>
+<p>AWS will provide you a domain name (mine is <code>https://7n5x5r84kc.execute-api.us-west-2.amazonaws.com/production</code>) where the endpoints live. So you can get this blog’ entries comments by visiting:</p>
+<pre><code>https://7n5x5r84kc.execute-api.us-west-2.amazonaws.com/production/comments?entry_id=c86b47d0d8a48f31581744d160b3dbdd</code></pre>
+<p>If anyone leaves a comment, you should start seeing data there!</p>
+<p>If you like, you can configure API Gateway to serve your API under a domain you own. For simplicity, I just used the default they gave me. Because that means my users make cross-site AJAX requests from <code>blog.self-loop.com</code>, I also had to configure <a href="https://en.wikipedia.org/wiki/Cross-origin_resource_sharing">CORS</a>. API Gateway makes that relatively simple.</p>
+<p>I found API Gateway to be a bit of a pain in the ass to configure. Sometimes not all the request parameters I wanted would be passed through properly by API Gateway to the Lambda functions. But in the final analysis though, API Gateway is quite simple, and paired with Lambda is quite nice.</p>
+<h3 id="future-blog-posts">Future Blog Posts:</h3>
+<p>I still want to talk about the React code I wrote. In the meantime you can <a href="https://github.com/ruggeri/ruggeri.github.io/tree/master/ui">read the on Github</a>.</p>
+<p>Also, I wanted to talk a little about how I do Github OAuth. But that will have to wait too!</p></div></div><div class="row justify-content-center"><div class="col-12 col-md-8" id="comments"><script src="/ui/dist/main.js"></script></div></div></div></body><script>hljs.initHighlightingOnLoad();</script>
