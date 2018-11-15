@@ -41,9 +41,15 @@ body
       div class="col-12 col-md-8"
         == yield
 
-    div class="row justify-content-center"
-      div class="col-12 col-md-8" id="comments"
-        script src="/ui/dist/main.js"
+        p: a href="/"
+          = "<< Back To The Posts Index! <<"
 
-javascript:
-  hljs.initHighlightingOnLoad();
+    div class="row justify-content-center"
+      div class="col-12 col-md-8"
+        div id="comments"
+        p: a href="/"
+          = "<<< Back To The Posts Index! <<<"
+
+  script src="/ui/dist/main.js"
+  javascript:
+    hljs.initHighlightingOnLoad();
