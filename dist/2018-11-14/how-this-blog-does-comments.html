@@ -34,22 +34,22 @@
 <p>A common query is to fetch all comments for a given blog post. Therefore, it is desirable that all these comments live on the same machine. That means the query can be answered by talking to a single machine. That is why I have selected <code>entry_id</code> as the primary partition key.</p>
 <p>To reflect that <code>entry_id</code> is not itself a full primary key, I have also specified a <em>primary sort key</em> which is <code>comment_id</code>. That means it is allowed for there be multiple rows for one <code>entry_id</code> <em>if</em> they have different <code>comment_id</code>s.</p>
 <p>Note: I cannot easily lookup a comment by its <code>comment_id</code> alone. The <code>comment_id</code> does not tell me on which machine that comment lives. I need also the <code>entry_id</code>. Without the <code>entry_id</code> DynamoDB wouldn’t know what machine to look in. To look up a single comment I need the <em>pair</em> <code>(entry_id, comment_id)</code>.</p>
-<p>As a bonus, the comments will be sorted on each machine in order of <code>(entry_id, comment_id)</code>. That first means that all comments for a given <code>entry_id</code> will live “next” to each other in storage. That means that reading comments for a single entry should involve reading one disk block.</p>
+<p>As a bonus, the comments will be sorted on each machine in order of <code>(entry_id, comment_id)</code>. This means that all comments for a given <code>entry_id</code> will live “next” to each other in storage. Reading comments for a single entry should involve reading one disk block.</p>
 <p>In my scenario, it’s not a very useful property that, within a given <code>entry_id</code>, that comments are further sorted by <code>comment_id</code>. That <em>could</em> help if I wanted to look up a single comment by <code>(entry_id, comment_id)</code>. Within the block of comments for <code>entry_id</code>, I could do binary search to find the comment with the given <code>comment_id</code>.</p>
-<p>But I don’t want to retrieve comments one-by-one this way: I always want to retrieve all the comments. Still, if I allowed you to update a previously posted comment, then it might be nice that the DB can so quickly find a specified comment.</p>
+<p>But I don’t want to retrieve comments one-by-one this way: I always want to retrieve all the comments. Still, if I allowed you to <em>update</em> a previously posted comment, then it might be nice that the DB can so quickly find a specified comment.</p>
 <p><strong>Evaluation of DynamoDB</strong></p>
 <p>I liked using DynamoDB. You can setup a DynamoDB database with a few clicks. You don’t need to specify a schema; you can change the structure of your stored data at will. Adding tables is easy. I love that I don’t have to do anything to make sure that the DB stays online and operational.</p>
 <p>DynamoDB costs very little at my usage level. The cost is proportional to the request rate that you want to support. Things that go into the cost calculation are:</p>
 <ul>
-<li>The number of reads and writes per seconds.</li>
+<li>The number of reads and writes per second.</li>
 <li>The size of the data you are fetching/storing.</li>
 </ul>
 <p>Becaue this blog is so seldom read, and comments are not that long, I can use the minimum amount of read resources. For me the cost is about $1/month.</p>
 <h3 id="aws-lambda">AWS Lambda</h3>
 <p>Now that I have somewhere to store comments, I need to write server logic to do things like:</p>
 <ul>
-<li>Fetch comments</li>
-<li>Store a new comment from an logged in user.</li>
+<li>Fetch comments,</li>
+<li>Store a new comment from an logged in user,</li>
 <li>Log in a user.</li>
 </ul>
 <p>To do this I use AWS Lambda. Lambda lets you write code (which they call a <em>Lambda function</em>) that gets executed when an incoming event is fired. For instance, events can be fired when someone makes an API request. AWS offers a product called <em>API Gateway</em> which allows you to connect API endpoints to Lambda functions.</p>
@@ -134,7 +134,7 @@
 <a class="sourceLine" id="cb4-5" data-line-number="5">  event[<span class="st">&quot;payload&quot;</span>][<span class="st">&quot;author_secret_code&quot;</span>],</a>
 <a class="sourceLine" id="cb4-6" data-line-number="6">)</a></code></pre></div>
 <p>The user needs to specify what entry they are posting a comment for, and the text of that comment. They need to specify who they are; the primary key for the <code>users</code> table is <code>github_id</code>. A user’s Github ID uniquely and permanently identifies a user.</p>
-<p>When a user logs in, they are given a <code>secret_code</code>. This is stored in the user’s cookie, and also in <code>users</code> row in DynamoDB. This is how, when the user makes a request to create a comment with a given <code>github_id</code>, we can verify they are who they say. Let’s do that now:</p>
+<p>When a user logs in, I give them a <code>secret_code</code>. I store this in the user’s cookie, and also in their <code>users</code> row in DynamoDB. This is how, when the user makes a request to create a comment with a given <code>github_id</code>, we can verify they are who they say. Let’s do that now:</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb5-1" data-line-number="1">author_user <span class="op">=</span> users_table.get_item(Key<span class="op">=</span>{<span class="st">&quot;github_id&quot;</span>: author_github_id})[<span class="st">&#39;Item&#39;</span>]</a>
 <a class="sourceLine" id="cb5-2" data-line-number="2"><span class="bu">print</span>(author_user)</a>
 <a class="sourceLine" id="cb5-3" data-line-number="3"></a>
@@ -182,25 +182,28 @@
 2^8 = 2^4 \cdot 2^4 = 16 \cdot 16
 \end{align}
 $$</span><br /></p>
-<p>The <code>comment_id</code> is selected without first looking at the <code>comment_id</code> values that exist in DynamoDB. Is this safe? What if I reuse a <code>comment_id</code> that has already been used?</p>
-<p>If I do reuse a <code>comment_id</code>, this new comment will clober the old comment. Essentially, I will lose the old comment. But this is very unlikely given the number of comments I am likely to receive on this blog, and the huge size of the ID space (<span class="math inline">2<sup>120</sup></span>). Regardless, the worst case scenario is that I lose one old comment.</p>
+<p>The <code>comment_id</code> is selected without first looking at the <code>comment_id</code> values that exist in DynamoDB. Is this safe? What if I accidentally reuse a <code>comment_id</code> that has already been used by a previously saved comment?</p>
+<p>If I do reuse a <code>comment_id</code>, this new comment will clober the old comment. I will lose that old comment. But this is very unlikely given the number of comments I am likely to receive on this blog, and the huge size of the ID space (<span class="math inline">2<sup>120</sup></span> possible ID values). Regardless, the worst case scenario is that I lose one old comment.</p>
 <p><strong>Author Data Is Denormalized Into The Comments</strong></p>
-<p>You may ask: instead of storing the <code>author_github_name</code> and <code>author_github_login</code> in the <code>comments</code> table, why isn’t it sufficient to store the <code>author_github_id</code>, which is primary key into the <code>users</code> table? I can always look up a user given an <code>author_github_id</code>.</p>
-<p>The reason I have <em>denormalized</em> some of the user’s data is as follows. DynamoDB is a partitioned database, and as such, you typically want to avoid logic that requires querying data across partitions. For instance, we know that because of the <code>entry_id</code> partition key, all comments for blog entry number 123 are stored on the same DynamoDB machine.</p>
-<p>Say there are 100 comments for blog entry number 123. If the comments do not contain the user’s information like login or name, that information should be fetched from the <code>users</code> table. But each of the 100 comments that are authored could be written by a different user, with a different <code>github_id</code>. So the row for that user could live on <em>any</em> partition. We might have to query as many as 100 partitions of the <code>users</code> table to get information about 100 users.</p>
+<p>You may ask: instead of storing the <code>author_github_name</code> and <code>author_github_login</code> in the <code>comments</code> table, why isn’t it sufficient to store the <code>author_github_id</code>, which is the primary key into the <code>users</code> table? I can always look up a user given an <code>author_github_id</code>.</p>
+<p>The reason I have <em>denormalized</em> some of the author’s user data is as follows. DynamoDB is a partitioned database, and as such, you typically want to avoid logic that requires querying data across partitions. For instance, we know that because of the <code>entry_id</code> partition key, all comments for blog entry number 123 are stored on the same DynamoDB machine.</p>
+<p>Say there are 100 comments for blog entry number 123. If the comments do not contain the user’s information like login or name, that information will have to be fetched from the <code>users</code> table. But each of the 100 comments for this post could be authored by a different user, each with their own <code>github_id</code>. So the row for each of 100 authors could live on <em>any</em> partition. We might have to query as many as 100 partitions of the <code>users</code> table to get information about 100 users.</p>
 <p>This will have low performance. Thus the denormalization. If all the needed user data is stored directly in the <code>comments</code> rows, then there is no need to write the join logic.</p>
 <p><strong>Denormalization Slows Down Name Changes</strong></p>
 <p>The <em>downside</em> to this denormalization happens when a user (say, Markov) goes to change their name (say to “Markov The Great”). In a relational database, we would change the name in one location: Markov’s record in the <code>users</code> table. In the denormalized model, we must update Markov’s name in every comment Markov has ever written.</p>
-<p>Since the comments are not partitioned by <code>github_login_id</code>, the comments for Markov are likely to be spread across the DynamoDB machines. Therefore, we would have to scan <em>all</em> the partitions, looking for comments written by Markov. Whenever we find one, we must update Markov’s name.</p>
+<p>The comments are not partitioned by <code>github_login_id</code>; they are partitioned by <code>entry_id</code>. Therefore the comments written by Markov are likely to be spread across the DynamoDB machines. We would have to scan <em>all</em> the partitions, looking for comments written by Markov. Whenever we find one, we must update Markov’s name.</p>
+<p>Note: not only will we have to scan all partitions, we’ll have to scan <em>every row</em> on <em>every partition</em>, since the rows are not sorted by <code>github_login_id</code> even within one partition!</p>
 <p>Now back to this blog. Whenever you login from Github, I will store in the <code>users</code> table the latest version of your name. However, I will <em>not</em> go back and change your name in old comments. In principle I could, but I am lazy and don’t want to.</p>
 <h3 id="aws-api-gateway">AWS API Gateway</h3>
-<p>I have shown you all these Lambda functions (except how to login a user). How do they ever get invoked.</p>
+<p>I have shown you all these Lambda functions (except how to login a user). How do they ever get invoked?</p>
 <p>AWS provides a service called <em>API Gateway</em>. In API Gateway, you can map API routes to Lambda functions. For instance, you can say that <code>GET /comments</code> maps to <code>get_comments</code>, <code>POST /comments</code> maps to <code>create_comment</code>.</p>
 <p>AWS will provide you a domain name (mine is <code>https://7n5x5r84kc.execute-api.us-west-2.amazonaws.com/production</code>) where the endpoints live. So you can get this blog’ entries comments by visiting:</p>
 <pre><code>https://7n5x5r84kc.execute-api.us-west-2.amazonaws.com/production/comments?entry_id=c86b47d0d8a48f31581744d160b3dbdd</code></pre>
 <p>If anyone leaves a comment, you should start seeing data there!</p>
-<p>If you like, you can configure API Gateway to serve your API under a domain you own. For simplicity, I just used the default they gave me. Because that means my users make cross-site AJAX requests from <code>blog.self-loop.com</code>, I also had to configure <a href="https://en.wikipedia.org/wiki/Cross-origin_resource_sharing">CORS</a>. API Gateway makes that relatively simple.</p>
-<p>I found API Gateway to be a bit of a pain in the ass to configure. Sometimes not all the request parameters I wanted would be passed through properly by API Gateway to the Lambda functions. But in the final analysis though, API Gateway is quite simple, and paired with Lambda is quite nice.</p>
-<h3 id="future-blog-posts">Future Blog Posts:</h3>
+<p>If you like, you can configure API Gateway to serve your API under a domain name of your own (maybe <code>api.blog.self-loop.com</code>). For simplicity, I just used the default Amazon gave me.</p>
+<p>My users make cross-site AJAX requests from <code>blog.self-loop.com</code> to <code>7n5x5r84kc.execute-api.us-west-2.amazonaws.com</code>, so I also have to configure <a href="https://en.wikipedia.org/wiki/Cross-origin_resource_sharing">CORS</a>. Note that I would have to do this even if the API domain name was <code>api.blog-self.com</code>, since even a subdomain counts as a cross-site request. Anyway, API Gateway makes it easy to setup CORS.</p>
+<p>I found API Gateway to be a bit of a pain in the ass to configure. The user interface is clunky, and sometimes not all the request parameters I wanted would be passed through properly by API Gateway to the Lambda functions. This was always due to misconfiguration by me, though.</p>
+<p>Clunky or not, using API Gateway to fire Lambda events is <em>way</em> simpler than the traditional alternative: rent an EC2 box, run a server, et cetera. In the final analysis, this was a good way to develop.</p>
+<h3 id="future-blog-posts">Future Blog Posts</h3>
 <p>I still want to talk about the React code I wrote. In the meantime you can <a href="https://github.com/ruggeri/ruggeri.github.io/tree/master/ui">read the on Github</a>.</p>
-<p>Also, I wanted to talk a little about how I do Github OAuth. But that will have to wait too!</p></div></div><div class="row justify-content-center"><div class="col-12 col-md-8" id="comments"><script src="/ui/dist/main.js"></script></div></div></div></body><script>hljs.initHighlightingOnLoad();</script>
+<p>Also, I wanted to talk a little about how I do Github OAuth. But that will have to wait too! If you want a sneak peak, you can read the relevant <a href="https://github.com/ruggeri/ruggeri.github.io/blob/master/lambda/lambda.py#L79">Lambda code I wrote on the Github</a>.</p></div></div><div class="row justify-content-center"><div class="col-12 col-md-8" id="comments"><script src="/ui/dist/main.js"></script></div></div></div></body><script>hljs.initHighlightingOnLoad();</script>

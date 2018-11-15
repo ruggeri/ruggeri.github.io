@@ -112,10 +112,9 @@ markdown:
   comment I need the *pair* `(entry_id, comment_id)`.
 
   As a bonus, the comments will be sorted on each machine in order of
-  `(entry_id, comment_id)`. That first means that all comments for a
-  given `entry_id` will live "next" to each other in storage. That
-  means that reading comments for a single entry should involve
-  reading one disk block.
+  `(entry_id, comment_id)`. This means that all comments for a given
+  `entry_id` will live "next" to each other in storage. Reading
+  comments for a single entry should involve reading one disk block.
 
   In my scenario, it's not a very useful property that, within a given
   `entry_id`, that comments are further sorted by `comment_id`. That
@@ -124,9 +123,9 @@ markdown:
   binary search to find the comment with the given `comment_id`.
 
   But I don't want to retrieve comments one-by-one this way: I always
-  want to retrieve all the comments. Still, if I allowed you to update
-  a previously posted comment, then it might be nice that the DB can
-  so quickly find a specified comment.
+  want to retrieve all the comments. Still, if I allowed you to
+  *update* a previously posted comment, then it might be nice that the
+  DB can so quickly find a specified comment.
 
   **Evaluation of DynamoDB**
 
@@ -140,7 +139,7 @@ markdown:
   to the request rate that you want to support. Things that go into the
   cost calculation are:
 
-  * The number of reads and writes per seconds.
+  * The number of reads and writes per second.
   * The size of the data you are fetching/storing.
 
   Becaue this blog is so seldom read, and comments are not that long, I
@@ -152,8 +151,8 @@ markdown:
   Now that I have somewhere to store comments, I need to write server
   logic to do things like:
 
-  * Fetch comments
-  * Store a new comment from an logged in user.
+  * Fetch comments,
+  * Store a new comment from an logged in user,
   * Log in a user.
 
   To do this I use AWS Lambda. Lambda lets you write code (which they
@@ -289,10 +288,11 @@ markdown:
   primary key for the `users` table is `github_id`. A user's Github ID
   uniquely and permanently identifies a user.
 
-  When a user logs in, they are given a `secret_code`. This is stored
-  in the user's cookie, and also in `users` row in DynamoDB. This is
-  how, when the user makes a request to create a comment with a given
-  `github_id`, we can verify they are who they say. Let's do that now:
+  When a user logs in, I give them a `secret_code`. I store this in
+  the user's cookie, and also in their `users` row in DynamoDB. This
+  is how, when the user makes a request to create a comment with a
+  given `github_id`, we can verify they are who they say. Let's do
+  that now:
 
   ```python
   author_user = users_table.get_item(Key={"github_id": author_github_id})['Item']
@@ -367,24 +367,26 @@ markdown:
 
   The `comment_id` is selected without first looking at the
   `comment_id` values that exist in DynamoDB. Is this safe? What if I
-  reuse a `comment_id` that has already been used?
+  accidentally reuse a `comment_id` that has already been used by a
+  previously saved comment?
 
   If I do reuse a `comment_id`, this new comment will clober the old
-  comment. Essentially, I will lose the old comment. But this is very
-  unlikely given the number of comments I am likely to receive on this
-  blog, and the huge size of the ID space ($2^{120}$). Regardless, the
-  worst case scenario is that I lose one old comment.
+  comment. I will lose that old comment. But this is very unlikely
+  given the number of comments I am likely to receive on this blog,
+  and the huge size of the ID space ($2^{120}$ possible ID
+  values). Regardless, the worst case scenario is that I lose one old
+  comment.
 
   **Author Data Is Denormalized Into The Comments**
 
   You may ask: instead of storing the `author_github_name` and
   `author_github_login` in the `comments` table, why isn't it
-  sufficient to store the `author_github_id`, which is primary key
+  sufficient to store the `author_github_id`, which is the primary key
   into the `users` table? I can always look up a user given an
   `author_github_id`.
 
-  The reason I have *denormalized* some of the user's data is as
-  follows. DynamoDB is a partitioned database, and as such, you
+  The reason I have *denormalized* some of the author's user data is
+  as follows. DynamoDB is a partitioned database, and as such, you
   typically want to avoid logic that requires querying data across
   partitions. For instance, we know that because of the `entry_id`
   partition key, all comments for blog entry number 123 are stored on
@@ -392,12 +394,12 @@ markdown:
 
   Say there are 100 comments for blog entry number 123. If the
   comments do not contain the user's information like login or name,
-  that information should be fetched from the `users` table. But each
-  of the 100 comments that are authored could be written by a
-  different user, with a different `github_id`. So the row for that
-  user could live on *any* partition. We might have to query as many
-  as 100 partitions of the `users` table to get information about 100
-  users.
+  that information will have to be fetched from the `users` table. But
+  each of the 100 comments for this post could be authored by a
+  different user, each with their own `github_id`. So the row for each
+  of 100 authors could live on *any* partition. We might have to query
+  as many as 100 partitions of the `users` table to get information
+  about 100 users.
 
   This will have low performance. Thus the denormalization. If all the
   needed user data is stored directly in the `comments` rows, then
@@ -411,11 +413,15 @@ markdown:
   Markov's record in the `users` table. In the denormalized model, we
   must update Markov's name in every comment Markov has ever written.
 
-  Since the comments are not partitioned by `github_login_id`, the
-  comments for Markov are likely to be spread across the DynamoDB
-  machines. Therefore, we would have to scan *all* the partitions,
-  looking for comments written by Markov. Whenever we find one, we
-  must update Markov's name.
+  The comments are not partitioned by `github_login_id`; they are
+  partitioned by `entry_id`. Therefore the comments written by Markov
+  are likely to be spread across the DynamoDB machines. We would have
+  to scan *all* the partitions, looking for comments written by
+  Markov. Whenever we find one, we must update Markov's name.
+
+  Note: not only will we have to scan all partitions, we'll have to
+  scan *every row* on *every partition*, since the rows are not sorted
+  by `github_login_id` even within one partition!
 
   Now back to this blog. Whenever you login from Github, I will store
   in the `users` table the latest version of your name. However, I
@@ -425,7 +431,7 @@ markdown:
   ### AWS API Gateway
 
   I have shown you all these Lambda functions (except how to login a
-  user). How do they ever get invoked.
+  user). How do they ever get invoked?
 
   AWS provides a service called *API Gateway*. In API Gateway, you can
   map API routes to Lambda functions. For instance, you can say that
@@ -442,25 +448,37 @@ markdown:
   If anyone leaves a comment, you should start seeing data there!
 
   If you like, you can configure API Gateway to serve your API under a
-  domain you own. For simplicity, I just used the default they gave
-  me. Because that means my users make cross-site AJAX requests from
-  `blog.self-loop.com`, I also had to configure [CORS][wiki-cors]. API
-  Gateway makes that relatively simple.
+  domain name of your own (maybe `api.blog.self-loop.com`). For
+  simplicity, I just used the default Amazon gave me.
+
+  My users make cross-site AJAX requests from `blog.self-loop.com` to
+  `7n5x5r84kc.execute-api.us-west-2.amazonaws.com`, so I also have to
+  configure [CORS][wiki-cors]. Note that I would have to do this even
+  if the API domain name was `api.blog-self.com`, since even a
+  subdomain counts as a cross-site request. Anyway, API Gateway makes
+  it easy to setup CORS.
 
   I found API Gateway to be a bit of a pain in the ass to
-  configure. Sometimes not all the request parameters I wanted would
-  be passed through properly by API Gateway to the Lambda
-  functions. But in the final analysis though, API Gateway is quite
-  simple, and paired with Lambda is quite nice.
+  configure. The user interface is clunky, and sometimes not all the
+  request parameters I wanted would be passed through properly by API
+  Gateway to the Lambda functions. This was always due to
+  misconfiguration by me, though.
+
+  Clunky or not, using API Gateway to fire Lambda events is *way*
+  simpler than the traditional alternative: rent an EC2 box, run a
+  server, et cetera. In the final analysis, this was a good way to
+  develop.
 
   [wiki-cors]: https://en.wikipedia.org/wiki/Cross-origin_resource_sharing
 
-  ### Future Blog Posts:
+  ### Future Blog Posts
 
   I still want to talk about the React code I wrote. In the meantime
   you can [read the on Github][github-ui-code].
 
   Also, I wanted to talk a little about how I do Github OAuth. But
-  that will have to wait too!
+  that will have to wait too! If you want a sneak peak, you can read
+  the relevant [Lambda code I wrote on the Github][github-oauth-code].
 
   [github-ui-code]: https://github.com/ruggeri/ruggeri.github.io/tree/master/ui
+  [github-oauth-code]: https://github.com/ruggeri/ruggeri.github.io/blob/master/lambda/lambda.py#L79
