@@ -53,7 +53,10 @@ class Entry
 
   def full_content
     template_source = File.read("./templates/default.slim")
-    Slim::Template.new { template_source }.render(nil, { meta: meta }) { content }
+    head_source = File.read("./templates/head.slim")
+    head_content = Slim::Template.new { head_source }.render
+    Slim::Template.new { template_source }.render(
+      nil, { meta: meta, head_content: head_content }) { content }
   end
 
   def meta
