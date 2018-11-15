@@ -79,18 +79,18 @@ markdown:
   Transmitting data to other machines can be very slow. Instead, an
   ideal would be if each of ten machines gave $\frac{1}{11}$ of their
   data to the 11th server. This is ideal because (1) the rows are
-  perfectly balanced, (2) the minimum number of rows are transfered.
+  perfectly balanced, (2) the minimum number of rows are transferred.
 
   There are several ways to approach this ideal, and maybe I can talk
   about it in a future blog post. One of the innovations of [Amazon's
-  Dynamo whitepaper][dynamo-whitepaper] is how it solves this issue.
+  Dynamo white paper][dynamo-whitepaper] is how it solves this issue.
 
   [dynamo-whitepaper]: https://www.allthingsdistributed.com/files/amazon-dynamo-sosp2007.pdf
 
   **Primary Sort Key**
 
   In my `comments` table, the primary partition key is `entry_id`. This
-  might seem somewhat odd, beacuse there can easily be multiple
+  might seem somewhat odd, because there can easily be multiple
   `comment` records for a single blog post. In a SQL DB, the primary key
   would probably be the `comment_id`.
 
@@ -142,7 +142,7 @@ markdown:
   * The number of reads and writes per second.
   * The size of the data you are fetching/storing.
 
-  Becaue this blog is so seldom read, and comments are not that long, I
+  Because this blog is so seldom read, and comments are not that long, I
   can use the minimum amount of read resources. For me the cost is about
   $1/month.
 
@@ -319,7 +319,7 @@ markdown:
   `secret_code` I stored in the users table. If not, I tell the user
   that they are not authorized.
 
-  In those anomolous cases, I return a 404 or a 403 (Not Authorized)
+  In those anomalous cases, I return a 404 or a 403 (Not Authorized)
   status as necessary. I only proceed with the function if all is
   well.
 
@@ -370,7 +370,7 @@ markdown:
   accidentally reuse a `comment_id` that has already been used by a
   previously saved comment?
 
-  If I do reuse a `comment_id`, this new comment will clober the old
+  If I do reuse a `comment_id`, this new comment will clobber the old
   comment. I will lose that old comment. But this is very unlikely
   given the number of comments I am likely to receive on this blog,
   and the huge size of the ID space ($2^{120}$ possible ID

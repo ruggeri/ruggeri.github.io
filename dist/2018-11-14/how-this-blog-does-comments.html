@@ -27,10 +27,10 @@
 <p><strong>Aside: Partitioning and Scaling Out</strong></p>
 <p>In fact DynamoDB does something slightly more complicated that what I described about hashing. To see why the above strategy might be not the best, consider if we wanted to increase the number of machines from 10 to 11. When we increase the number of machines to handle more load, that is called <em>scaling out</em>. Under the scheme I suggested, each row should now live on machine numbered <code>hash(primary_partition_key_value) % 11</code>. But that means almost every row is going to be shuffled to a new machine.</p>
 <p>This is similar to what happens when a hash map resizes and doubles the number of buckets. Increasing the <em>modulus</em> throws everything off, so that almost everything belongs in a different bucket number. For instance, if <code>hash(key) == 50</code>, this belongs in bucket number 0 when there are ten buckets, but bucket number ten when there are twenty buckets.</p>
-<p>Returning to the scenario of partitioning, it would be good if when an 11th machine is added, we do not reshuffle almost all the data. Transmitting data to other machines can be very slow. Instead, an ideal would be if each of ten machines gave <span class="math inline">$\frac{1}{11}$</span> of their data to the 11th server. This is ideal because (1) the rows are perfectly balanced, (2) the minimum number of rows are transfered.</p>
-<p>There are several ways to approach this ideal, and maybe I can talk about it in a future blog post. One of the innovations of <a href="https://www.allthingsdistributed.com/files/amazon-dynamo-sosp2007.pdf">Amazon’s Dynamo whitepaper</a> is how it solves this issue.</p>
+<p>Returning to the scenario of partitioning, it would be good if when an 11th machine is added, we do not reshuffle almost all the data. Transmitting data to other machines can be very slow. Instead, an ideal would be if each of ten machines gave <span class="math inline">$\frac{1}{11}$</span> of their data to the 11th server. This is ideal because (1) the rows are perfectly balanced, (2) the minimum number of rows are transferred.</p>
+<p>There are several ways to approach this ideal, and maybe I can talk about it in a future blog post. One of the innovations of <a href="https://www.allthingsdistributed.com/files/amazon-dynamo-sosp2007.pdf">Amazon’s Dynamo white paper</a> is how it solves this issue.</p>
 <p><strong>Primary Sort Key</strong></p>
-<p>In my <code>comments</code> table, the primary partition key is <code>entry_id</code>. This might seem somewhat odd, beacuse there can easily be multiple <code>comment</code> records for a single blog post. In a SQL DB, the primary key would probably be the <code>comment_id</code>.</p>
+<p>In my <code>comments</code> table, the primary partition key is <code>entry_id</code>. This might seem somewhat odd, because there can easily be multiple <code>comment</code> records for a single blog post. In a SQL DB, the primary key would probably be the <code>comment_id</code>.</p>
 <p>A common query is to fetch all comments for a given blog post. Therefore, it is desirable that all these comments live on the same machine. That means the query can be answered by talking to a single machine. That is why I have selected <code>entry_id</code> as the primary partition key.</p>
 <p>To reflect that <code>entry_id</code> is not itself a full primary key, I have also specified a <em>primary sort key</em> which is <code>comment_id</code>. That means it is allowed for there be multiple rows for one <code>entry_id</code> <em>if</em> they have different <code>comment_id</code>s.</p>
 <p>Note: I cannot easily lookup a comment by its <code>comment_id</code> alone. The <code>comment_id</code> does not tell me on which machine that comment lives. I need also the <code>entry_id</code>. Without the <code>entry_id</code> DynamoDB wouldn’t know what machine to look in. To look up a single comment I need the <em>pair</em> <code>(entry_id, comment_id)</code>.</p>
@@ -44,7 +44,7 @@
 <li>The number of reads and writes per second.</li>
 <li>The size of the data you are fetching/storing.</li>
 </ul>
-<p>Becaue this blog is so seldom read, and comments are not that long, I can use the minimum amount of read resources. For me the cost is about $1/month.</p>
+<p>Because this blog is so seldom read, and comments are not that long, I can use the minimum amount of read resources. For me the cost is about $1/month.</p>
 <h3 id="aws-lambda">AWS Lambda</h3>
 <p>Now that I have somewhere to store comments, I need to write server logic to do things like:</p>
 <ul>
@@ -152,7 +152,7 @@
 <a class="sourceLine" id="cb5-15" data-line-number="15">    }</a></code></pre></div>
 <p>In this code, I lookup the user in DynamoDB. Just in case there was never any user stored for the given <code>github_id</code>, I check that.</p>
 <p>Next, I check that the submitted <code>author_secret_code</code> matches the <code>secret_code</code> I stored in the users table. If not, I tell the user that they are not authorized.</p>
-<p>In those anomolous cases, I return a 404 or a 403 (Not Authorized) status as necessary. I only proceed with the function if all is well.</p>
+<p>In those anomalous cases, I return a 404 or a 403 (Not Authorized) status as necessary. I only proceed with the function if all is well.</p>
 <p><strong>Storing the Comment</strong></p>
 <p>Last up is storing the comment in DynamoDB.</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb6-1" data-line-number="1">author_github_login, author_github_name <span class="op">=</span> author_user[<span class="st">&#39;github_login&#39;</span>], author_user[<span class="st">&#39;github_name&#39;</span>]</a>
@@ -183,7 +183,7 @@
 \end{align}
 $$</span><br /></p>
 <p>The <code>comment_id</code> is selected without first looking at the <code>comment_id</code> values that exist in DynamoDB. Is this safe? What if I accidentally reuse a <code>comment_id</code> that has already been used by a previously saved comment?</p>
-<p>If I do reuse a <code>comment_id</code>, this new comment will clober the old comment. I will lose that old comment. But this is very unlikely given the number of comments I am likely to receive on this blog, and the huge size of the ID space (<span class="math inline">2<sup>120</sup></span> possible ID values). Regardless, the worst case scenario is that I lose one old comment.</p>
+<p>If I do reuse a <code>comment_id</code>, this new comment will clobber the old comment. I will lose that old comment. But this is very unlikely given the number of comments I am likely to receive on this blog, and the huge size of the ID space (<span class="math inline">2<sup>120</sup></span> possible ID values). Regardless, the worst case scenario is that I lose one old comment.</p>
 <p><strong>Author Data Is Denormalized Into The Comments</strong></p>
 <p>You may ask: instead of storing the <code>author_github_name</code> and <code>author_github_login</code> in the <code>comments</code> table, why isn’t it sufficient to store the <code>author_github_id</code>, which is the primary key into the <code>users</code> table? I can always look up a user given an <code>author_github_id</code>.</p>
 <p>The reason I have <em>denormalized</em> some of the author’s user data is as follows. DynamoDB is a partitioned database, and as such, you typically want to avoid logic that requires querying data across partitions. For instance, we know that because of the <code>entry_id</code> partition key, all comments for blog entry number 123 are stored on the same DynamoDB machine.</p>
