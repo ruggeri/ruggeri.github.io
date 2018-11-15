@@ -106,13 +106,18 @@ def login(event, context):
         user['name'],
     )
 
-    user = {
-        "github_id": github_id,
-        "github_login": github_login,
-        "github_name": github_name,
-        "secret_code": str(uuid.uuid4()),
-        "json_user_payload": json.dumps(user)
-    }
+    user = users_table.get_item(Key={"github_id": github_id})['Item']
+
+    if user is None:
+        user = { "github_id": github_id, "secret_code": str(uuid.uuid4()) }
+    else:
+        # Don't *reset* secret_code, as this will invalidate other logins.
+        # Should only reset on *logout*.
+        user = { "github_id": github_id, "secret_code": user["secret_code"] }
+
+    user["github_login"] = github_login
+    user["github_name"] = github_name
+    user["json_user_payload"] = json.dumps(user)
     print(user)
 
     users_table.put_item(Item=user)
