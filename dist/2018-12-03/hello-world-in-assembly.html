@@ -1,0 +1,274 @@
+<head><title>&quot;Hello World!&quot; in Assembly Language</title><script>const entryId = "65c2e0382cd674cfbf025e1c94142d9b"</script><meta charset="UTF-8" /><meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport" /><link crossorigin="anonymous" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" rel="stylesheet" /><link href="https://fonts.googleapis.com/css?family=EB+Garamond" rel="stylesheet" /><script src="/assets/highlight.pack.js"></script><link href="/assets/hybrid.css" rel="stylesheet" /><link href="/assets/styles.css" rel="stylesheet" /><script type="text/x-mathjax-config">MathJax.Hub.Config({
+  tex2jax: {
+      inlineMath: [['$', '$']],
+      displayMath: [['$$', '$$']],
+  },
+});</script><script async="" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"></script></head><body><div class="container"><div class="row justify-content-center"><div class="col-12 col-md-8"><h2 class="title display-2 mb-3"><a href="/">self-loop</a></h2></div></div><div class="row justify-content-center"><div class="col-12 col-md-8"><h1 class="mb-0">&quot;Hello World!&quot; in Assembly Language</h1><small class="text-muted">Published: </small><h3 id="machine-code-and-assembly-code">Machine Code and Assembly Code</h3>
+<p>Most compiled languages like Go or C++ or Haskell are compiled to <em>machine code</em>. Machine code is the language the CPU understands; it is very primitive. Machine code consists of a series of bytes; those bytes stand for instructions that the CPU can execute. The CPU reads some bytes, performs the operation they stand for, then moves on to the bytes immediately after and performs those.</p>
+<p>Machine code is basically unreadable for a human. Therefore, right “above” machine code is <em>assembly code</em>. Assembly code is a human readable version of machine code. It more or less translates one-to-one with the machine code, but instead of being just numbers for instructions, it gives the instructions human readable names.</p>
+<p>Assembly code instructions look like this:</p>
+<pre class="plaintext"><code>add  rax, rbx
+inc  rcx
+imul rax, rcx</code></pre>
+<p>The first part of those three instructions mean <code>add</code>, <code>increment</code>, and <code>multiply</code>. The “arguments” to those instructions are (1) the two registers <code>rax, rbx</code>, (2) the register <code>rcx</code>, and (3) the two registers <code>rax, rcx</code>.</p>
+<h3 id="registers">Registers</h3>
+<p>All data that the CPU works on is stored in one of two places: either the memory, or in a <em>register</em>. A register is a memory location which the CPU can access and operate on extremely quickly. For instance, adding two numbers stored in registers is way faster than adding two numbers that are stored in the memory. That’s because the CPU first has to fetch values stored in memory. Accessing the RAM is extremely slow compared to using values that are stored in registers.</p>
+<p>Registers have funny names. The original general use registers were <code>rax</code>, <code>rbx</code>, <code>rcx</code>, <code>rdx</code>. These are the first four. The <code>r</code> means register. Then you have <code>a</code>, <code>b</code>, <code>c</code>, <code>d</code>; there are four basic registers. Then you have <code>x</code>, which means “extended.” This means the register can hold a 64bit number.</p>
+<p>There are some more registers for general use: <code>r8</code>, <code>r9</code>, <code>r10</code>, …, up to <code>r15</code>. These registers were added later, which is why their names are a little different.</p>
+<p>Some registers with weird names are <code>rdi</code> and <code>rsi</code>. These are just like the prior registers; they had a historical use that isn’t very interesting to us right now.</p>
+<p>Last, there are some special registers. The special registers are:</p>
+<ul>
+<li><code>rip</code>: the register for the <em>instruction pointer</em>. The instruction pointer is a pointer to the place in memory where the currently executing instruction lives. You can jump around in machine code by changing <code>rip</code>.</li>
+<li><code>rsp</code>: the register for the <em>stack pointer</em>. This is a pointer to the end of the stack memory.</li>
+<li><code>rbp</code>: the register for the <em>stack base pointer</em>. This points to the start of the current stack frame.</li>
+</ul>
+<p>We’ll look at <code>rip</code>, <code>rsp</code>, and <code>rbp</code> later. You can mostly ignore what I’ve said about registers so far.</p>
+<h3 id="hello-world">Hello World!</h3>
+<p>Let’s see a “Hello World!” assembly program:</p>
+<pre class="plaintext"><code>; hello_world.s
+
+; `global _main` makes the &quot;symbol&quot; _main available to any code
+;  &quot;linked&quot; with our program. This will let other people call our
+; _main code.
+;
+; Basically, it makes our main &quot;function&quot; public so that it can be the
+; start of the program.
+global _main
+
+; Assembly code is split into sections. The .text section is,
+; ironically, where your code lives.
+section .text
+
+; _main is a label for a location in the program&#39;s memory. It&#39;s not
+; really a &quot;function&quot;. It&#39;s more like the memory address where some
+; assembly code starts. When people want to &quot;call&quot; the _main
+; &quot;function&quot;, they will *jump* to the *location* &quot;_main.&quot;
+_main:
+        ; Our main code will simply print &quot;hello world.&quot; It will do
+        ; this by making a &quot;system call.&quot; That means asking the
+        ; operating system to do something. In this case, we will make
+        ; a call to the operating system&#39;s `write` command. `write`
+        ; will write bytes out to a file (`stdout` is a kind of file).
+
+        ; `mov` sets the register `rax` to the hexadecimal value
+        ; `0x02000004`. This is the system call number for the `write`
+        ; command. A raw value like `0x02000004` like this is sometimes
+        ; called an &quot;immediate&quot; value.
+        ;
+        ; When making a system call, you put the kind of system call
+        ; you want to make in rax.
+        ;
+        ; Note: in Linux you would have used a different system call
+        ; number than for OSX.
+        mov rax, 0x02000004
+
+        ; Set the register `rdi` to the value `0x01`. This number
+        ; represents the &quot;standard output&quot; file which is opened for us
+        ; by the operating system when it starts up our program.
+        ;
+        ; When &quot;calling a function,&quot; we typically place the first
+        ; argument into the `rdi` register. The function will expect it
+        ; to have been placed there.
+        mov rdi, 0x01
+
+        ; This sets the register rsi to the memory location `msg`,
+        ; defined below. The bytes at location msg are the ASCII
+        ; character codes for &quot;Hello world!\n&quot;.
+        ;
+        ; When calling a function, `rsi` is the register that the second
+        ; argument is typically expected to be placed into.
+        mov rsi, msg
+
+        ; Defined below, the *constant* msg_len is not a position in
+        ; memory (unlike how msg is a position in memory). It is a
+        ; value: the number of bytes to write.
+        ;
+        ; `rdx` is the expected register for the third argument.
+        mov rdx, msg_len
+
+        ; This tells the operating system to take over. The operating
+        ; system will print out a message for us, because we have
+        ; specified the 0x02000004 system call which is &quot;write&quot; by
+        ; setting rax. We have set up rdi, rsi, and rdx to the
+        ; appropriate arguments for the system call (file identifier,
+        ; pointer to characters, number of bytes to write).
+        syscall
+
+        ; The following lines run the operating system&#39;s exit system
+        ; call.  0x02000001 means exit. The immediate value 0x00
+        ; loaded into rdi means to return exit status zero, which
+        ; indicates normal closing.
+        ;
+        ; This system call will terminate the program.
+        mov     rax, 0x02000001
+        mov     rdi, 0x00
+        syscall
+
+; The next section is the *data* section. This is where &quot;global
+; variables&quot; live.
+section .data
+
+msg:
+        ; `db` means &quot;declare bytes&quot;. It will set the very first bytes
+        ; in the data section to the ASCII codes for the characters
+        ; &#39;H&#39;, &#39;e&#39;, &#39;l&#39;, ...
+        ;
+        ; After the ASCII code for &#39;!&#39;, I put in the literal byte
+        ; value 0x0a immediately afterward, which is the ASCII code
+        ; for newline (&#39;\n&#39;). I could also have written `Hello,
+        ; world!\n`; you can use backquotes which allow escape
+        ; characters like &#39;\n&#39;. I wrote it like this so you could see
+        ; that the string is really just bytes. If you wanted you could
+        ; have just listed the ASCII values instead of typing letters
+        ; within quotes.
+        db   &quot;Hello, world!&quot;, 0x0a
+
+        ; `equ` declares a constant. This declares a constant named
+        ; msg_len. The `$` symbol means &quot;the memory which would be the
+        ; start of this line.&quot; In other words, `$` here means the
+        ; location right after the byte 0x0a from the prior line. If we
+        ; subtract `msg` (the location of the start of the characters)
+        ; from `$` (the location after the end of the letters), we get
+        ; the length of the string.
+        ;
+        ; I could have hardcoded 14, but writing this way lets me
+        ; change the contents of the msg string without touching the
+        ; `msg_len` line.
+        msg_len equ $ - msg</code></pre>
+<h2 id="compiling-and-linking">Compiling and Linking</h2>
+<p>The next step is to <em>compile</em> our assembly code. Compile just means “translation.” We want to translate the human readable (barely) assembly code into binary machine code that the computer can understand.</p>
+<p>To do this, we will use <a href="https://www.nasm.us/"><code>nasm</code></a>. You can <code>brew install nasm</code>. To compile your assembly code, run: <code>nasm -f macho64 hello_world.s</code>. This will output a file called <code>hello_world.o</code>.</p>
+<p><code>hello_world.o</code> consists of machine code. Machine code is also sometimes called <em>object code</em>. Thus the <code>.o</code> extension. Object code has nothing to do with object oriented programming.</p>
+<p>(The object code is stored in a format called <em>Mach-O</em>. Mach is the name of the <em>kernel</em> used by macOS. We use the macho<strong>64</strong> format because we want to produce 64-bit object code. You don’t need to know this right now.)</p>
+<p>You cannot run the produced <code>.o</code> file directly. You must <em>link</em> a <code>.o</code> file (or sometimes multiple <code>.o</code> files). This will produce a Mach-O <em>executable</em> file. The idea of linking is that you will combine several files several object files into a single executable file. That’s just like how you might split up a Ruby program into multiple source files.</p>
+<p>Anyway, you don’t have to know much about linking right now. Here’s how to do the linking:</p>
+<pre class="plaintext"><code>ld -macosx_version_min 10.14.0 -static -e _main hello_world.o -o hello_world</code></pre>
+<p>This runs the linker program <code>ld</code>. It says to build an executable for macOS version 10.14.0 or greater. The <code>-static</code> flag means to build a “static” executable file; that means that only the object code we wrote will be included; nothing else should be included. We specify the <em>entry point</em> with <code>-e</code> flag. This says: start executing the program at the address labeled <code>_main</code>. Lastly, we pass <code>hello_world.o</code> (the object file to link) and we specify the output (<code>-o</code>) be <code>hello_world</code>.</p>
+<p>You should now be able to run <code>./hello_world</code>!</p>
+<h3 id="looping-five-times">Looping Five Times</h3>
+<p>Here is a program that loops five times, printing “Hello, world!” each time. The comments in the code explain some new instructions like <code>call</code>, <code>ret</code>, <code>test</code>, <code>jz</code>, <code>jmp</code>, <code>push</code>, and <code>pop</code>.</p>
+<pre class="plaintext"><code>global _main
+
+section .text
+
+        ; This defines a &quot;function&quot; named `_exit`. Basically, if we
+        ; jump to the instructions starting at location `_exit`, this
+        ; will perform the `exit` system call.
+_exit:
+        mov rax, 0x02000001
+        mov rdi, 0
+        syscall
+
+        ; This defines a &quot;function&quot; named `_print`. It will do the
+        ; same printing of &quot;Hello World!\n&quot; as we saw before. It does
+        ; this by making a system call to `write`, &quot;passing&quot; the
+        ; stdout file identifier (0x01), the location of the message
+        ; bytes, and the number of bytes to print.
+        ;
+        ; Recall that &quot;passing&quot; an argument means putting the first
+        ; argument in register `rdi`, the second argument in `rsi`, et
+        ; cetera.
+_print:
+        mov rax, 0x02000004
+        mov rdi, 0x01
+        mov rsi, msg
+        mov rdx, msg_len
+        syscall
+
+        ; At the end of a &quot;function&quot; (AKA, procedure), to return to
+        ; the calling function, we use the `ret` instruction.
+        ;
+        ; The `ret` instruction pops the saved instruction pointer off
+        ; the stack, and returns to the position in the caller&#39;s code.
+        ret
+
+        ; Here we begin the definition of our `_print_five_times`
+        ; procedure. Here are the interesting parts
+_print_five_times:
+        ; This loads the value `0x05` into register `rax`. We will
+        ; *not* be using this as an argument. We are using it as a
+        ; local variable of our procedure. The instruction `mov rax,
+        ; 0x05` basically means `i = 5`.
+        mov rax, 0x05
+
+        ; Here we are creating a &quot;local label&quot;. This location in
+        ; memory can be refered to as `_print_five_times.loop_start`.
+        ; We&#39;ll use this label to return to the top of our &quot;for loop.&quot;
+.loop_start:
+        ; The `test` operation sets a flag if rax is equal to zero.
+        test    rax, rax
+
+        ; The `jz` instruction says: if the previous operation set the
+        ; zero flag, then jump to the memory address
+        ; indicated. Basically, we&#39;ll break out of the loop.
+        jz  _print_five_times.loop_over
+
+        ; Else, the loop is not over. We will call our `_print`
+        ; procedure in a moment. But because we worry that `_print`
+        ; may mutate `rax`, we will first push the value of `rax` onto
+        ; &quot;the stack.&quot; The stack is a first-in-last-out place in
+        ; memory where you can save values.
+        push    rax
+
+        ; After pushing `rax` onto the stack (saving it), we can use
+        ; `call` to invoke our `_print` procedure.
+        ;
+        ; Call will set the &quot;instruction pointer&quot; to the location in
+        ; memory we named `_print`. But when `_print` is done, it
+        ; needs to return to here. So before calling `_print`, `call`
+        ; will push onto the stack the location of the next
+        ; instruction (in this case, `pop rax`).
+        ;
+        ; When `_print` is done, we are expecting it to call the `ret`
+        ; instruction. This (a) pops the stored return address off the
+        ; stack, resets the &quot;instruction pointer&quot; to the address of
+        ; `pop rax`.
+        call    _print
+
+        ; This pops off the previously saved value of `rax` from the
+        ; stack. The argument to the `pop` operation is `rax`, which
+        ; is why the popped value is saved again in `rax`.
+        pop rax
+
+        ; This operation decrements `rax` by one. Simple.
+        dec rax
+
+        ; This is the end of the loop. It does an &quot;unconditional jump&quot;
+        ; back to the top of the loop code.
+        jmp _print_five_times.loop_start
+
+        ; This label is used for breaking out of the loop.
+.loop_over:
+        ; Finally, we will return to the caller of the
+        ; `_print_five_times` procedure.
+        ret
+
+        ; This is the actual &quot;main code.&quot;
+_main:
+        ; Call the `_print_five_times` procedure.
+        call    _print_five_times
+        ; Then exit the program.
+        call    _exit
+
+section .data
+
+        ; You saw this from before.
+msg:        db  `Hello, world!\n`
+msg_len:    equ $ - msg</code></pre>
+<p>To compile and run, you may run the commands:</p>
+<pre class="plaintext"><code># compiles the assembly to object code
+nasm -f macho64 hello_world5.s
+# links the program statically, specifying the entry point.
+ld -macosx_version_min 10.14.0 -static hello_world5.o -e _main -o hello_world5
+# runs the program
+./hello_world5</code></pre>
+<h3 id="next-steps-and-resources">Next Steps and Resources</h3>
+<p>I’ve had a lot of fun playing around with assembly code recently, which is part of a project I’m working on with some students to write a toy programming language.</p>
+<p>The procedures we wrote didn’t take any arguments (the system calls did though). I’d like to write another blog post about <em>calling conventions</em>, and to talk about how the <code>rsp</code> and <code>rbp</code> registers are used.</p>
+<p>Here are some resources you can look at in the meantime:</p>
+<p><strong>nasm</strong></p>
+<p><a href="https://www.nasm.us/">nasm</a> has some nice documentation. The code I’ve written is specific to nasm. If you try to use other assembly compilers my code won’t quite work because each uses a different format. Assembly code is not exactly a universal language; each assembly compiler compiles a slightly different version/syntax.</p>
+<p><strong>x86 Assembly Guide</strong></p>
+<p><a href="http://www.cs.virginia.edu/~evans/cs216/guides/x86.html">This tutorial</a> from the University of Virginia was quite helpful. It has some nice drawings. It is especially helpful in understanding how the stack works exactly. That is something I’d like to discuss in a follow-up blog post.</p>
+<p><strong>x64 Cheat Sheet</strong></p>
+<p>(Probably should be called <code>x86_64</code> Cheat Sheet). This is a <a href="https://cs.brown.edu/courses/cs033/docs/guides/x64_cheatsheet.pdf">ten page cheat sheet</a>. It sumarizes most of the important assembly instructions you might use. Probably useful after playing around on your own for a bit.</p><p><a href="/">&lt;&lt; Back To The Posts Index! &lt;&lt;</a></p></div></div><div class="row justify-content-center"><div class="col-12 col-md-8"><div id="comments"></div><p><a href="/">&lt;&lt;&lt; Back To The Posts Index! &lt;&lt;&lt;</a></p></div></div></div><script src="/ui/dist/main.js"></script><script>hljs.initHighlightingOnLoad();</script></body>
