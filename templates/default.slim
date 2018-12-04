@@ -10,20 +10,20 @@ head
 body
   div class="container"
     div class="row justify-content-center"
-      div class="col-12 col-md-8"
+      div class="col-12"
         h2.title.display-2.mb-3
           a href="/"
             = "self-loop"
 
     div class="row justify-content-center"
-      div class="col-12 col-md-8"
+      div class="col-12"
         == yield
 
         p: a href="/"
           = "<< Back To The Posts Index! <<"
 
     div class="row justify-content-center"
-      div class="col-12 col-md-8"
+      div class="col-12"
         div id="comments"
         p: a href="/"
           = "<<< Back To The Posts Index! <<<"

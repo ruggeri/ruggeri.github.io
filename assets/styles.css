@@ -27,3 +27,8 @@ p br:first-child, p br:last-child {
 .title a:hover {
   color: #007bff;
 }
+
+.container {
+  /* This is the full width of an iPhone X. */
+  max-width: 812px;
+}
