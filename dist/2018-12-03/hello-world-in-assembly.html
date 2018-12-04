@@ -131,7 +131,7 @@ msg:
         ; from `$` (the location after the end of the letters), we get
         ; the length of the string.
         ;
-        ; I could have hardcoded 14, but writing this way lets me
+        ; I could have hard-coded 14, but writing this way lets me
         ; change the contents of the msg string without touching the
         ; `msg_len` line.
         msg_len equ $ - msg</code></pre>
@@ -192,7 +192,7 @@ _print_five_times:
         mov rax, 0x05
 
         ; Here we are creating a &quot;local label&quot;. This location in
-        ; memory can be refered to as `_print_five_times.loop_start`.
+        ; memory can be referred to as `_print_five_times.loop_start`.
         ; We&#39;ll use this label to return to the top of our &quot;for loop.&quot;
 .loop_start:
         ; The `test` operation sets a flag if rax is equal to zero.
@@ -271,4 +271,4 @@ ld -macosx_version_min 10.14.0 -static hello_world5.o -e _main -o hello_world5
 <p><strong>x86 Assembly Guide</strong></p>
 <p><a href="http://www.cs.virginia.edu/~evans/cs216/guides/x86.html">This tutorial</a> from the University of Virginia was quite helpful. It has some nice drawings. It is especially helpful in understanding how the stack works exactly. That is something I’d like to discuss in a follow-up blog post.</p>
 <p><strong>x64 Cheat Sheet</strong></p>
-<p>(Probably should be called <code>x86_64</code> Cheat Sheet). This is a <a href="https://cs.brown.edu/courses/cs033/docs/guides/x64_cheatsheet.pdf">ten page cheat sheet</a>. It sumarizes most of the important assembly instructions you might use. Probably useful after playing around on your own for a bit.</p><p><a href="/">&lt;&lt; Back To The Posts Index! &lt;&lt;</a></p></div></div><div class="row justify-content-center"><div class="col-12 col-md-8"><div id="comments"></div><p><a href="/">&lt;&lt;&lt; Back To The Posts Index! &lt;&lt;&lt;</a></p></div></div></div><script src="/ui/dist/main.js"></script><script>hljs.initHighlightingOnLoad();</script></body>
+<p>(Probably should be called <code>x86_64</code> Cheat Sheet). This is a <a href="https://cs.brown.edu/courses/cs033/docs/guides/x64_cheatsheet.pdf">ten page cheat sheet</a>. It summarizes most of the important assembly instructions you might use. Probably useful after playing around on your own for a bit.</p><p><a href="/">&lt;&lt; Back To The Posts Index! &lt;&lt;</a></p></div></div><div class="row justify-content-center"><div class="col-12 col-md-8"><div id="comments"></div><p><a href="/">&lt;&lt;&lt; Back To The Posts Index! &lt;&lt;&lt;</a></p></div></div></div><script src="/ui/dist/main.js"></script><script>hljs.initHighlightingOnLoad();</script></body>
