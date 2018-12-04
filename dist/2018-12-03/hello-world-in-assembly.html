@@ -25,7 +25,7 @@ imul rax, rcx</code></pre>
 <p>We’ll look at <code>rip</code>, <code>rsp</code>, and <code>rbp</code> later. You can mostly ignore what I’ve said about registers so far.</p>
 <h3 id="hello-world">Hello World!</h3>
 <p>Let’s see a “Hello World!” assembly program:</p>
-<pre class="plaintext"><code>; hello_world.s
+<pre class="x86asm"><code>; hello_world.s
 
 ; `global _main` makes the &quot;symbol&quot; _main available to any code
 ;  &quot;linked&quot; with our program. This will let other people call our
@@ -147,7 +147,7 @@ msg:
 <p>You should now be able to run <code>./hello_world</code>!</p>
 <h3 id="looping-five-times">Looping Five Times</h3>
 <p>Here is a program that loops five times, printing “Hello, world!” each time. The comments in the code explain some new instructions like <code>call</code>, <code>ret</code>, <code>test</code>, <code>jz</code>, <code>jmp</code>, <code>push</code>, and <code>pop</code>.</p>
-<pre class="plaintext"><code>global _main
+<pre class="x86asm"><code>global _main
 
 section .text
 

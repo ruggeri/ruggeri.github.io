@@ -1,0 +1,20 @@
+For "common" I turned off:
+
+* Apache
+* CoffeeScript
+* Ini, TOML
+* Nginx
+* PHP
+* Perl
+
+For Other I turned on:
+
+* Clojure
+* F#
+* Go
+* Haskell
+* Intel x86 Assembly
+* Rust
+* Scala
+* TypeScript
+* plaintext
