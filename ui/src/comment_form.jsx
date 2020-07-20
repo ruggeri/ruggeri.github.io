@@ -79,7 +79,7 @@ class CommentForm extends React.Component {
 const CustomTextareaComponent = ({
   field,
   form,
-  ...props,
+  ...props
 }) => (
     <TextareaAutosize type="text" {...field} {...props} />
 );
