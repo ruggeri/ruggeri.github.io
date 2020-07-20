@@ -44,9 +44,9 @@ markdown:
   consists of only the top two candidates from the first round.
 
   In our example, since neither Markov, Curie, nor Gizmo received a
-  majority (50%+ of votes), a second round would be run. The top two
-  candidates in the first round were Markov and Curie, so they are
-  selected for the second round. Presuming that the voters for Gizmo
+  majority (more than 50% of votes), a second round would be run. The
+  top two candidates in the first round were Markov and Curie, so they
+  are selected for the second round. Presuming that the voters for Gizmo
   prefer Curie to Markov, Curie will win 55%-to-45%. Curie wins!
 
   The two-round system is very commonly used throughout the world. It is
@@ -59,7 +59,7 @@ markdown:
   France does elect its National Assembly members using the two-round
   system.
 
-  #### Contingent Voting
+  #### Automating A Two Round System
 
   A two-round system can require that two rounds of election be held.
   This could be burdensome to the electorate. They must come out to vote
@@ -72,11 +72,15 @@ markdown:
 
   Otherwise, we eliminate all but the top two candidates. In our
   example, Gizmo would be eliminated. We count each ballot for the more
-  preferred of the two remaining candidates. In effect, we have
-  "automatically" run the second round.
+  preferred of the two remaining candidates. Votes for Gizmo are
+  "transferred" to Curie and Markov depending on who the Gizmo voter
+  ranks more highly.
 
-  This system is called *contingent voting*. I am not aware that it is
-  used anywhere. That is because a better alternative exists.
+
+  This system is called *contingent voting*. It is simply an
+  "automation" of a standard two round system. I am not aware that
+  contingent voting is used anywhere. That is because a better
+  alternative exists.
 
   #### The Problem With Two Rounds
 
@@ -85,21 +89,25 @@ markdown:
   consider voters' first choice? In such a scenario, both the two round
   and contingent voting systems would "prematurely" jump to eliminating
   all but the top-two first-choice candidates. This would be a "mistake"
-  because an eliminated candidate is preferred by a majority of the
-  electorate to the top two candidates (when judged by first-rank
-  votes).
+  because an eliminated candidate would defeat either of the "top-two"
+  candidates in a head-to-head election.
 
   A fanciful scenario? Consider the 2002 French presidential election.
   In the first round the Gaullist (right) candidate Chirac won ~20% of
   the vote. The far-right candidate Le Pen won 16.86%. The Socialist
   candidate Jospin came third with 16.18% of the vote and was
-  eliminated. Other lesser candidates of the left won 28.59% of the
-  first-round vote and were also eliminated.
+  eliminated. Various less popular candidates of the left won a total of
+  28.59% of the first-round vote, but all these were also eliminated.
 
   Chirac beat Le Pen 82%-to-18% in the second round (one campaign poster
   read: "vote for the crook, not the fascist"). Had Jospin entered the
-  second round, who knows whether he would have defeated Chirac? It is
-  probable.
+  second round instead of Le Pen, who knows whether Jospin would have
+  defeated Chirac? It is probable that the French electorate would have
+  preferred Jospin to Chirac and indeed *every* other presidential
+  candidate.
+
+  If so, it seems undesirable that the two round system did not elect
+  Jospin.
 
   #### Instant Runoff Voting
 
@@ -117,13 +125,13 @@ markdown:
   number of votes is eliminated. Another round is run, and a next
   candidate is eliminated.
 
-  The process ends when a candidate receives a majority (50%+) of votes.
-  This is the winner.
+  The process ends when a candidate receives a majority (more than 50%)
+  of votes. This is the winner.
 
   #### Instant Runoff Voting: An Example
 
-  We should first note: when there are exactly three candidates, the two
-  round system is identical to instant runoff voting.
+  We should first note: when there are exactly three candidates, instant
+  runoff voting is identical to the two round system.
 
   Let us say that five candidates run for mayor in San Francisco. Alice
   receives 30% of first-choice votes, Bob receives 25% of first-choice
@@ -149,10 +157,10 @@ markdown:
   Alice/Bob/David.
 
   Now Alice has 35% of the vote, Bob has 30% of the vote, and David has
-  35% of the vote. We eliminate Bob. Let us say that his votes transfer
-  5% to Alice, and 25% to David. Note that some voters who had ranked
-  Candice first and Bob second are having their votes transferred a
-  *second time*!
+  35% of the vote. We eliminate Bob next. Let us say that his votes
+  transfer 5% to Alice, and 25% to David. Note that some voters who had
+  ranked Candice first and Bob second are having their votes transferred
+  a *second time*!
 
   Now that there are only two candidates remaining, the vote tally in
   the final round is 40% for Alice and 60% for David. David wins!
@@ -166,19 +174,18 @@ markdown:
   redistributed to Al Gore. Al Gore would likely have defeated George W.
   Bush.
 
-  In a cruel sense, votes for Ralph Nader were "wasted" in Florida,
-  because a vote for Ralph Nader neither increased nor decreased the
-  victory margin for the candidate with the plurality (Bush). Under IRV,
-  votes are never wasted in this way, because a vote is always
-  transferred to one of two final candidates.
+  In a cruel sense, votes for Nader were "wasted" in Florida, because a
+  vote for Nader neither increased nor decreased the victory margin for
+  the candidate with the plurality (Bush). Under IRV, votes are never
+  wasted in this way, because a vote is always transferred to one of the
+  two final candidates. IRV typically doesn't penalize a voter to rank
+  their first choice according to their conscience. This is good.
 
-  IRV can be useful here, because it allows a voter to rank their first
-  choice according to their conscience. On the other hand, I would not
-  want to overstate the harm of FPTP here. Voters can identify the top
-  two general election candidates easily in the two party system that
-  prevails in the United States. It is a simple (and common) strategy
-  for voters to vote for one of the top two candidates even if these are
-  not their first choice.
+  On the other hand, I would not want to overdramatize the failure of
+  FPTP. Voters can identify the top two general election candidates
+  easily in the two party system that prevails in the United States. It
+  is a simple (and common) strategy for voters to vote for one of the
+  top two candidates even if these are not their first choice.
 
   Lastly, in the American system, third party candidates are marginal
   enough that they attract relatively few votes. Thus third party
@@ -188,10 +195,10 @@ markdown:
   "subverts the will of the people," since there is not in fact any
   consensus on a best candidate.
 
-  #### IRV Does Not Particularly Help Compromise Candidates
+  #### IRV Does Not Particularly Help Centrist Candidates
 
   Where a two-party system prevails, instant runoff voting does not
-  significantly help compromise candidates. Imagine a polarized country
+  significantly help centrist candidates. Imagine a polarized country
   where diametrically opposed candidates A and B both command 40%
   first-rank support. Centrist voters can vote for candidate C, but
   because C is not popular enough to win more first-rank votes, they
@@ -206,8 +213,8 @@ markdown:
   candidates who appeal to the center.
 
   In conclusion: I would not expect IRV to greatly help American
-  candidates with broad but tepid support. However, IRV can be no worse
-  than FPTP in this respect.
+  candidates with broad but tepid support. On the other hand, IRV
+  wouldn't *harm* centrists/compromise candidates.
 
   #### IRV Could Help When There Are Many Candidates
 
@@ -233,7 +240,9 @@ markdown:
   But how can you identify the non-Trump consensus candidate? The more
   similar the leading non-Trump candidates are, the harder it will be
   for never-Trump voters to pick and rally around just one of those
-  candidates.
+  candidates. Also, candidates have a strong personal incentive
+  (professional advancement) not to withdraw unless it is obvious they
+  cannot win.
 
   At least one analysis suggests that [IRV flips most Donald Trump
   Primary Victories][trump-results].
@@ -245,12 +254,16 @@ markdown:
   1. IRV has some advantages (and no obvious disadvantages) when
      compared with FPTP.
   1. Introducing IRV probably wouldn't fundamentally change the two
-     party dynamic that prevails in American general elections.
+     party dynamic that prevails in American general elections. IRV
+     would eliminate third party candidates and the election would
+     mostly reduce to the two main parties (as is already the case).
   1. IRV would presumably reduce the spoiler effect in closely contested
-     general elections.
-  1. Introducing IRV would greatly reduce the probability that extremist
+     general elections. This is nice, but not vital. Third-party
+     spoilers in the US tend to have low support, so only already
+     contentious FPTP elections can be spoiled.
+  1. Introducing IRV could reduce the probability that extremist
      candidates are selected in *primary* elections (where there can be
-    many candidates).
+     many similar candidates).
 
   #### Future Discussion
 
@@ -260,14 +273,17 @@ markdown:
   support party B, then a *multi-member district* of *ten* seats will
   elect 4 members of party A and 6 members of party B.
 
-  Examples include:
+  Examples systems that achieve this are:
 
   1. Party-List Proportional Representation (most legislatures are
      elected this way),
   1. Single Transferrable Vote (Irish legislature elected this way)
 
-  I'd also like to consider and review ways that other countries
-  organize their federal government. For example: did you know that most
-  European countries are run by a coalition government? I'd like to talk
-  about how that works, and what the advantages of such systems might
-  be.
+  countries organize their federal government. For example: did you know
+  On a related note: I'd like to consider and review ways that other
+  that most European countries are run by a coalition government? I'd
+  like to talk about how that works, and what the advantages of such
+  systems might be.
+
+  **TODO**: Why didn't voters focus on one non-Trump candidate in the
+  primaries?
