@@ -16,6 +16,10 @@ p, ul, ol {
   font-size: 1.25rem;
 }
 
+p strong {
+  font-weight: 600;
+}
+
 /* Math in a p or ul tag should still be Tex font. */
 span.math.inline {
   font-family: 'MJXc-TeX-math-I,MJXc-TeX-math-Ix,MJXc-TeX-math-Iw';
