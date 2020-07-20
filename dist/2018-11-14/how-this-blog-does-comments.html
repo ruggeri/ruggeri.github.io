@@ -6,23 +6,23 @@
 });</script><script async="" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"></script></head><body><div class="container"><div class="row justify-content-center"><div class="col-12"><h2 class="title display-2 mb-3"><a href="/">self-loop</a></h2></div></div><div class="row justify-content-center"><div class="col-12"><h1 class="mb-0">How This Blog Does Comments</h1><small class="text-muted">Published: 2018-11-14 21:33:13 -0800</small><p>Rather than use a system like Disqus, I wrote my own logic to handle commenting on this blog. Storing comments means the comments need to be stored somewhere, so this blog needs to be more than just statically generated content stored on Github Pages.</p>
 <h3 id="dynamodb-stores-the-comments">DynamoDB Stores The Comments</h3>
 <p>To store the comments, I use Amazon DynamoDB. I have two tables: <code>users</code> and <code>comments</code>. In general, DynamoDB is “schemaless”, each row is like a JSON blob, and the keys in one row don’t have to match up with the keys in the next row. However, it is typical that all rows follow some common format. Here are the schemas for the two tables:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode yaml"><code class="sourceCode yaml"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="fu">comments:</span></a>
-<a class="sourceLine" id="cb1-2" data-line-number="2">  entry_id, <span class="co"># the blog post you are leaving a comment on,</span></a>
-<a class="sourceLine" id="cb1-3" data-line-number="3">  comment_id, <span class="co"># unique for each comment</span></a>
-<a class="sourceLine" id="cb1-4" data-line-number="4">  author_name,</a>
-<a class="sourceLine" id="cb1-5" data-line-number="5">  created_at,</a>
-<a class="sourceLine" id="cb1-6" data-line-number="6">  text,</a>
-<a class="sourceLine" id="cb1-7" data-line-number="7"></a>
-<a class="sourceLine" id="cb1-8" data-line-number="8"><span class="fu">users:</span></a>
-<a class="sourceLine" id="cb1-9" data-line-number="9">  github_id, <span class="co"># unique for each user</span></a>
-<a class="sourceLine" id="cb1-10" data-line-number="10">  github_name, <span class="co"># Their name as recorded on Github; not everyone has this</span></a>
-<a class="sourceLine" id="cb1-11" data-line-number="11">  github_login, <span class="co"># Their Github login name; this can change,</span></a>
-<a class="sourceLine" id="cb1-12" data-line-number="12">  json_user_payload, <span class="co"># A dump of Github&#39;s JSON representation of the user</span></a>
-<a class="sourceLine" id="cb1-13" data-line-number="13">  secret_code, <span class="co"># An authentication token stored in the users&#39; cookies</span></a></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="fu">comments</span><span class="kw">:</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a><span class="at">  entry_id,</span><span class="co"> # the blog post you are leaving a comment on,</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true"></a><span class="at">  comment_id,</span><span class="co"> # unique for each comment</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true"></a><span class="at">  author_name,</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true"></a><span class="at">  created_at,</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true"></a><span class="at">  text,</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true"></a><span class="fu">users</span><span class="kw">:</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true"></a><span class="at">  github_id,</span><span class="co"> # unique for each user</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true"></a><span class="at">  github_name,</span><span class="co"> # Their name as recorded on Github; not everyone has this</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true"></a><span class="at">  github_login,</span><span class="co"> # Their Github login name; this can change,</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true"></a><span class="at">  json_user_payload,</span><span class="co"> # A dump of Github&#39;s JSON representation of the user</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true"></a><span class="at">  secret_code,</span><span class="co"> # An authentication token stored in the users&#39; cookies</span></span></code></pre></div>
 <h3 id="primary-partition-vs-primary-sort-keys">Primary Partition vs Primary Sort Keys</h3>
 <p>DynamoDB has two kinds of key: <em>primary partition key</em> and <em>primary sort key</em>. DynamoDB is a partitioned database, which means it splits up the rows in a table across different DynamoDB machines.</p>
 <p><strong>Primary Partition Key</strong></p>
-<p>DynamoDB chooses which machine to store a new row on by looking at the <em>primary partition key</em>. For instance: if DynamoDB runs 10 machines for your database, and you insert a row with primary partition key value “Gizmo”, then DynamoDB will store this row on the machine numbered <code>hash(&quot;Gizmo&quot;) % 10</code>. This should relatively evenly (but deterministically) split up the rows across machines.</p>
+<p>DynamoDB chooses which machine to store a new row on by looking at the <em>primary partition key</em>. For instance: if DynamoDB runs 10 machines for your database, and you insert a row with primary partition key value “Gizmo”, then DynamoDB will store this row on the machine numbered <code>hash("Gizmo") % 10</code>. This should relatively evenly (but deterministically) split up the rows across machines.</p>
 <p>It is important that the splitting up is done deterministically, because later, when you look up your data, you will need to specify the primary partition key so that DynamoDB knows where that row is stored.</p>
 <p><strong>Aside: Partitioning and Scaling Out</strong></p>
 <p>In fact DynamoDB does something slightly more complicated that what I described about hashing. To see why the above strategy might be not the best, consider if we wanted to increase the number of machines from 10 to 11. When we increase the number of machines to handle more load, that is called <em>scaling out</em>. Under the scheme I suggested, each row should now live on machine numbered <code>hash(primary_partition_key_value) % 11</code>. But that means almost every row is going to be shuffled to a new machine.</p>
@@ -59,22 +59,22 @@
 <p>Also, AWS Lambda will only charge you when your Lambda function is executed. You get 1,000,000 requests free. My blog has 820 requests for comments this past month. So I pay Amazon nothing for Lambda. (Lambda function execution is time limited, so no cheating by doing hours of bitcoin mining for free in a Lambda function!)</p>
 <p>So let’s see some Lambda code.</p>
 <p><strong>Fetching Comments</strong></p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb2-1" data-line-number="1">dynamodb <span class="op">=</span> boto3.resource(<span class="st">&#39;dynamodb&#39;</span>)</a>
-<a class="sourceLine" id="cb2-2" data-line-number="2">comments_table <span class="op">=</span> dynamodb.Table(<span class="st">&#39;comments&#39;</span>)</a>
-<a class="sourceLine" id="cb2-3" data-line-number="3">users_table <span class="op">=</span> dynamodb.Table(<span class="st">&#39;users&#39;</span>)</a>
-<a class="sourceLine" id="cb2-4" data-line-number="4"></a>
-<a class="sourceLine" id="cb2-5" data-line-number="5"><span class="kw">def</span> get_comments(event, context):</a>
-<a class="sourceLine" id="cb2-6" data-line-number="6">    entry_id <span class="op">=</span> event[<span class="st">&quot;entry_id&quot;</span>]</a>
-<a class="sourceLine" id="cb2-7" data-line-number="7">    response <span class="op">=</span> comments_table.query(</a>
-<a class="sourceLine" id="cb2-8" data-line-number="8">        KeyConditionExpression<span class="op">=</span>Key(<span class="st">&#39;entry_id&#39;</span>).eq(entry_id)</a>
-<a class="sourceLine" id="cb2-9" data-line-number="9">    )</a>
-<a class="sourceLine" id="cb2-10" data-line-number="10"></a>
-<a class="sourceLine" id="cb2-11" data-line-number="11">    comments <span class="op">=</span> response[<span class="st">&#39;Items&#39;</span>]</a>
-<a class="sourceLine" id="cb2-12" data-line-number="12"></a>
-<a class="sourceLine" id="cb2-13" data-line-number="13">    <span class="cf">return</span> {</a>
-<a class="sourceLine" id="cb2-14" data-line-number="14">        <span class="st">&quot;statusCode&quot;</span>: <span class="dv">200</span>,</a>
-<a class="sourceLine" id="cb2-15" data-line-number="15">        <span class="st">&quot;comments&quot;</span>: comments</a>
-<a class="sourceLine" id="cb2-16" data-line-number="16">    }</a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a>dynamodb <span class="op">=</span> boto3.resource(<span class="st">&#39;dynamodb&#39;</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true"></a>comments_table <span class="op">=</span> dynamodb.Table(<span class="st">&#39;comments&#39;</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true"></a>users_table <span class="op">=</span> dynamodb.Table(<span class="st">&#39;users&#39;</span>)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true"></a></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true"></a><span class="kw">def</span> get_comments(event, context):</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true"></a>    entry_id <span class="op">=</span> event[<span class="st">&quot;entry_id&quot;</span>]</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true"></a>    response <span class="op">=</span> comments_table.query(</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true"></a>        KeyConditionExpression<span class="op">=</span>Key(<span class="st">&#39;entry_id&#39;</span>).eq(entry_id)</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true"></a>    )</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true"></a></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true"></a>    comments <span class="op">=</span> response[<span class="st">&#39;Items&#39;</span>]</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true"></a></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true"></a>    <span class="cf">return</span> {</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true"></a>        <span class="st">&quot;statusCode&quot;</span>: <span class="dv">200</span>,</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true"></a>        <span class="st">&quot;comments&quot;</span>: comments</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true"></a>    }</span></code></pre></div>
 <p>This code is relatively self-explanatory. <code>boto3</code> is a library that Amazon provides to interact with AWS services. I say I want to use the <code>comments</code> and (later on in other event handlers) <code>users</code> tables.</p>
 <p>The <code>get_comments</code> function will be fired when someone makes a request for comments. They will specify the <code>entry_id</code>, which will be passed to us inside the <code>event</code> object (which contains the params of the request).</p>
 <p>We submit a query to the <code>comments_table</code>, asking for all records that meet the expressed requirement that <code>entry_id</code> equal the specified value.</p>
@@ -127,61 +127,61 @@
       &quot;comment&quot;: comment,
   }</code></pre>
 <p>First thing first: getting the params of the request:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb4-1" data-line-number="1">entry_id, text, author_github_id, author_secret_code <span class="op">=</span> (</a>
-<a class="sourceLine" id="cb4-2" data-line-number="2">  event[<span class="st">&quot;payload&quot;</span>][<span class="st">&quot;entry_id&quot;</span>],</a>
-<a class="sourceLine" id="cb4-3" data-line-number="3">  event[<span class="st">&quot;payload&quot;</span>][<span class="st">&quot;comment_text&quot;</span>],</a>
-<a class="sourceLine" id="cb4-4" data-line-number="4">  event[<span class="st">&quot;payload&quot;</span>][<span class="st">&quot;author_github_id&quot;</span>],</a>
-<a class="sourceLine" id="cb4-5" data-line-number="5">  event[<span class="st">&quot;payload&quot;</span>][<span class="st">&quot;author_secret_code&quot;</span>],</a>
-<a class="sourceLine" id="cb4-6" data-line-number="6">)</a></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true"></a>entry_id, text, author_github_id, author_secret_code <span class="op">=</span> (</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true"></a>  event[<span class="st">&quot;payload&quot;</span>][<span class="st">&quot;entry_id&quot;</span>],</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true"></a>  event[<span class="st">&quot;payload&quot;</span>][<span class="st">&quot;comment_text&quot;</span>],</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true"></a>  event[<span class="st">&quot;payload&quot;</span>][<span class="st">&quot;author_github_id&quot;</span>],</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true"></a>  event[<span class="st">&quot;payload&quot;</span>][<span class="st">&quot;author_secret_code&quot;</span>],</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true"></a>)</span></code></pre></div>
 <p>The user needs to specify what entry they are posting a comment for, and the text of that comment. They need to specify who they are; the primary key for the <code>users</code> table is <code>github_id</code>. A user’s Github ID uniquely and permanently identifies a user.</p>
 <p>When a user logs in, I give them a <code>secret_code</code>. I store this in the user’s cookie, and also in their <code>users</code> row in DynamoDB. This is how, when the user makes a request to create a comment with a given <code>github_id</code>, we can verify they are who they say. Let’s do that now:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb5-1" data-line-number="1">author_user <span class="op">=</span> users_table.get_item(Key<span class="op">=</span>{<span class="st">&quot;github_id&quot;</span>: author_github_id})[<span class="st">&#39;Item&#39;</span>]</a>
-<a class="sourceLine" id="cb5-2" data-line-number="2"><span class="bu">print</span>(author_user)</a>
-<a class="sourceLine" id="cb5-3" data-line-number="3"></a>
-<a class="sourceLine" id="cb5-4" data-line-number="4"><span class="cf">if</span> author_user <span class="op">==</span> <span class="va">None</span>:</a>
-<a class="sourceLine" id="cb5-5" data-line-number="5">    <span class="cf">return</span> {</a>
-<a class="sourceLine" id="cb5-6" data-line-number="6">        <span class="st">&quot;statusCode&quot;</span>: <span class="dv">404</span>,</a>
-<a class="sourceLine" id="cb5-7" data-line-number="7">        <span class="st">&quot;message&quot;</span>: <span class="ss">f&quot;No user found for this github_id: </span><span class="sc">{</span>author_github_id<span class="sc">}</span><span class="ss">.&quot;</span>,</a>
-<a class="sourceLine" id="cb5-8" data-line-number="8">    }</a>
-<a class="sourceLine" id="cb5-9" data-line-number="9"></a>
-<a class="sourceLine" id="cb5-10" data-line-number="10"><span class="cf">if</span> author_user[<span class="st">&#39;secret_code&#39;</span>] <span class="op">!=</span> author_secret_code:</a>
-<a class="sourceLine" id="cb5-11" data-line-number="11">    <span class="cf">return</span> {</a>
-<a class="sourceLine" id="cb5-12" data-line-number="12">        <span class="st">&quot;statusCode&quot;</span>: <span class="dv">403</span>,</a>
-<a class="sourceLine" id="cb5-13" data-line-number="13">        <span class="st">&quot;message&quot;</span>: <span class="ss">f&quot;That is the wrong secret_code for this github_id: </span><span class="sc">{</span>author_github_id<span class="sc">}</span><span class="ss">.&quot;</span>,</a>
-<a class="sourceLine" id="cb5-14" data-line-number="14">        <span class="st">&quot;submittedUserSecretCode&quot;</span>: author_secret_code,</a>
-<a class="sourceLine" id="cb5-15" data-line-number="15">    }</a></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true"></a>author_user <span class="op">=</span> users_table.get_item(Key<span class="op">=</span>{<span class="st">&quot;github_id&quot;</span>: author_github_id})[<span class="st">&#39;Item&#39;</span>]</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true"></a><span class="bu">print</span>(author_user)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true"></a><span class="cf">if</span> author_user <span class="op">==</span> <span class="va">None</span>:</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true"></a>    <span class="cf">return</span> {</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true"></a>        <span class="st">&quot;statusCode&quot;</span>: <span class="dv">404</span>,</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true"></a>        <span class="st">&quot;message&quot;</span>: <span class="ss">f&quot;No user found for this github_id: </span><span class="sc">{</span>author_github_id<span class="sc">}</span><span class="ss">.&quot;</span>,</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true"></a>    }</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true"></a></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true"></a><span class="cf">if</span> author_user[<span class="st">&#39;secret_code&#39;</span>] <span class="op">!=</span> author_secret_code:</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true"></a>    <span class="cf">return</span> {</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true"></a>        <span class="st">&quot;statusCode&quot;</span>: <span class="dv">403</span>,</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true"></a>        <span class="st">&quot;message&quot;</span>: <span class="ss">f&quot;That is the wrong secret_code for this github_id: </span><span class="sc">{</span>author_github_id<span class="sc">}</span><span class="ss">.&quot;</span>,</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true"></a>        <span class="st">&quot;submittedUserSecretCode&quot;</span>: author_secret_code,</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true"></a>    }</span></code></pre></div>
 <p>In this code, I lookup the user in DynamoDB. Just in case there was never any user stored for the given <code>github_id</code>, I check that.</p>
 <p>Next, I check that the submitted <code>author_secret_code</code> matches the <code>secret_code</code> I stored in the users table. If not, I tell the user that they are not authorized.</p>
 <p>In those anomalous cases, I return a 404 or a 403 (Not Authorized) status as necessary. I only proceed with the function if all is well.</p>
 <p><strong>Storing the Comment</strong></p>
 <p>Last up is storing the comment in DynamoDB.</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb6-1" data-line-number="1">author_github_login, author_github_name <span class="op">=</span> author_user[<span class="st">&#39;github_login&#39;</span>], author_user[<span class="st">&#39;github_name&#39;</span>]</a>
-<a class="sourceLine" id="cb6-2" data-line-number="2">comment_id <span class="op">=</span> <span class="bu">str</span>(binascii.b2a_hex(os.urandom(<span class="dv">15</span>)), <span class="st">&quot;ascii&quot;</span>)</a>
-<a class="sourceLine" id="cb6-3" data-line-number="3">created_at <span class="op">=</span> datetime.now(timezone.utc)</a>
-<a class="sourceLine" id="cb6-4" data-line-number="4"></a>
-<a class="sourceLine" id="cb6-5" data-line-number="5">comment <span class="op">=</span> {</a>
-<a class="sourceLine" id="cb6-6" data-line-number="6">    <span class="st">&quot;entry_id&quot;</span>: entry_id,</a>
-<a class="sourceLine" id="cb6-7" data-line-number="7">    <span class="st">&quot;comment_id&quot;</span>: comment_id,</a>
-<a class="sourceLine" id="cb6-8" data-line-number="8">    <span class="st">&quot;created_at&quot;</span>: created_at.isoformat(),</a>
-<a class="sourceLine" id="cb6-9" data-line-number="9">    <span class="st">&quot;author_github_id&quot;</span>: author_github_id,</a>
-<a class="sourceLine" id="cb6-10" data-line-number="10">    <span class="st">&quot;author_github_login&quot;</span>: author_github_login,</a>
-<a class="sourceLine" id="cb6-11" data-line-number="11">    <span class="st">&quot;author_github_name&quot;</span>: author_github_name,</a>
-<a class="sourceLine" id="cb6-12" data-line-number="12">    <span class="st">&quot;text&quot;</span>: text,</a>
-<a class="sourceLine" id="cb6-13" data-line-number="13">}</a>
-<a class="sourceLine" id="cb6-14" data-line-number="14"></a>
-<a class="sourceLine" id="cb6-15" data-line-number="15">comments_table.put_item(Item<span class="op">=</span>comment)</a>
-<a class="sourceLine" id="cb6-16" data-line-number="16"></a>
-<a class="sourceLine" id="cb6-17" data-line-number="17"><span class="cf">return</span> {</a>
-<a class="sourceLine" id="cb6-18" data-line-number="18">    <span class="st">&quot;statusCode&quot;</span>: <span class="dv">200</span>,</a>
-<a class="sourceLine" id="cb6-19" data-line-number="19">    <span class="st">&quot;comment&quot;</span>: comment,</a>
-<a class="sourceLine" id="cb6-20" data-line-number="20">}</a></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true"></a>author_github_login, author_github_name <span class="op">=</span> author_user[<span class="st">&#39;github_login&#39;</span>], author_user[<span class="st">&#39;github_name&#39;</span>]</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true"></a>comment_id <span class="op">=</span> <span class="bu">str</span>(binascii.b2a_hex(os.urandom(<span class="dv">15</span>)), <span class="st">&quot;ascii&quot;</span>)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true"></a>created_at <span class="op">=</span> datetime.now(timezone.utc)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true"></a></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true"></a>comment <span class="op">=</span> {</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true"></a>    <span class="st">&quot;entry_id&quot;</span>: entry_id,</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true"></a>    <span class="st">&quot;comment_id&quot;</span>: comment_id,</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true"></a>    <span class="st">&quot;created_at&quot;</span>: created_at.isoformat(),</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true"></a>    <span class="st">&quot;author_github_id&quot;</span>: author_github_id,</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true"></a>    <span class="st">&quot;author_github_login&quot;</span>: author_github_login,</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true"></a>    <span class="st">&quot;author_github_name&quot;</span>: author_github_name,</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true"></a>    <span class="st">&quot;text&quot;</span>: text,</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true"></a>}</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true"></a></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true"></a>comments_table.put_item(Item<span class="op">=</span>comment)</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true"></a></span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true"></a><span class="cf">return</span> {</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true"></a>    <span class="st">&quot;statusCode&quot;</span>: <span class="dv">200</span>,</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true"></a>    <span class="st">&quot;comment&quot;</span>: comment,</span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true"></a>}</span></code></pre></div>
 <p>I first pull out a couple fields of the user: <code>github_login</code> (their login name), <code>github_name</code> (their human name, if provided).</p>
 <p>Next, I randomly generate a hex string for the <code>comment_id</code> value. <code>os.urandom(15)</code> generates 15 bytes of random data, while <code>binascii.b2a_hex</code> will convert a string of bytes to a string of ASCII letters. Each byte can be translated to two hexadecimal digits, since</p>
-<p><br /><span class="math display">$$
+<p><span class="math display">$$
 \begin{align}
 2^8 = 2^4 \cdot 2^4 = 16 \cdot 16
 \end{align}
-$$</span><br /></p>
+$$</span></p>
 <p>The <code>comment_id</code> is selected without first looking at the <code>comment_id</code> values that exist in DynamoDB. Is this safe? What if I accidentally reuse a <code>comment_id</code> that has already been used by a previously saved comment?</p>
 <p>If I do reuse a <code>comment_id</code>, this new comment will clobber the old comment. I will lose that old comment. But this is very unlikely given the number of comments I am likely to receive on this blog, and the huge size of the ID space (<span class="math inline">2<sup>120</sup></span> possible ID values). Regardless, the worst case scenario is that I lose one old comment.</p>
 <p><strong>Author Data Is Denormalized Into The Comments</strong></p>

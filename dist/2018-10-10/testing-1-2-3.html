@@ -7,29 +7,29 @@
 <h2 id="proof-that-sqrt2-is-irrational">Proof that <span class="math inline">$\sqrt{2}$</span> is irrational</h2>
 <p>Let’s test that MathJax is setup correctly.</p>
 <p>Say that <span class="math inline">$\sqrt{2}$</span> were rational. We will aim to produce a contradiction. Then the definition of rationality implies that:</p>
-<p><br /><span class="math display">$$\sqrt{2} = \frac{a}{b}$$</span><br /></p>
+<p><span class="math display">$$\sqrt{2} = \frac{a}{b}$$</span></p>
 <p>for some <span class="math inline"><em>a</em>, <em>b</em></span> integers. Further, we may assume that the fraction is in lowest terms, which means that <span class="math inline"><em>a</em>, <em>b</em></span> share no factors.</p>
 <p>Now, squaring both sides tells us:</p>
-<p><br /><span class="math display">$$
+<p><span class="math display">$$
   \begin{align}
     \sqrt{2} &amp;= \frac{a}{b}\\
     2 &amp;= \frac{a^2}{b^2}\\
     2 b^2 &amp;= a^2
   \end{align}
-$$</span><br /></p>
+$$</span></p>
 <p>This implies that 2 is a factor of <span class="math inline"><em>a</em><sup>2</sup></span>.</p>
 <p>Note that, if the prime factorization of <span class="math inline"><em>a</em></span> is:</p>
-<p><br /><span class="math display">$$
+<p><span class="math display">$$
   \begin{align}
     a = p_1^{k_1} p_2^{k_2} \cdots p_n^{k_n}
   \end{align}
-$$</span><br /></p>
+$$</span></p>
 <p>then this implies</p>
-<p><br /><span class="math display">$$
+<p><span class="math display">$$
   \begin{align}
     a^2 = p_1^{2k_1} p_2^{2k_2} \cdots p_n^{2k_n}
   \end{align}
-$$</span><br /></p>
+$$</span></p>
 <p>Note first: any prime factor <span class="math inline"><em>p</em><sub><em>i</em></sub></span> of <span class="math inline"><em>a</em><sup>2</sup></span> is also a factor of <span class="math inline"><em>a</em></span>.</p>
 <p>More, if <span class="math inline"><em>p</em><sub><em>i</em></sub></span> is a prime factor which divides <span class="math inline"><em>a</em><sup>2</sup></span>, than in fact we must have <span class="math inline"><em>p</em><sub><em>i</em></sub><sup>2</sup></span> divides <span class="math inline"><em>a</em><sup>2</sup></span>. And since we know that 2 divides <span class="math inline"><em>a</em><sup>2</sup></span>, then so must <span class="math inline">2<sup>2</sup> = 4</span>. Which allows us to say that <span class="math inline">$\frac{a^2}{2}$</span> should still be divisible by 2.</p>
 <p>But note: <span class="math inline">$b^2 = \frac{a^2}{2}$</span>. So therefore <span class="math inline"><em>b</em><sup>2</sup></span> should be divisible by 2. But we already said about prime factors of squares: if 2 divides <span class="math inline"><em>b</em><sup>2</sup></span>, then it must also divide <span class="math inline"><em>b</em></span>.</p>
@@ -37,45 +37,45 @@ $$</span><br /></p>
 <p>Therefore we have established the contradiction. It must not be possible to write <span class="math inline">$\sqrt{2}$</span> as <span class="math inline">$\frac{a}{b}$</span>, which means <span class="math inline">$\sqrt{2}$</span> was not rational in the first place.</p>
 <h2 id="code-highlighting">Code highlighting</h2>
 <p>Let’s test out code highlighting for some Haskell code.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="ot">qsort ::</span> <span class="dt">ArraySlice</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb1-2" data-line-number="2">qsort as</a>
-<a class="sourceLine" id="cb1-3" data-line-number="3">  <span class="fu">|</span> (asLength as) <span class="fu">==</span> <span class="dv">0</span> <span class="fu">=</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb1-4" data-line-number="4">      return ()</a>
-<a class="sourceLine" id="cb1-5" data-line-number="5">  <span class="fu">|</span> otherwise <span class="fu">=</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb1-6" data-line-number="6">      pivotIdx <span class="ot">&lt;-</span> partition as <span class="dv">0</span> <span class="dv">0</span></a>
-<a class="sourceLine" id="cb1-7" data-line-number="7">      <span class="kw">let</span> leftLen <span class="fu">=</span> pivotIdx</a>
-<a class="sourceLine" id="cb1-8" data-line-number="8">      qsort (resliceArraySlice as <span class="dv">0</span> leftLen)</a>
-<a class="sourceLine" id="cb1-9" data-line-number="9">      <span class="kw">let</span> rightLen <span class="fu">=</span> (asLength as) <span class="fu">-</span> (pivotIdx <span class="fu">+</span> <span class="dv">1</span>)</a>
-<a class="sourceLine" id="cb1-10" data-line-number="10">      qsort (resliceArraySlice as (pivotIdx <span class="fu">+</span> <span class="dv">1</span>) rightLen)</a></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="ot">qsort ::</span> <span class="dt">ArraySlice</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> ()</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a>qsort as</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true"></a>  <span class="op">|</span> (asLength as) <span class="op">==</span> <span class="dv">0</span> <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true"></a>      <span class="fu">return</span> ()</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true"></a>  <span class="op">|</span> <span class="fu">otherwise</span> <span class="ot">=</span> <span class="kw">do</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true"></a>      pivotIdx <span class="ot">&lt;-</span> partition as <span class="dv">0</span> <span class="dv">0</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true"></a>      <span class="kw">let</span> leftLen <span class="ot">=</span> pivotIdx</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true"></a>      qsort (resliceArraySlice as <span class="dv">0</span> leftLen)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true"></a>      <span class="kw">let</span> rightLen <span class="ot">=</span> (asLength as) <span class="op">-</span> (pivotIdx <span class="op">+</span> <span class="dv">1</span>)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true"></a>      qsort (resliceArraySlice as (pivotIdx <span class="op">+</span> <span class="dv">1</span>) rightLen)</span></code></pre></div>
 <p>Look at that! Wow oh wow! How about some C++?</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode cpp"><code class="sourceCode cpp"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="dt">void</span> sort(<span class="bu">std::</span>vector&lt;<span class="dt">int</span>&gt;&amp; nums, <span class="dt">int</span> start, <span class="dt">int</span> len) {</a>
-<a class="sourceLine" id="cb2-2" data-line-number="2">  <span class="cf">if</span> (len == <span class="dv">0</span>) {</a>
-<a class="sourceLine" id="cb2-3" data-line-number="3">    <span class="cf">return</span>;</a>
-<a class="sourceLine" id="cb2-4" data-line-number="4">  }</a>
-<a class="sourceLine" id="cb2-5" data-line-number="5"></a>
-<a class="sourceLine" id="cb2-6" data-line-number="6">  <span class="dt">int</span> pivotIdx = start;</a>
-<a class="sourceLine" id="cb2-7" data-line-number="7">  <span class="at">const</span> <span class="dt">int</span> pivot = nums[pivotIdx];</a>
-<a class="sourceLine" id="cb2-8" data-line-number="8">  <span class="cf">for</span> (<span class="dt">int</span> idx = start; idx &lt; start+len; idx += <span class="dv">1</span>) {</a>
-<a class="sourceLine" id="cb2-9" data-line-number="9">    <span class="dt">int</span> val = nums[idx];</a>
-<a class="sourceLine" id="cb2-10" data-line-number="10">    <span class="cf">if</span> (pivot &lt;= val) {</a>
-<a class="sourceLine" id="cb2-11" data-line-number="11">      <span class="cf">continue</span>;</a>
-<a class="sourceLine" id="cb2-12" data-line-number="12">    }</a>
-<a class="sourceLine" id="cb2-13" data-line-number="13"></a>
-<a class="sourceLine" id="cb2-14" data-line-number="14">    nums[pivotIdx] = val;</a>
-<a class="sourceLine" id="cb2-15" data-line-number="15">    nums[idx] = nums[pivotIdx + <span class="dv">1</span>];</a>
-<a class="sourceLine" id="cb2-16" data-line-number="16">    nums[pivotIdx + <span class="dv">1</span>] = pivot;</a>
-<a class="sourceLine" id="cb2-17" data-line-number="17">    pivotIdx += <span class="dv">1</span>;</a>
-<a class="sourceLine" id="cb2-18" data-line-number="18">  }</a>
-<a class="sourceLine" id="cb2-19" data-line-number="19"></a>
-<a class="sourceLine" id="cb2-20" data-line-number="20">  <span class="dt">int</span> numLeft = pivotIdx - start;</a>
-<a class="sourceLine" id="cb2-21" data-line-number="21">  <span class="dt">int</span> numRight = (start + len) - (pivotIdx + <span class="dv">1</span>);</a>
-<a class="sourceLine" id="cb2-22" data-line-number="22"></a>
-<a class="sourceLine" id="cb2-23" data-line-number="23">  <span class="co">// printVector(nums);</span></a>
-<a class="sourceLine" id="cb2-24" data-line-number="24">  <span class="cf">if</span> (numLeft &gt; <span class="dv">0</span>) {</a>
-<a class="sourceLine" id="cb2-25" data-line-number="25">    sort(nums, start, numLeft);</a>
-<a class="sourceLine" id="cb2-26" data-line-number="26">  }</a>
-<a class="sourceLine" id="cb2-27" data-line-number="27">  <span class="cf">if</span> (numRight &gt; <span class="dv">0</span>) {</a>
-<a class="sourceLine" id="cb2-28" data-line-number="28">    sort(nums, pivotIdx + <span class="dv">1</span>, numRight);</a>
-<a class="sourceLine" id="cb2-29" data-line-number="29">  }</a>
-<a class="sourceLine" id="cb2-30" data-line-number="30">}</a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a><span class="dt">void</span> sort(<span class="bu">std::</span>vector&lt;<span class="dt">int</span>&gt;&amp; nums, <span class="dt">int</span> start, <span class="dt">int</span> len) {</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true"></a>  <span class="cf">if</span> (len == <span class="dv">0</span>) {</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true"></a>    <span class="cf">return</span>;</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true"></a>  }</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true"></a>  <span class="dt">int</span> pivotIdx = start;</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true"></a>  <span class="at">const</span> <span class="dt">int</span> pivot = nums[pivotIdx];</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true"></a>  <span class="cf">for</span> (<span class="dt">int</span> idx = start; idx &lt; start+len; idx += <span class="dv">1</span>) {</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true"></a>    <span class="dt">int</span> val = nums[idx];</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true"></a>    <span class="cf">if</span> (pivot &lt;= val) {</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true"></a>      <span class="cf">continue</span>;</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true"></a>    }</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true"></a></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true"></a>    nums[pivotIdx] = val;</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true"></a>    nums[idx] = nums[pivotIdx + <span class="dv">1</span>];</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true"></a>    nums[pivotIdx + <span class="dv">1</span>] = pivot;</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true"></a>    pivotIdx += <span class="dv">1</span>;</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true"></a>  }</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true"></a></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true"></a>  <span class="dt">int</span> numLeft = pivotIdx - start;</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true"></a>  <span class="dt">int</span> numRight = (start + len) - (pivotIdx + <span class="dv">1</span>);</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true"></a></span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true"></a>  <span class="co">// printVector(nums);</span></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true"></a>  <span class="cf">if</span> (numLeft &gt; <span class="dv">0</span>) {</span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true"></a>    sort(nums, start, numLeft);</span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true"></a>  }</span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true"></a>  <span class="cf">if</span> (numRight &gt; <span class="dv">0</span>) {</span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true"></a>    sort(nums, pivotIdx + <span class="dv">1</span>, numRight);</span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true"></a>  }</span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true"></a>}</span></code></pre></div>
 <p>Okay, all done! Let’s just finally check out some comments!</p><p><a href="/">&lt;&lt; Back To The Posts Index! &lt;&lt;</a></p></div></div><div class="row justify-content-center"><div class="col-12"><div id="comments"></div><p><a href="/">&lt;&lt;&lt; Back To The Posts Index! &lt;&lt;&lt;</a></p></div></div></div><script src="/ui/dist/main.js"></script><script>hljs.initHighlightingOnLoad();</script></body>

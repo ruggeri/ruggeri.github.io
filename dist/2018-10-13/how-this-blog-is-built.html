@@ -6,33 +6,33 @@
 });</script><script async="" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"></script></head><body><div class="container"><div class="row justify-content-center"><div class="col-12"><h2 class="title display-2 mb-3"><a href="/">self-loop</a></h2></div></div><div class="row justify-content-center"><div class="col-12"><h1 class="mb-0">How this blog is built</h1><small class="text-muted">Published: 2018-10-13 19:36:59 -0700</small><p>I’m pretty happy with how this blog has turned out. I wanted to explain how I built it. Maybe you’ll find my approach interesting :-)</p>
 <h2 id="the-markdown-and-slim-content">The Markdown and Slim content</h2>
 <p>The first step of my blog system is generating the static HTML content. I write most of the blog content in <a href="https://en.wikipedia.org/wiki/Markdown">Markdown</a> and <a href="http://slim-lang.com/">Slim</a> templates. It looks kinda like this:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode markdown"><code class="sourceCode markdown"><a class="sourceLine" id="cb1-1" data-line-number="1">h1.mb-0</a>
-<a class="sourceLine" id="cb1-2" data-line-number="2">  = meta.title</a>
-<a class="sourceLine" id="cb1-3" data-line-number="3"></a>
-<a class="sourceLine" id="cb1-4" data-line-number="4">small.text-muted</a>
-<a class="sourceLine" id="cb1-5" data-line-number="5">  = &quot;Published: &quot; + meta.publication_time.to_s</a>
-<a class="sourceLine" id="cb1-6" data-line-number="6"></a>
-<a class="sourceLine" id="cb1-7" data-line-number="7">markdown:</a>
-<a class="sourceLine" id="cb1-8" data-line-number="8">  I&#39;m pretty happy with how this blog has turned out. I wanted to</a>
-<a class="sourceLine" id="cb1-9" data-line-number="9">  explain how I built it. Maybe you&#39;ll find my approach interesting :-)</a>
-<a class="sourceLine" id="cb1-10" data-line-number="10"></a>
-<a class="sourceLine" id="cb1-11" data-line-number="11">  ## The Markdown and Slim content</a>
-<a class="sourceLine" id="cb1-12" data-line-number="12"></a>
-<a class="sourceLine" id="cb1-13" data-line-number="13">  The first step of my blog system is generating the static HTML</a>
-<a class="sourceLine" id="cb1-14" data-line-number="14">  content. I write most of the blog content in</a>
-<a class="sourceLine" id="cb1-15" data-line-number="15">  <span class="ot">[Markdown](https://en.wikipedia.org/wiki/Markdown)</span> and</a>
-<a class="sourceLine" id="cb1-16" data-line-number="16">  <span class="ot">[Slim](http://slim-lang.com/)</span> templates. It looks kinda like this:</a>
-<a class="sourceLine" id="cb1-17" data-line-number="17"></a>
-<a class="sourceLine" id="cb1-18" data-line-number="18">  <span class="bn">```markdown</span></a>
-<a class="sourceLine" id="cb1-19" data-line-number="19"><span class="bn">  h1.mb-0</span></a>
-<a class="sourceLine" id="cb1-20" data-line-number="20"><span class="bn">    = meta.title</span></a>
-<a class="sourceLine" id="cb1-21" data-line-number="21"></a>
-<a class="sourceLine" id="cb1-22" data-line-number="22"><span class="bn">  small.text-muted</span></a>
-<a class="sourceLine" id="cb1-23" data-line-number="23"><span class="bn">    = &quot;Published: &quot; + meta.publication_time.to_s</span></a>
-<a class="sourceLine" id="cb1-24" data-line-number="24"></a>
-<a class="sourceLine" id="cb1-25" data-line-number="25"><span class="bn">  markdown:</span></a>
-<a class="sourceLine" id="cb1-26" data-line-number="26"><span class="bn">    I&#39;m pretty happy with how this blog has turned out. I wanted to</span></a>
-<a class="sourceLine" id="cb1-27" data-line-number="27"><span class="bn">    explain how I built it. Maybe you&#39;ll find my approach interesting :-)</span></a></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a>h1.mb-0</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a>  = meta.title</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true"></a>small.text-muted</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true"></a>  = &quot;Published: &quot; + meta.publication_time.to_s</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true"></a>markdown:</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true"></a>  I&#39;m pretty happy with how this blog has turned out. I wanted to</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true"></a>  explain how I built it. Maybe you&#39;ll find my approach interesting :-)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true"></a></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true"></a>  ## The Markdown and Slim content</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true"></a></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true"></a>  The first step of my blog system is generating the static HTML</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true"></a>  content. I write most of the blog content in</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true"></a>  <span class="co">[</span><span class="ot">Markdown</span><span class="co">](https://en.wikipedia.org/wiki/Markdown)</span> and</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true"></a>  <span class="co">[</span><span class="ot">Slim</span><span class="co">](http://slim-lang.com/)</span> templates. It looks kinda like this:</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true"></a></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true"></a>  <span class="in">```markdown</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true"></a>  h1.mb-0</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true"></a>    = meta.title</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true"></a></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true"></a>  small.text-muted</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true"></a>    = &quot;Published: &quot; + meta.publication_time.to_s</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true"></a></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true"></a>  markdown:</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true"></a>    I&#39;m pretty happy with how this blog has turned out. I wanted to</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true"></a>    explain how I built it. Maybe you&#39;ll find my approach interesting :-)</span></code></pre></div>
 <p>Did I just inception you? You can see the whole thing <a href="https://github.com/ruggeri/ruggeri.github.io/blob/master/entries/2018-10-13/how-this-blog-is-built.slim">here</a>.</p>
 <h2 id="ruby-scripts-to-generate-html">Ruby scripts to generate HTML</h2>
 <p>I have a bunch of Ruby scripts that will turn this Slim/Markdown content into the HTML you see here before you. I won’t bore you with <em>all</em> the details of these scripts. They’re checked into my <code>scripts/</code> directory: you can <a href="https://github.com/ruggeri/ruggeri.github.io/tree/master/scripts">read them if you like</a>.</p>
@@ -57,18 +57,18 @@
 <p>Here’s one part I’m proud of. I don’t want to manually run <code>./scripts/build_entries.rb</code> every time I make a change to an entry’s Markdown content. I want to write Markdown in VSCode, save the <code>.slim</code> file, and then view it immediately in Firefox without having to explicitly go to the terminal to run <code>./scripts/build_entries.rb</code>.</p>
 <p>This is like in Rails or with Webpack, where you can change some code, then go to the browser and hit refresh. I want that. In the past, when I had a similar blog setup, I didn’t have this functionality. It was a <em>major</em> pain point.</p>
 <p>To solve this problem I wrote a <a href="https://github.com/ruggeri/ruggeri.github.io/blob/master/scripts/watch.rb"><code>scripts/watch.rb</code></a> script. Here it is:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode ruby"><code class="sourceCode ruby"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="co"># ./scripts/watch.rb</span></a>
-<a class="sourceLine" id="cb2-2" data-line-number="2"><span class="kw">#!/usr/bin/env ruby</span></a>
-<a class="sourceLine" id="cb2-3" data-line-number="3"></a>
-<a class="sourceLine" id="cb2-4" data-line-number="4">require <span class="st">&#39;open3&#39;</span></a>
-<a class="sourceLine" id="cb2-5" data-line-number="5"></a>
-<a class="sourceLine" id="cb2-6" data-line-number="6"><span class="st">`./scripts/build_all.rb`</span></a>
-<a class="sourceLine" id="cb2-7" data-line-number="7"><span class="dt">Open3</span>.popen3(<span class="st">&quot;fswatch ./entries ./templates&quot;</span>) <span class="kw">do</span> |stdin, stdout, stderr, status, thread|</a>
-<a class="sourceLine" id="cb2-8" data-line-number="8">  <span class="kw">while</span> changed_fname = stdout.gets</a>
-<a class="sourceLine" id="cb2-9" data-line-number="9">    puts <span class="st">&quot;Changed: </span><span class="ot">#{</span>changed_fname<span class="ot">}</span><span class="st">&quot;</span></a>
-<a class="sourceLine" id="cb2-10" data-line-number="10">    <span class="st">`./scripts/build_all.rb`</span></a>
-<a class="sourceLine" id="cb2-11" data-line-number="11">  <span class="kw">end</span></a>
-<a class="sourceLine" id="cb2-12" data-line-number="12"><span class="kw">end</span></a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a><span class="co"># ./scripts/watch.rb</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true"></a><span class="kw">#!/usr/bin/env ruby</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true"></a>require <span class="st">&#39;open3&#39;</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true"></a><span class="st">`./scripts/build_all.rb`</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true"></a><span class="dt">Open3</span>.popen3(<span class="st">&quot;fswatch ./entries ./templates&quot;</span>) <span class="kw">do</span> |stdin, stdout, stderr, status, thread|</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true"></a>  <span class="kw">while</span> changed_fname = stdout.gets</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true"></a>    puts <span class="st">&quot;Changed: </span><span class="ot">#{</span>changed_fname<span class="ot">}</span><span class="st">&quot;</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true"></a>    <span class="st">`./scripts/build_all.rb`</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true"></a>  <span class="kw">end</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true"></a><span class="kw">end</span></span></code></pre></div>
 <p>This script uses the <a href="https://docs.ruby-lang.org/en/2.0.0/Open3.html"><code>open3</code></a> lib to start a terminal command called <a href="https://github.com/emcrisostomo/fswatch"><code>fswatch</code></a>. You can give <code>fswatch</code> a list of directories, and it will watch for changes being made to any files in those directories. It will print out the name of any file that changes. It will keep doing this until you kill <code>fswatch</code>.</p>
 <p>The inner loop of my Ruby script constantly tries to read from the <code>fswatch</code> command. Whenever <code>fswatch</code> does detect a change and output a file name, the <code>scripts/watch.rb</code> script will invoke a rebuild of the blog entries.</p>
 <p>This is somewhat wasteful, because I don’t rebuild only the specific entry that has been changed. I rebuild <em>all</em> the entries. At some point this will begin to feel too slow (as I accumulate more blog posts), but for now it is fine.</p>
