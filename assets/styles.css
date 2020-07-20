@@ -1,5 +1,6 @@
 h1, h2, h3, h4 {
-  font-family: 'Baskerville', 'EB Garamond', serif;
+  font-family: 'Didot', 'EB Garamond', serif;
+  font-weight: 600;
   border-bottom: 1px solid black;
 }
 
@@ -8,7 +9,7 @@ h1 {
 }
 
 h4 {
-  font-size: 1.75rem;
+  font-size: 1.7rem;
 }
 
 p, ul, ol {
