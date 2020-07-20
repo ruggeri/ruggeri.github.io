@@ -1,6 +1,19 @@
-p, ul {
-  font-family: 'EB Garamond', serif;
-  font-size: 14pt;
+h1, h2, h3, h4 {
+  font-family: 'Baskerville', 'EB Garamond', serif;
+  border-bottom: 1px solid black;
+}
+
+h1 {
+  font-size: 3rem;
+}
+
+h4 {
+  font-size: 1.75rem;
+}
+
+p, ul, ol {
+  font-family: 'Baskerville', 'EB Garamond', serif;
+  font-size: 1.25rem;
 }
 
 /* Math in a p or ul tag should still be Tex font. */
@@ -17,6 +30,10 @@ p br:first-child, p br:last-child {
     margin. */
 .card-text :last-child {
   margin-bottom: 0;
+}
+
+.title {
+  border-bottom: unset;
 }
 
 .title a {
