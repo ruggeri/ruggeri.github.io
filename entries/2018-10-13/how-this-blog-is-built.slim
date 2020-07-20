@@ -1,8 +1,12 @@
-h1.mb-0
+<h1 class="mb-0">
   = meta.title
+</h1>
 
-small.text-muted
-  = "Published: " + meta.publication_time.to_s
+<div class="mb-2">
+  <small class="text-muted">
+    = "Published: " + meta.publication_time.to_s
+  </small>
+</div>
 
 markdown:
   I'm pretty happy with how this blog has turned out. I wanted to
