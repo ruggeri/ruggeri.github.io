@@ -1,0 +1,193 @@
+<h1 class="mb-0">
+  = meta.title
+</h1>
+
+<small class="text-muted">
+  = "Published: " + meta.publication_time.to_s
+</small>
+
+markdown:
+  #### FPTP: How Congressional Elections Work In The United States
+
+  In the United States there is one congressperson per congressional
+  district. When an election is held for the congressional district,
+  only one candidate can win the election. The winner is the person who
+  receives the greatest number of votes.
+
+  If 45% of votes are for Markov, 35% of votes are for Curie, and 20% of
+  votes are for Gizmo, then Markov wins the election and is elected
+  congressperson. This happens even though fewer than 50% of voters
+  voted for Markov.
+
+  This system is called **First Past The Post** (FPTP). In FPTP, the
+  winner is the candidate who has received the *plurality* of the votes
+  (the greatest number). It doesn't matter whether the winner has
+  received a *majority* of the votes (that is, more than 50%
+  of the votes).
+
+  Perhaps the 20% of voters who voted for Gizmo would have preferred
+  that Curie be elected rather than Markov. That is: if the election
+  were "head-to-head" between Markov and Curie, Curie would have
+  defeated Markov 55%-to-45%.
+
+  This circumstance feels unfortunate. Would it not be better if Curie
+  were chosen as congressperson?
+
+  #### Two-Round Systems (2RS)
+
+  Some electoral systems try to address this problem by using a
+  **two-round** (2RS) electoral system. Under this system, if no
+  candidate receives a majority, then a *second* round is run. The
+  second round consists of only the top two candidates from the first
+  round.
+
+  In our example, since neither Markov, Curie, nor Gizmo received a
+  majority (50%+ of votes), a second round would be run. The top two
+  candidates in the first round were Markov and Curie, so they are
+  selected for the second round. Presuming that the voters for Gizmo
+  prefer Curie to Markov, Curie will win 55%-to-45%. Curie wins!
+
+  The two-round system is very commonly used throughout the world. It is
+  a very common way to elect the president of a country. France is one
+  example. 2RS is not widely used to elect members of a legislature.
+  FPTP is more common, though France does elect its National Assembly
+  members using the two-round system.
+
+  #### Contingent Voting
+
+  A two-round system can require that two rounds of election be held.
+  This could be burdensome to the electorate. Is there an easy way to
+  eliminate the need for the second round?
+
+  The simplest solution is this: ask each voter to *rank* all candidates
+  on the ballot. We then count all the first-rank votes. If there is a
+  majority winner then they are elected.
+
+  Otherwise, we eliminate all but the top two candidates. In our
+  example, Gizmo would be eliminated. We count each ballot for the more
+  preferred of the two remaining candidates. In effect, we have
+  "automatically" run the second round.
+
+  This system is called **contingent voting**. To my knowledge, it is
+  not used anywhere.
+
+  #### Instant Runoff Voting
+
+  I want to introduce you to an improved version of contingent voting:
+  **instant runoff voting**. It is the system that is used to elect the
+  mayor of San Francisco. It is used to elect members of the lower house
+  of Australia. Maine will use IRV in 2020 when it votes for president.
+
+  IRV is a slight twist on contingent voting. It (attempts to) solve a
+  problem: what if a candidate would win every head-to-head matchup of
+  candidates, but is *not* amongst the top-two candidates if you only
+  consider voters' first choice? In such a scenario, both 2RS and
+  contingent voting would "prematurely" jump to a conclusion by
+  eliminating all but the top-two first-choice candidates.
+
+  If there are $N$ candidates, IRV does not eliminate $N-2$ in one go.
+  IRV eliminates candidates one-at-a-time. A series of rounds are run.
+  In each round, each ballot is counted toward the top-ranked remaining
+  candidate. The candidate with the fewest number of votes is
+  eliminated. Another round is run, and a next candidate is eliminated.
+
+  The process ends when a candidate receives a majority (50%+) of votes.
+  This is the winner.
+
+  #### IRV: An Example
+
+  Let us say that five candidates run for mayor in San Francisco. Alice
+  receives 30% of first-choice votes, Bob receives 25% of first-choice
+  votes, Candice receives 20% of first-choice votes, David receives 15%
+  of votes, and Eve receives 10% of first-choice votes.
+
+  Eve is eliminated first, because she has received the fewest number of
+  first-choice votes. Let's imagine that David's platform is very
+  similar to Eve's. Everyone who ranked Eve first has ranked David
+  *second*. Thus, after elimination of Eve, all her supporters' votes
+  transfer to David. His share of the vote increases to 25%.
+
+  Still, no one has a majority of votes. Candice is the next candidate
+  eliminated. Of her supporters, let us imagine that some prefer Alice,
+  others prefer Bob, but that David is most popular amongst Candice's
+  supporters. Lets say that Candice's supporters splice 5/5/10 for
+  Alice/Bob/David.
+
+  Now Alice has 35% of the vote, Bob has 30% of the vote, and David has
+  35% of the vote. We finally eliminate Bob. Let us say that his votes
+  transfer 5% to Alice, and 25% to David. The final vote tally is 40%
+  for Alice and 60% for David. David wins!
+
+  #### IRV Reduces The "Spoiler Effect"
+
+  IRV reduces the "spoiler effect" in close elections. Votes for a
+  marginal candidate will be redistributed when the candidate is
+  eliminated. For example: if IRV had been used in the 2000 presidential
+  election, votes for Ralph Nader would have (most likely) been
+  redistributed to Al Gore, and he would have defeated George W. Bush.
+
+  I think IRV is valuable here, though I would argue that the failure of
+  FPTP is not so extreme because the strategy of identifying and voting
+  for one of the top-two candidates is clear.
+
+  #### IRV Does Not Particularly Help Centrist Candidates
+
+  IRV does not significantly help centrist candidates to be elected.
+  Imagine a polarized country where diametrically opposed candidates A
+  and B both command 40% first-rank support. Centrist voters can vote
+  for candidate C, but because C is not inspiring enough to win enough
+  first-rank votes, they will be the first eliminated under IRV. One of
+  the two polarizing candidates (A or B) will be elected (after C's
+  votes are redistributed).
+
+  IRV *might* incentivize candidates A and B to appeal to supporters of
+  candidate C. It *might* encourage parties A and B to nominate
+  candidates who will win C's votes. But (in theory) the two party FPTP
+  system already encourages parties to choose more centrist candidates.
+
+  #### IRV Could Help When There Are Many Candidates
+
+  I think the real value of IRV is in elections where there are a large
+  number of candidates, many of whom share supporters.
+
+  Imagine a world where there are 12 primary contestants, 11 of whom are
+  near-facsimiles of each other. A 12th candidate is named Donald Trump.
+  In this crazy world, IRV is not used in presidential primaries. You
+  want to vote against Donald Trump. Who do you vote for?
+
+  Do you vote for the candidate you most like? That could help your
+  favorite candidate build visibility and momentum, even if they lose
+  your state's primary (maybe even getting no delegates).
+
+  Important question: is your state a winner-take-all primary? If so,
+  you probably should vote for the non-Trump candidate with the
+  strongest support. Without the other candidates' voters banding
+  together, Donald Trump will win all the delegates in your state.
+
+  At least one analysis suggests [IRV flips most Donald Trump Primary
+  Victories][trump-results].
+
+  [trump-results]: https://www.fairvote.org/simulating_instant_runoff_flips_most_donald_trump_primary_victories
+
+  #### Future Discussion
+
+  IRV is, in my opinion, a much more sane default than FPTP for
+  single-member districts.
+
+  However, there are many other kinds of systems. I'd like to
+  review/consider other systems that achieve *proportional* outcomes.
+  That is: if 40% of the electorate support party A and 60% support
+  party B, then a district of 10 seats will elect 4 members of party A
+  and 6 members of party B.
+
+  Election systems I'd like to discuss in the future include:
+
+  1. Party-List Proportional Representation (most legislatures are
+     elected this way),
+  1. Single Transferrable Vote (Irish legislature elected this way)
+
+  I'd also like to consider and review ways that other countries
+  organize their federal government. For example: did you know that most
+  European countries are run by a coalition government? I'd like to talk
+  about how that works, and what the advantages of such systems might
+  be.
