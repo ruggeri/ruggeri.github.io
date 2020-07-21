@@ -13,15 +13,16 @@ markdown:
 
   #### First Past The Post
 
-  Imagine a standard US election for a member of the House of
-  Representatives. Multiple candidates can run for the single seat in
-  the congressional district. The winner is the single candidate who
-  receives the greatest number of votes.
+  With the exception of Maine, US states vote all their electoral votes
+  for the same presidential candidate, no matter how close the election.
+  Consider Florida in 2000. George W Bush won 48.847% of the vote, Al
+  Gore won 48.838%, and Ralph Nader won 1.635% of the vote. For the sake
+  of simplicity, let's assume the breakdown was Bush 49%, Gore 48%,
+  Nader 3%.
 
-  45% of votes are for Markov, 40% of votes are for Curie, and 15% of
-  votes are for Gizmo. Markov wins the election and is elected
-  congressperson. This happens even though fewer than 50% of voters
-  voted for Markov.
+  Even though Bush won by only 1 percentage point, all of Florida's 25
+  electoral votes went to Bush. This happens even though fewer than 50%
+  of voters voted for Bush.
 
   This kind of electoral system is called *First Past The Post*
   (abbreviated FPTP). In a FPTP system, the winner is the candidate who
@@ -31,22 +32,21 @@ markdown:
 
   #### Wasted Votes, Voter Regret, Spoilers
 
-  We might (cruelly) say that the voters for Gizmo have "wasted" their
+  We might (cruelly) say that the voters for Nader have "wasted" their
   votes. They did not vote for either of the top-two candidates, so the
-  Gizmo voters neither increased nor decreased Markov's margin of
-  victory. In a sense, the Gizmo voters' participation was superfluous
-  to the final result of the election.
+  Nader voters neither increased nor decreased Bush's margin of victory.
+  In a sense, the Nader voters' participation was superfluous to the
+  final result of the election.
 
-  Perhaps the voters for Gizmo would have preferred that Curie be
-  elected over Markov. For instance: perhaps Markov and Curie are right
-  and left candidates, while Gizmo is a far-left candidate. The voters
-  for Gizmo may *regret* their vote and wish that they had voted for
-  Curie instead.
+  Perhaps the voters for Nader would have preferred that Gore be elected
+  over Bush. Bush and Gore are right and left candidates, while Nader is
+  more progressive than Gore. The Florida voters for Nader may *regret*
+  their vote and wish that they had voted for Gore instead.
 
-  If Gizmo's voters were able to switch their votes to Curie, Curie
-  would win 55%-to-45%. Because Gizmo has pulled away enough voters from
-  Curie so that she is in second-place (rather than the winner), we call
-  Gizmo a *spoiler* candidate.
+  If Nader's voters were able to switch their votes to Gore, Gore would
+  win 51%-to-49%. Because Nader has pulled away enough voters from Gore
+  so that he is in second-place (rather than the winner), we call Nader
+  a *spoiler* candidate.
 
   The possibility for voter regret and spoiler candidates is a negative
   attribute of FPTP.
@@ -58,24 +58,24 @@ markdown:
   receives a majority, then a *second* round is run. The second round
   consists of only the top two candidates from the first round.
 
-  In our example, since neither Markov, Curie, nor Gizmo received a
+  In our example, since neither Bush, Gore, nor Nader received a
   majority (more than 50% of votes), a second round would be run. The
-  top two candidates in the first round were Markov and Curie, so they
-  are selected for the second round. Presuming that the voters for Gizmo
-  prefer Curie to Markov, Curie will win 55%-to-45%. Curie wins!
+  top two candidates in the first round were Bush and Gore, so they are
+  selected for the second round. Presuming that the voters for Nader
+  prefer Gore to Bush, Gore will win 51%-to-49%. Gore wins.
 
   The two round system tends to reduce "wasted" votes. Every vote in the
   second round either increases or decreases the winner's margin of
-  victory -- no second round vote is wasted. Effectively, the two round
-  system gives every voter a chance to change their vote to one of the
-  top two candidates.
+  victory -- *no second round vote is wasted*. Effectively, the two
+  round system gives every voter a chance to change their vote to one of
+  the top two candidates.
 
   A single third-party candidate cannot act as a spoiler in the two
   round system, since the potential spoiler is eliminated before the
   final second round. In a strongly two-party system (like in America),
   it is difficult for even multiple third-party candidates to spoil a
   two round election. We shall see, however, that spoiling is still
-  possible if there is a strong third party!
+  possible if there is a strong enough third party!
 
   The two-round system is very commonly used throughout the world. It is
   almost universally used for electing the president of a country.
@@ -87,103 +87,123 @@ markdown:
   option. However, France does elect its National Assembly members using
   the two-round system.
 
-  #### Automating A Two Round System
+  #### The Problem With Two Rounds: A French Example
+
+  The two round system is not robust when there are *multiple spoilers*
+  and there is a sufficiently strong third party. The best explanation
+  is an example.
+
+  Consider the 2002 French presidential election. Most French voters
+  were aligned either with the right or the left. However, a significant
+  minority of 15%-20% of voters were aligned with Marie Le Pen's far
+  right Front National party.
+
+  In the first round, the leading right candidate (Jacques Chirac) won
+  ~20% of the vote. A total of ~36% of first round votes were cast for
+  Chirac and other right candidates. The leading left candidate (Lionel
+  Jospin) won 16.18% of the vote. A total of ~45% of the first round
+  votes were cast for Jospin and other left candidates.
+
+  Le Pen won 16.86% of the vote. Thus Le Pen came in second, Jospin in
+  third. Jospin was eliminated (along with all other left candidates),
+  even though parties of the left (in aggregate) had a significant lead
+  over the parties of the right.
+
+  In the second round, Chirac beat Le Pen 82%-to-18%. One campaign
+  poster encouraged left voters to vote for Chirac: "Vote for the crook,
+  not the fascist."
+
+  The problem here was that the left had wide but fragmented support.
+  Chirac and Le Pen had focused support. The wide variety of left
+  candidates split the left vote, spoiling Jospin's ability to advance
+  to the second round. If Jospin had advanced to face Chirac
+  tête-à-tête, he presumably would have won!
+
+  #### Diagnosing The Two Round Problem
+
+  The problem is that the two round system can *waste votes in the first
+  round*. Left voters who voted for anyone other than Jospin in the
+  first round "wasted" their vote. Many probably regret it. They wish
+  they had voted for Jospin to decrease (to overcome!) his first round
+  deficit to Le Pen. They regret not keeping Jospin alive until the
+  final round.
+
+  Taking a different perspective: it was "premature" for the two round
+  system to assume that left, non-Jospin voters would regret not voting
+  for one of the *top two* candidates. Their true regret was in not
+  voting for the third place candidate (Jospin)!
+
+  #### Fixing The Two Round Problem: More Rounds!
+
+  We've identified the problem with the two round system. It eliminates
+  too many candidates too quickly. To fix things, we'll have *many
+  rounds*, each round eliminating *as few* candidates as possible.
+
+  Specifically: we will eliminate candidates one-at-a-time. We will
+  eliminate the bottom ranked candidate and have voters vote again. We
+  will keep repeating until there are only two candidates left. We know
+  that in the final round, no votes are wasted because there are only
+  two candidates left.
+
+  Are votes wasted in earlier rounds? In round $k$, imagine that
+  candidate X is eliminated. Voters for any other candidate Y did not
+  waste their vote: their vote increased Y's margin of victory over
+  eliminated candidate X. They helped Y not get eliminated.
+
+  Also, the voters for X did not waste their ballot. They were making
+  X's deficit as small as possible. Their vote was helping
+  (unsuccessfully) keep X in the race.
+
+  It is true that X is eliminated, but X's supporters can always vote
+  for any other candidate in the next round. They did not throw away
+  their vote on X, since they get another vote in the next round!
+
+  Imagine what would happen if we applied this system to the French 2002
+  election. The less popular candidates of the left and right would be
+  eliminated, increasing the vote share of the leading candidates Jospin
+  and Chirac. Le Pen's vote share would never rise appreciably above his
+  initial 16.68%, since his support comes only from the FN.
+
+  Thus Le Pen would eventually be eliminated in the second-to-last
+  round. The final round would be a head-to-head of Jospin and Chirac.
+
+  #### Automating A Multiple Round System: Instant Runoff Voting
 
   If there is no first-round majority winner, a second round wil have to
   be held. This means the electorate must come out on a second day to
-  vote in a second election! Could we somehow streamline the two round
-  system by eliminating the second round?
+  vote in a second election! If we need to run even more rounds, we'll
+  have to have the electorate come out for those, too!
+
+  Could we somehow streamline a multi-round system into just a single
+  round?
 
   The simplest solution is this: ask each voter to *rank* all candidates
-  on the ballot. We then count all the first-rank votes. If there is a
-  majority winner then they are elected and we are done.
+  on the ballot. In the initial round, we count all the first-rank
+  votes. We eliminate the bottom candidate. In our Florida example,
+  Nader is eliminated first.
 
-  Otherwise we eliminate all but the top two candidates. In our example,
-  Gizmo would be eliminated, since they are ranked first on only 15% of
-  ballots. We then recount each ballot for the more preferred of the two
-  remaining candidates. In our example, votes for Gizmo are
-  "transferred" to Curie, who the Gizmo voters have ranked second.
+  We now "simulate" a second round. We count votes again, but we treat
+  Nader's votes as if they were submitted for the second-ranked
+  candidate. In this case, we're assuming Nader voters would rank Gore
+  as second. Thus, in the second round Gore wins 48% of first round
+  votes plus the 3% of the Nader supporters' second round votes. This
+  gives Gore his 51%-49% victory over Bush.
 
-  This system is called *contingent voting*. It is simply an
-  "automation" of a standard two round system. I am not aware that
-  contingent voting is used anywhere. That is because a better
-  alternative exists.
+  Methods that ask voters to *rank* candidates are called *ranked
+  choice* systems (there are many such systems). The ranked choice
+  system we've described here is simply an automation of the multiple
+  round system we've described above. It is called *Instant Runoff
+  Voting* (*IRV*).
 
-  #### The Problem With Two Rounds
+  #### Where Is Instant Runoff Voting Used?
 
-  **TODO**: Rewrite with explicit reference to multiple candidates of
-  spoilers with a strong third party.
-
-  What if a candidate would win every head-to-head matchup of
-  candidates, but is *not* amongst the top-two candidates if you only
-  consider voters' first choice? In such a scenario, both the two round
-  and contingent voting systems would "prematurely" jump to eliminating
-  all but the top-two first-choice candidates. This would be a "mistake"
-  because an eliminated candidate would defeat either of the "top-two"
-  candidates in a head-to-head election.
-
-  A fanciful scenario? Consider the 2002 French presidential election.
-  In the first round the Gaullist (right) candidate Chirac won ~20% of
-  the vote. The far-right candidate Le Pen won 16.86%. The Socialist
-  candidate Jospin came third with 16.18% of the vote and was
-  eliminated. Various less popular candidates of the left won a total of
-  28.59% of the first-round vote, but all these were also eliminated.
-
-  Chirac beat Le Pen 82%-to-18% in the second round (one campaign poster
-  read: "vote for the crook, not the fascist"). Had Jospin entered the
-  second round instead of Le Pen, who knows whether Jospin would have
-  defeated Chirac? It is probable that the French electorate would have
-  preferred Jospin to Chirac and indeed *every* other presidential
-  candidate.
-
-  If so, it seems undesirable that the two round system did not elect
-  Jospin.
-
-  #### Voter Regret, Head-To-Head Elections, and Condorcet Winners
-
-  **TODO**: Reconsider. I haven't reviewed much past here.
-
-  Let us say that voters for Gizmo prefer Curie over Markov. Perhaps
-  Markov and Gizmo represent political extremes, while Curie is a
-  centrist candidate. Given the vote breakdown, Gizmo voters would have
-  done better to vote for Curie rather than Gizmo. By switching their
-  vote they could put Curie in the lead 55%-to-45%.
-
-  It feels undesirable that Gizmo voters *regret* their vote for Gizmo
-  (wish they could change their vote to Curie). It gets worse. If Curie
-  represents the political center, then Markov voters probably prefer
-  Curie to Gizmo. In that case, Curie would win a head-to-head race
-  against Gizmo 80%-to-20%.
-
-  Curie would beat *every other candidate* if she were in a head-to-head
-  race with them. We call Curie the *Condorcet winner* of the election.
-  There can be only (at most) one Condorcet winner in an election.
-
-  Speaking loosely/imprecisely, the Condorcet winner (when there is
-  one), is the single candidate that "a majority" agrees is better than
-  every other candidate. It seems a shame that FPTP can fail to elect
-  the Condorcet winner (as in our example).
-
-  #### Instant Runoff Voting
-
-  I now want to introduce you to an improved version of contingent
-  voting: *instant runoff voting* (IRV). It is the system that is used
-  to elect the mayor of San Francisco. It is used to elect members of
-  the lower house of Australia. Maine will use IRV in 2020 when it votes
-  for president.
-
-  When there are $N$ candidates, IRV does not eliminate $N-2$ candidates
-  all in one go. IRV runs $N-1$ rounds, eliminating candidates one at a
-  time. In each round, each voter's ballot is counted toward their
-  top-ranked candidate, excluding candidates who have previously been
-  eliminated. At the end of the round, the candidate with the fewest
-  number of votes is eliminated. Another round is run, and a next
-  candidate is eliminated.
-
-  The process ends when a candidate receives a majority (more than 50%)
-  of votes. This is the winner.
+  Instant Runoff Voting is the system that is used to elect the mayor of
+  San Francisco. It is used to elect members of the lower house of
+  Australia. Maine will use IRV in 2020 when it votes for president.
 
   #### Instant Runoff Voting: An Example
+
+  Let's work an example to see IRV in action.
 
   We should first note: when there are exactly three candidates, instant
   runoff voting is identical to the two round system.
@@ -220,35 +240,60 @@ markdown:
   Now that there are only two candidates remaining, the vote tally in
   the final round is 40% for Alice and 60% for David. David wins!
 
-  #### IRV Reduces The "Spoiler Effect"
+  #### How Much Would IRV Reduce Spoiling In US Elections?
 
-  IRV reduces the "spoiler effect" in close elections. Votes for a
-  marginal candidate will be redistributed when the candidate is
-  eliminated. For example: if IRV had been used in the 2000 presidential
-  election, votes for Ralph Nader would have (most likely) been
-  redistributed to Al Gore. Al Gore would likely have defeated George W.
-  Bush.
-
-  In a cruel sense, votes for Nader were "wasted" in Florida, because a
-  vote for Nader neither increased nor decreased the victory margin for
-  the candidate with the plurality (Bush). Under IRV, votes are never
-  wasted in this way, because a vote is always transferred to one of the
-  two final candidates. IRV typically doesn't penalize a voter to rank
-  their first choice according to their conscience. This is good.
+  We've discussed how IRV reduces the spoiler effect, even when there
+  may be a strong third party and many "spoilers." It is nice that
+  voters who prefer a "spoiler" can still vote their conscience (e.g.,
+  rank Nader first), knowing that this symbolic vote is not wasted.
 
   On the other hand, I would not want to overdramatize the failure of
-  FPTP. Voters can identify the top two general election candidates
-  easily in the two party system that prevails in the United States. It
-  is a simple (and common) strategy for voters to vote for one of the
-  top two candidates even if these are not their first choice.
+  FPTP. Voters can easily identify the top two general election
+  candidates in the two party system that prevails in the United States.
+  It is a simple (and common) strategy for voters to vote for one of the
+  top two candidates even if these are not their first choice. In other
+  words: Florida Nader voters knew that they might regret voting for
+  Nader. Probably many Nader supporters decided to vote for Gore anyway
+  for this very reason.
 
-  Lastly, in the American system, third party candidates are marginal
-  enough that they attract relatively few votes. Thus third party
-  candidates can "spoil" only elections that were already very close
-  (like the 2000 election in Florida). The narrower the margin of
-  support between the two top candidates, the less the spoiler effect
-  "subverts the will of the people," since there is not in fact any
-  consensus on a best candidate.
+  Also: in the American two-party system, third party candidates are
+  marginal enough that they attract relatively few votes. Thus third
+  party candidates can "spoil" only elections that were already very
+  close. Nader spoiled an election which was basically 49%/49%/2%. If
+  there had been a small tornado in Jacksonville, Bush would have lost.
+  If there had been a flood in Miami, it wouldn't matter what Nader
+  voters did: Gore would have lost.
+
+  When an election result is close enough that it is not robust to
+  normal, random events, the injustice of getting it "wrong" is less. In
+  my opinion, the real tragedy of Florida 2000 was that 49% of voters
+  wanted to vote for Bush. I'm a lot less angry that Nader and FPTP
+  spoiled the election for Gore.
+
+  #### Voter Regret, Head-To-Head Elections, and Condorcet Winners
+
+  **TODO**: Reconsider. I haven't reviewed much past here.
+
+  Let us say that voters for Nader prefer Gore over Markov. Perhaps
+  Markov and Nader represent political extremes, while Gore is a
+  centrist candidate. Given the vote breakdown, Nader voters would have
+  done better to vote for Gore rather than Nader. By switching their
+  vote they could put Gore in the lead 55%-to-45%.
+
+  It feels undesirable that Nader voters *regret* their vote for Nader
+  (wish they could change their vote to Gore). It gets worse. If Gore
+  represents the political center, then Markov voters probably prefer
+  Gore to Nader. In that case, Gore would win a head-to-head race
+  against Nader 80%-to-20%.
+
+  Gore would beat *every other candidate* if he were in a head-to-head
+  race with them. We call Gore the *Condorcet winner* of the election.
+  There can be only (at most) one Condorcet winner in an election.
+
+  Speaking loosely/imprecisely, the Condorcet winner (when there is
+  one), is the single candidate that "a majority" agrees is better than
+  every other candidate. It seems a shame that FPTP can fail to elect
+  the Condorcet winner (as in our example).
 
   #### IRV May Not Particularly Help Centrist Candidates
 
