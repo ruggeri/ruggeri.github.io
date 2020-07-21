@@ -9,18 +9,19 @@
 </div>
 
 markdown:
-  In the United States there is one member of the House of
-  Representatives per congressional district. When an election is held
-  for the congressional district, only one candidate can win the
-  election. The winner is the person who receives the greatest number of
-  votes.
-
-  If 45% of votes are for Markov, 35% of votes are for Curie, and 20% of
-  votes are for Gizmo, then Markov wins the election and is elected
-  congressperson. This happens even though fewer than 50% of voters
-  voted for Markov.
+  **TODO**: write an introduction.
 
   #### First Past The Post
+
+  Imagine a standard US election for a member of the House of
+  Representatives. Multiple candidates can run for the single seat in
+  the congressional district. The winner is the single candidate who
+  receives the greatest number of votes.
+
+  45% of votes are for Markov, 40% of votes are for Curie, and 15% of
+  votes are for Gizmo. Markov wins the election and is elected
+  congressperson. This happens even though fewer than 50% of voters
+  voted for Markov.
 
   This kind of electoral system is called *First Past The Post*
   (abbreviated FPTP). In a FPTP system, the winner is the candidate who
@@ -28,13 +29,27 @@ markdown:
   doesn't matter whether the winner has received a *majority* of the
   votes (that is, more than 50% of the votes cast).
 
-  Perhaps the 20% of voters who voted for Gizmo would have preferred
-  that Curie be elected rather than Markov. That is: if the election had
-  been held "head-to-head" between Markov and Curie, Curie would have
-  defeated Markov 55%-to-45%.
+  #### Wasted Votes, Voter Regret, Spoilers
 
-  This circumstance feels unfortunate. Would it not be better if Curie
-  were chosen as congressperson?
+  We might (cruelly) say that the voters for Gizmo have "wasted" their
+  votes. They did not vote for either of the top-two candidates, so the
+  Gizmo voters neither increased nor decreased Markov's margin of
+  victory. In a sense, the Gizmo voters' participation was superfluous
+  to the final result of the election.
+
+  Perhaps the voters for Gizmo would have preferred that Curie be
+  elected over Markov. For instance: perhaps Markov and Curie are right
+  and left candidates, while Gizmo is a far-left candidate. The voters
+  for Gizmo may *regret* their vote and wish that they had voted for
+  Curie instead.
+
+  If Gizmo's voters were able to switch their votes to Curie, Curie
+  would win 55%-to-45%. Because Gizmo has pulled away enough voters from
+  Curie so that she is in second-place (rather than the winner), we call
+  Gizmo a *spoiler* candidate.
+
+  The possibility for voter regret and spoiler candidates is a negative
+  attribute of FPTP.
 
   #### Two-Round Systems
 
@@ -49,33 +64,45 @@ markdown:
   are selected for the second round. Presuming that the voters for Gizmo
   prefer Curie to Markov, Curie will win 55%-to-45%. Curie wins!
 
-  The two-round system is very commonly used throughout the world. It is
-  a very common way to elect the president of a country. France is one
-  example.
+  The two round system tends to reduce "wasted" votes. Every vote in the
+  second round either increases or decreases the winner's margin of
+  victory -- no second round vote is wasted. Effectively, the two round
+  system gives every voter a chance to change their vote to one of the
+  top two candidates.
 
-  Most countries do not use single-member legislative districts, so
-  neither FPTP nor two round systems are applicable. In those countries
-  with single-member districts, FPTP is the more common option. However,
-  France does elect its National Assembly members using the two-round
-  system.
+  A single third-party candidate cannot act as a spoiler in the two
+  round system, since the potential spoiler is eliminated before the
+  final second round. In a strongly two-party system (like in America),
+  it is difficult for even multiple third-party candidates to spoil a
+  two round election. We shall see, however, that spoiling is still
+  possible if there is a strong third party!
+
+  The two-round system is very commonly used throughout the world. It is
+  almost universally used for electing the president of a country.
+  France is the classic example.
+
+  Most countries do not use single-member legislative districts at all,
+  so neither FPTP nor two round systems are applicable. In those
+  countries with single-member districts, FPTP is the more common
+  option. However, France does elect its National Assembly members using
+  the two-round system.
 
   #### Automating A Two Round System
 
-  A two-round system can require that two rounds of election be held.
-  This could be burdensome to the electorate. They must come out to vote
-  in a second election! Is there an easy way to eliminate the need for
-  the second round?
+  If there is no first-round majority winner, a second round wil have to
+  be held. This means the electorate must come out on a second day to
+  vote in a second election! Could we somehow streamline the two round
+  system by eliminating the second round?
 
   The simplest solution is this: ask each voter to *rank* all candidates
   on the ballot. We then count all the first-rank votes. If there is a
-  majority winner then they are elected.
+  majority winner then they are elected and we are done.
 
-  Otherwise, we eliminate all but the top two candidates. In our
-  example, Gizmo would be eliminated. We count each ballot for the more
-  preferred of the two remaining candidates. Votes for Gizmo are
-  "transferred" to Curie and Markov depending on who the Gizmo voter
-  ranks more highly.
-
+  Otherwise we eliminate all but the top two candidates. In our example,
+  Gizmo would be eliminated, since they are ranked first on only 15% of
+  ballots. We then recount each ballot for the more preferred of the two
+  remaining candidates. In our example, votes for Gizmo are
+  "transferred" to Curie, who the Gizmo voters have ranked second.
 
   This system is called *contingent voting*. It is simply an
   "automation" of a standard two round system. I am not aware that
@@ -83,6 +110,9 @@ markdown:
   alternative exists.
 
   #### The Problem With Two Rounds
+
+  **TODO**: Rewrite with explicit reference to multiple candidates of
+  spoilers with a strong third party.
 
   What if a candidate would win every head-to-head matchup of
   candidates, but is *not* amongst the top-two candidates if you only
@@ -108,6 +138,31 @@ markdown:
 
   If so, it seems undesirable that the two round system did not elect
   Jospin.
+
+  #### Voter Regret, Head-To-Head Elections, and Condorcet Winners
+
+  **TODO**: Reconsider. I haven't reviewed much past here.
+
+  Let us say that voters for Gizmo prefer Curie over Markov. Perhaps
+  Markov and Gizmo represent political extremes, while Curie is a
+  centrist candidate. Given the vote breakdown, Gizmo voters would have
+  done better to vote for Curie rather than Gizmo. By switching their
+  vote they could put Curie in the lead 55%-to-45%.
+
+  It feels undesirable that Gizmo voters *regret* their vote for Gizmo
+  (wish they could change their vote to Curie). It gets worse. If Curie
+  represents the political center, then Markov voters probably prefer
+  Curie to Gizmo. In that case, Curie would win a head-to-head race
+  against Gizmo 80%-to-20%.
+
+  Curie would beat *every other candidate* if she were in a head-to-head
+  race with them. We call Curie the *Condorcet winner* of the election.
+  There can be only (at most) one Condorcet winner in an election.
+
+  Speaking loosely/imprecisely, the Condorcet winner (when there is
+  one), is the single candidate that "a majority" agrees is better than
+  every other candidate. It seems a shame that FPTP can fail to elect
+  the Condorcet winner (as in our example).
 
   #### Instant Runoff Voting
 
@@ -195,12 +250,12 @@ markdown:
   "subverts the will of the people," since there is not in fact any
   consensus on a best candidate.
 
-  #### IRV Does Not Particularly Help Centrist Candidates
+  #### IRV May Not Particularly Help Centrist Candidates
 
-  Where a two-party system prevails, instant runoff voting does not
-  significantly help centrist candidates. Imagine a polarized country
-  where diametrically opposed candidates A and B both command 40%
-  first-rank support. Centrist voters can vote for candidate C, but
+  Where a polarized two-party system prevails, instant runoff voting
+  does not significantly help centrist candidates. Imagine a polarized
+  country where diametrically opposed candidates A and B both command
+  40% first-rank support. Centrist voters can vote for candidate C, but
   because C is not popular enough to win more first-rank votes, they
   will be the first eliminated under IRV. One of the two polarizing
   candidates (A or B) will be elected (after C's votes are
