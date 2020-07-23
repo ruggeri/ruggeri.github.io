@@ -146,11 +146,11 @@ markdown:
   left.
 
   We know that in the final round, no votes are wasted because there are
-  only two candidates left. Are votes wasted in earlier rounds? In round
-  $k$, imagine that candidate X is eliminated. Voters for any other
-  candidate Y did not waste their vote: their vote increased Y's margin
-  of victory over eliminated candidate X. Y's voters have helped Y not
-  get eliminated.
+  only two candidates remaining. Are votes wasted in earlier rounds? In
+  round $k$, imagine that candidate X is eliminated. Voters for any
+  other candidate Y did not waste their vote: their vote increased Y's
+  margin of victory over eliminated candidate X. Y's voters have helped
+  Y not get eliminated.
 
   Also, the voters for X did not waste their ballot. They were making
   X's deficit as small as possible. Their vote was helping
@@ -158,7 +158,7 @@ markdown:
 
   It is true that X is eliminated, but X's supporters can always vote
   for any other candidate in the next round. They lost nothing by
-  supporting X in round $k$ - they get another vote in round $k+1$!
+  supporting X in round $k$ -- they get another vote in round $k+1$!
 
   Imagine what would happen if we applied this system to the French 2002
   election. The less popular candidates of the left and right would be
@@ -168,7 +168,8 @@ markdown:
   since his support comes only from within the fringe FN party.
 
   Thus Le Pen would eventually be eliminated in the second-to-last
-  round. The final round would be a head-to-head of Jospin and Chirac.
+  round. The final round would be a head-to-head match of Jospin and
+  Chirac.
 
   #### Automating A Multiple-Round System: Instant Runoff Voting
 
@@ -185,13 +186,13 @@ markdown:
 
   We now "simulate" a second round. We count votes again, but we treat a
   first-rank Nader supporter's vote as if it were submitted for the
-  voter's second-ranked candidate. That is: we *transfer* a Nader
-  supporter's vote to their second choice. We assume that Nader voters
-  would rank Gore second. In the simulated second round, Nader's votes
-  transfer to Gore.
+  voter's second-ranked choice. That is: we *transfer* a Nader
+  supporter's vote to their second choice. Assuming that Nader voters
+  would rank Gore second, then Nader's votes will transfer to Gore in
+  the simulated second round.
 
   Thus, in the simulated second round Gore wins his 48% of first-rank
-  votes plus the 3% of the Nader supporters' second-rank votes. This
+  votes plus another 3% from Nader supporters' transferred votes. This
   gives Gore his 51%-49% victory over Bush.
 
   If there had been $N>3$ candidates in our example, we would "simulate"
@@ -203,9 +204,8 @@ markdown:
 
   Methods that ask voters to *rank* candidates are called *ranked
   choice* systems (there are many such systems). The particular ranked
-  choice system we've described here is simply an automation of the
-  multiple-round system we've described above. This system is called
-  *Instant Runoff Voting* (abbreviated *IRV*).
+  choice system we've described here is called *Instant Runoff Voting*
+  (abbreviated *IRV*).
 
   #### Where Is Instant Runoff Voting Used?
 
@@ -216,12 +216,9 @@ markdown:
 
   #### Instant Runoff Voting: An Example
 
-  Let's work an example to see IRV in action.
-
-  We should first note: when there are exactly three candidates, instant
-  runoff voting is always exactly identical to the two-round system. We
-  worked the Bush/Gore/Nader example already. So let's do a more
-  complicated one!
+  When there are exactly three candidates, instant runoff voting is
+  always exactly identical to the two-round system. We've worked the
+  Bush/Gore/Nader example already. So let's do a more complicated one!
 
   Let us say that five candidates run for mayor in San Francisco. Alice
   receives 30% of first-rank votes, Bob receives 25% of first-rank
@@ -259,11 +256,11 @@ markdown:
   We've shown already that the two-round system would have avoided the
   spoiling problem in Florida 2000. The two-round system works well when
   there are only two widely-supported candidates. This is the typical
-  case within the US two-party default. IRV is "overkill" if the two
+  case within the US two-party default. IRV is "overkill" when the two
   candidates that get the most first-round votes always go on to the
-  final IRV round. However, if the US were to develop a strong
-  third-party, IRV would be helpful just as it would have been in the
-  2002 French election.
+  final IRV round. If the US were to (somehow) develop a strong
+  third-party, then IRV could be helpful (as in the 2002 French
+  election).
 
   It would be nice if voters could vote their conscience in a
   first-round. I think it's undesirable in FPTP that a candidate like
@@ -277,13 +274,13 @@ markdown:
   vote for one of the top two candidates, even if neither are their true
   first choice. Voters do this all the time.
 
-  Also: in the American two-party system, third party candidates are
+  Also: in the American two-party system, third-party candidates are
   marginal enough that they attract relatively few votes. Thus third
   party candidates can "spoil" only elections that were already very
-  close. Nader spoiled an election which was basically 49%/49%/2%. If
-  there had been a small tornado in Jacksonville, Bush would have lost.
-  If there had been a flood in Miami, it wouldn't matter what Nader
-  voters did: Gore would have lost.
+  close. Nader spoiled an election which was basically 49%/49%/2%.
+  Perhaps if there had been a small tornado in Jacksonville, Bush would
+  have lost. Perhaps if there had been a flood in Miami, it wouldn't
+  matter what Nader voters did: Gore would have lost.
 
   When an election result is close enough that it is not robust to
   random but typical events, the injustice of getting an election
@@ -294,12 +291,12 @@ markdown:
   #### Primary Elections In The United States
 
   General elections in the United States typically consist of only two
-  plausible candidates: the Democrat and the Republican nominees. *Primary*
-  elections for selection of the nominee, however, are often wide-open
-  with support fragmented across many plausible winners. Examples
-  include the 2016 Republican presidential primary (9 candidates won
-  convention delegates) and the 2020 Democratic presidential primary (7
-  candidates won delegates).
+  plausible candidates: the Democratic and the Republican nominees.
+  *Primary* elections for selection of the nominee, however, are often
+  wide-open with support fragmented across many plausible winners.
+  Examples include the 2016 Republican presidential primary (9
+  candidates won convention delegates) and the 2020 Democratic
+  presidential primary (7 candidates won delegates).
 
   Individual states run their primaries in many different ways. A
   typical way is to award convention delegates *in proportion* to a
@@ -313,47 +310,38 @@ markdown:
 
   On the Republican side: some state primaries award delegates
   proportionally (often with floor thresholds as in Democratic
-  primaries). Other primaries are *winner-take-all*: the winner of the
-  primary "takes all" the delegates. Winner-take-all is just another
-  name for FPTP -- with emphasis that *multiple* delegates are being
-  won.
+  primaries). Other primaries are FPTP *winner-take-all*: the FPTP
+  winner of the primary "takes all" the delegates.
 
   *Winner-take-most* methods are also used in Republican primaries.
-  Every state uses its own specific method with its own rules, but one
-  instructive example of a winner-take-most system is
-  [Alabama][alabama-rules]. Alabama allocates three convention delegates
-  for each congressional district. Within each congressional district,
-  if a candidate wins >50% of the vote *or* is the only candidate to win
-  >20% of the vote, then the candidate wins *all* of the district's
-  three delegates. Only if there are multiple candidates that win at
-  least 20% of the vote in a district are delegates dived amongst
-  candidates.
+  Every state uses its own specific method with its own rules. One
+  instructive example is [the system used by Alabama][alabama-rules].
+  Alabama allocates three convention delegates for each congressional
+  district. Within each congressional district, if a candidate wins >50%
+  of the vote *or* is the only candidate to win >20% of the vote, then
+  the candidate wins *all* of the district's three delegates. Only if
+  there are multiple candidates that win at least 20% of the vote in a
+  district are delegates dived amongst candidates.
 
   In Alabama, Trump won 43% of the primary vote, while Ted Cruz won
   about 21% of the statewide vote. But Cruz's support in many individual
   districts was less than the 20% cutoff. Thus Trump won all three
-  delegates in many congressional districts. This is how Trump can
-  receive only 43% of the votes cast in Alabama but still win 72% of the
-  delegates.
+  delegates in many Alabama congressional districts. This is how Trump
+  can receive only 43% of the votes cast in Alabama but still win 72% of
+  the delegates.
 
   [alabama-rules]: http://www.thegreenpapers.com/P16/AL-R
 
   #### Non-Proportionality Incurs Wasted Votes
 
   We call a result *non-proportional* if a candidate wins a greater
-  percentage of delegates than their share of the votes. Of course,
-  winner-take-all is the *most* non-proportional system possible. The
-  plurality winner always wins exactly 100% of the delegates no matter
-  how low their vote share (so long as it is greater than any other
-  candidate).
+  percentage of delegates than their share of the votes. Winner-take-all
+  (whether FPTP or IRV style) is the *most* non-proportional system
+  possible. The plurality winner always wins exactly 100% of the
+  delegates no matter how low their vote share.
 
   Winner-take-most systems can also produce very non-proportional
-  outcomes in fragmented races, as we've seen. Given his fragmented
-  opposition, winner-take-most systems helped to greatly amplify Trump's
-  delegate count in 2016. In the 2016 Republican primary, ~40% of all
-  delegates were awarded by the winner-take-all and winner-take-most
-  methods.
-
+  outcomes in fragmented races, as we've seen in the Alabama example.
   Even so-called proportional allocation can produce a non-proportional
   result if elimination thresholds are high.
 
@@ -362,28 +350,43 @@ markdown:
   received 18% of the vote in Alabama and won only 2% of the convention
   delegates. If we presume that Rubio supporters wanted to stop Trump
   and would have preferred Cruz, then their votes for Rubio were wasted
-  and regrettable.
+  and regrettable. Switching Rubio votes to Cruz would have a huge
+  impact because it would help Cruz avoid the 20% cutoff in many
+  districts.
+
+  The problem is acute because Rubio is so close to the elimination
+  cutoff. How could Rubio voters know that he would not meet the 20%
+  cutoff in most districts? If Rubio voters expect that Rubio will meet
+  the threshold, they should vote Rubio. If they expect he will not,
+  then they should vote Cruz. In fact, the same difficult calculation
+  must be made by the Cruz voters -- Cruz's support also hovered just
+  around the cutoff. The problem is that without perfect polling, you
+  cannot know before an election whether a candidate will be eliminated
+  by the threshold.
+
+  In the 2016 Republican primary, ~40% of all delegates were awarded by
+  the FPTP winner-take-all and various winner-take-most methods. Given
+  his fragmented opposition, winner-take-most systems helped to greatly
+  amplify Trump's delegate count in 2016.
 
   #### Fixing Non-Proportionality In Primary Elections
 
-  Where winner-take-all is already used, IRV is a clear improvement over
-  the FPTP in a fractured landscape. It might have [flipped some early
-  Trump victories][trump-flip] like South Carolina. I see no downside in
+  Where FPTP winner-take-all is already used, IRV is a clear improvement
+  in a fractured landscape. Switching from FPTP winner-take-all to IRV
+  winner-take-all might have [flipped some early Trump
+  victories][trump-flip] like South Carolina. I see no downside in
   selecting a candidate like Rubio or Cruz if the majority of the
-  Republican electorate prefers either of them to Donald Trump. Rubio
-  and Cruz were spoiling each other. Maybe the spoiling effect was great
-  enough to throw some primaries in Trump's favor.
+  Republican electorate prefers either of them to Donald Trump.
 
   [trump-flip]: https://www.fairvote.org/simulating_instant_runoff_flips_most_donald_trump_primary_victories
 
   It is difficult to analyze post-hoc what could have happened in
   Alabama if a winner-take-all IRV system had been used instead of their
-  winner-take-most system. Quite possibly Trump would have won a
-  majority after eliminated candidates' votes were transferred. It
-  depends on how never-Trump the Rubio voters were. Switching from a
-  semi-proportional system like winner-take-most to a non-proportional
-  system like IRV would reduce votes wasted on Rubio, but it also will
-  produce a less proportional outcome.
+  winner-take-most system. As candidates like Kasich, Carson, and Rubio
+  were eliminated, would their votes transfer to Cruz or to Trump? It's
+  quite possible that Trump would have won a majority after eliminated
+  candidates' votes were transferred. Winner-take-all IRV could have
+  *helped* Trump in Alabama.
 
   One alternative (amongst many), is to retain the existing
   winner-take-most system, but to have voters rank candidates. Alabama
@@ -394,61 +397,56 @@ markdown:
 
   Under the existing Alabama system, voters for eliminated candidates
   effectively have their votes discarded. Their vote is wasted and
-  regrettable. Why not let them (automatically) change their vote to
-  an uneliminated candidate?
+  regrettable. Why not let voters (automatically) change their vote to
+  an uneliminated candidate? Doing so would both retain the intended
+  proportionality of winner-take-most, while reducing vote wastage and
+  spoiling.
 
   #### Conclusions
 
-  1. Introducing IRV probably wouldn't fundamentally change the two
-     party dynamic that prevails in American general elections. IRV
-     would eliminate third party candidates and the election would
-     mostly reduce to the two main parties (as is already the case).
-  1. Introducing IRV could reduce the probability that extremist
-     candidates are selected in *primary* elections (where there can be
-     many similar candidates).
-  1. IRV has some advantages (and no disadvantages) when compared with
-     both FPTP and the two-round system.
-  1. Either a two-round or IRV system in *general* elections would
-     reduce the possibility of spoiling. Using two-round or IRV would be
-     more like the rest of the world. It would usually have no impact on
-     the final outcome, but could be nice in some very close elections
-     like Florida 2000.
-  1. IRV would be better than the two-round system if the US were to
-     (somehow) develop into a multiparty system (as in France). IRV
-     would prevent the spoiling problem seen in France 2002.
-  1. Winner-take-all primaries should absolutely be replaced by IRV in
+  1. Using either a two-round or IRV system for *general* elections
+     would reduce the possibility of spoiling. Doing so would be less
+     idiosyncratic and more like the rest of the world. This change
+     would *usually* have no impact on the final outcome, but could be
+     nice in some very close elections like Florida 2000. There is no
+     obvious downside.
+  1. For general elections, IRV would be better than the
+     two-round system if the US were to (somehow) develop a multiparty
+     political system (as in France). IRV would prevent the spoiling
+     problem seen in France 2002.
+  1. Winner-take-all *primaries* should absolutely be replaced by IRV in
      US primaries. This is a simple change with significant benefits. It
-     would produce much fairer outcomes with no downside. It doesn't
-     make sense that a widely undesired candidate should win their
-     party's nomination simply because a minority of voters want that
-     person.
+     would produce much fairer outcomes with no downside. Fragmentation,
+     vote wasting, and spoiling are common problems in primaries. It
+     doesn't make sense that a widely undesired candidate should win
+     their party's nomination simply because a minority of voters want
+     that person.
   1. Where "proportional" primary systems are encumbered by floor
-     thresholds (as in Democratic primaries or winner-take-most
-     primaries à la Alabama), it is unarguable that allowing votes of
+     thresholds (as in the Democratic primaries or winner-take-most
+     primaries à la Alabama), it seems clear that allowing votes of
      eliminated candidates to transfer IRV-style is the more rational
-     and fairer system.
+     and fairer system. This is again a simple change with no obvious
+     downside, but a great positive impact.
 
   #### Future Discussion
 
-  My discussion in this essay has been focused on *wasted votes* and
-  *voter regret*. It has taken for granted that wastage, regret, and
-  spoiling are all bad.
+  My discussion in this essay has generally taken the political
+  landscape for granted. In a future essay, I'd like to focus on how
+  changing the electoral system might change the political landscape.
+  For instance: would adopting IRV encourage more and stronger
+  third-party candidates to run in general elections? Would political
+  parties try to pick less alienating candidates if they knew that
+  voters would have more plausible general election options? Would IRV
+  vote transfers discover desirable candidates outside the bipolar US
+  political order?
 
-  I also began to talk about *proportionality* of election outcomes. In
-  a future essay, I would like to discuss why proportional outcomes
-  might be a good thing.
+  Many other nations use proportional representation in the national
+  legislature. That is: if X% of the population votes for the Green
+  Party, the Green Party wins about X% of the seats of the national
+  parliament. Is this desirable? What are the pros-and-cons? Can such a
+  system discover a path forward that our bipolar order cannot?
 
-  When discussing the effect of IRV on general elections, I have mostly
-  presumed that the existing two-party dynamic would continue to
-  prevail. However, I would like to explore in the future whether we
-  might expect the two-party dynamic to change if we were to change our
-  electoral system. Would that be a good thing?
-
-  Even if the general election two-party dynamic did not change, would
-  the parties themselves be affected by the introduction of IRV in
-  primaries? I've suggested that polarizing candidates might be getting
-  a boost from winner-take-all, but I would like to examine that more
-  carefully.
+  These are all questions for a future essay!
 
   #### Outline
 
@@ -475,36 +473,8 @@ markdown:
     * IRV is better than FPTP. Could change South Carolina.
     * IRV could be less proportional than winner-take-most.
     * Transferring votes of threshold eliminated candidates makes sense.
-  * Future:
-    * Would IRV help primaries concentrate on centrists?
-    * Would IRV in general elections change two-party dynamic?
-    * Should I mention concept of Condorcet winner?
+  * Future: how would IRV change the political landscape? If we adopt
+    a different electoral system, can we find a path forward for the US?
 
   **TODO**: Why didn't voters focus on one non-Trump candidate in the
   primaries?
-
-  #### Voter Regret, Head-To-Head Elections, and Condorcet Winners
-
-  **TODO**: Reconsider. I haven't reviewed past here. I've reviewed and
-  liked everything prior.
-
-  Let us say that voters for Nader prefer Gore over Markov. Perhaps
-  Markov and Nader represent political extremes, while Gore is a
-  centrist candidate. Given the vote breakdown, Nader voters would have
-  done better to vote for Gore rather than Nader. By switching their
-  vote they could put Gore in the lead 55%-to-45%.
-
-  It feels undesirable that Nader voters *regret* their vote for Nader
-  (wish they could change their vote to Gore). It gets worse. If Gore
-  represents the political center, then Markov voters probably prefer
-  Gore to Nader. In that case, Gore would win a head-to-head race
-  against Nader 80%-to-20%.
-
-  Gore would beat *every other candidate* if he were in a head-to-head
-  race with them. We call Gore the *Condorcet winner* of the election.
-  There can be only (at most) one Condorcet winner in an election.
-
-  Speaking loosely/imprecisely, the Condorcet winner (when there is
-  one), is the single candidate that "a majority" agrees is better than
-  every other candidate. It seems a shame that FPTP can fail to elect
-  the Condorcet winner (as in our example).
