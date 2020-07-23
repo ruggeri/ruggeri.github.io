@@ -11,52 +11,78 @@
 markdown:
   **TODO**: write an introduction.
 
-  #### First Past The Post
+  #### Outline
+
+  1. We will learn how the *first-past-the-post* electoral system
+     works.
+  1. We will learn about the phenomena of *wasted votes*, *voter
+     regret*, and *spoiler candidates*.
+  1. We will learn how the *two-round* electoral system works and
+     where is is used. We will learn how it is less susceptible to
+     wastage, regret, and spoiling.
+  1. We will see how spoiling can still occur in the two-round
+     system. We will examine a historical example.
+  1. We will learn how a multi-round system called *instant runoff
+     voting* solves the spoiling problem that occurs in a two-round
+     system. We will learn about countries and cities where instant
+     runoff voting is used.
+  1. We will observe a key difference in US general and primary
+     elections: US general elections are bipolar, while US primary
+     elections feature fragmented support across many candidates.
+  1. We will see that US primary elections are thus particularly
+     susceptible to vote wastage and spoiling. We will see that
+     introducing IRV could significantly reduce wastage and spoiling
+     with no obvious downside.
+
+  #### First-past-the-post
 
   With the exception of Maine, each US state votes *all* its electoral
-  votes for *one* presidential candidate, no matter how close the
-  election in that state. Consider Florida in 2000. George W Bush won
-  48.847% of the vote, Al Gore won 48.838%, and Ralph Nader won 1.635%
-  of the vote. For the sake of simpler numbers, let's say that the
-  breakdown was Bush 49%, Gore 48%, Nader 3%.
+  votes for *one* presidential candidate. It does not matter how close
+  the election is in that state. Consider Florida in 2000. George W.
+  Bush won 48.847% of the vote, Al Gore won 48.838%, and Ralph Nader won
+  1.635% of the vote. For the sake of simpler numbers, let's say that
+  the breakdown was Bush 49%, Gore 48%, Nader 3%.
 
-  Even though Bush won by only one percentage point, all of Florida's 25
-  electoral votes went to Bush. This happens even though fewer than 50%
-  of voters voted for Bush.
+  Even though Bush beat Gore by only one percentage point, all of
+  Florida's 25 electoral votes went to Bush. This happens even though
+  fewer than 50% of voters voted for Bush.
 
-  This kind of electoral system is called *First Past The Post*
+  This kind of electoral system is called *first-past-the-post*
   (abbreviated FPTP). In a FPTP system, the winner is the candidate who
   has received the *plurality* of the votes (the greatest number). It
-  doesn't matter whether the winner has received a *majority* of the
+  does not matter whether the winner has received a *majority* of the
   votes (that is, more than 50% of the votes cast).
 
   #### Wasted Votes, Voter Regret, Spoilers
 
-  We might (cruelly) say that the voters for Nader have "wasted" their
+  We might (cruelly) say that the voters for Nader have "*wasted*" their
   votes. They did not vote for either of the top-two candidates, so the
   Nader voters neither increased nor decreased Bush's margin of victory.
   In a sense, the Nader voters' participation was superfluous to the
   final result of the election.
 
-  Bush and Gore are (with respect to the American political spectrum)
-  center-right and center-left candidates. Nader is more strongly
-  left-wing. Probably most voters for Nader would have preferred that
-  Gore be elected over Bush. The Florida voters for Nader may *regret*
-  their vote and wish that they had voted for Gore instead.
+  Probably most voters for Nader would have preferred that Gore be
+  elected over Bush. The Florida voters for Nader may *regret* their
+  vote and wish that they had voted for Gore instead.
 
   If Nader's voters were able to switch their votes to Gore, Gore would
   win 51%-to-49%. Because Nader's candidacy has pulled away enough
   voters from Gore so that he is in second-place (rather than the
-  winner), we call Nader a "*spoiler*" candidate. (BTW, when I say
-  "spoiler," I am not trying to be pejorative.)
+  winner), we call Nader a "*spoiler*" candidate.
+
+  I should note: when I write that a vote is "wasted" or that a
+  candidate is a "spoiler," I am not trying to be pejorative or
+  denigrate the voter or candidate. The point of this essay is that a
+  better electoral system would reduce the phenomena of wastage and
+  spoiling.
 
   #### Two-Round Systems
 
-  Some electoral systems try to address this problem by using a
-  *two-round* electoral system. Under such a system, if no candidate
-  receives a majority of votes in the first round, then a *second* round
-  is run. The second round consists of only the top two candidates from
-  the first round.
+  Some electoral systems try to address the problems of wasting and
+  spoiling by using a *two-round* electoral system. Under such a system,
+  if no candidate receives a majority of votes in the first round, then
+  a *second* round is run. The second round consists of only the top two
+  candidates from the first round.
 
   In our example, neither Bush, Gore, nor Nader received a majority
   (more than 50% of votes). Thus a second round would be run. The top
@@ -67,19 +93,24 @@ markdown:
 
   The two-round system tends to reduce "wasted" votes. Every vote in the
   second round either increases or decreases the winner's margin of
-  victory -- *no second round vote is wasted*. Effectively, the two
-  round system gives every voter a chance to change their vote to one of
-  the top two candidates.
+  victory -- *no second round vote is wasted*. Effectively, the
+  two-round system gives every voter a chance to change their vote to
+  one of the top two candidates.
 
-  A single third-party candidate can never act as a spoiler in the two
-  round system, since the potential spoiler is eliminated before the
-  final second round. We will investigate (soon!) what can happen when
-  there are *more* than three candidates.
+  A single third-party candidate can never act as a spoiler in the
+  two-round system, since the potential spoiler is eliminated before the
+  final second round. Likewise, when there are exactly three candidates,
+  first-round votes for the eliminated candidate are not wasted -- those
+  voters get a second chance to vote.
+
+  We will investigate (soon!) what can happen when there are *more* than
+  three candidates.
 
   #### Where Is The Two-Round System Used?
 
   When electing the president of a country, the two-round system is very
-  commonly used. France is the classic example.
+  commonly used. France since the Fifth Republic is the classic example
+  of a president being elected this way.
 
   Most countries do not use single-member legislative districts, so
   neither FPTP nor two-round systems are applicable. In those countries
@@ -196,23 +227,23 @@ markdown:
   gives Gore his 51%-49% victory over Bush.
 
   If there had been $N>3$ candidates in our example, we would "simulate"
-  more rounds: $N-1$ of them! Note an "optimization:" we can always stop
-  simulating rounds as soon as a candidate obtains a majority of the
-  vote (greater than 50% of the vote). If a candidate has more than 50%
-  of the vote in round $k$, then they will have a majority in every
-  round subsequent to $k$.
+  more rounds: $N-1$ of them! Note a possible "optimization:" we can
+  always stop simulating rounds as soon as a candidate obtains a
+  majority of the vote (greater than 50% of the vote). If a candidate
+  has more than 50% of the vote in round $k$, then they will have a
+  majority in every round subsequent to $k$.
 
   Methods that ask voters to *rank* candidates are called *ranked
   choice* systems (there are many such systems). The particular ranked
-  choice system we've described here is called *Instant Runoff Voting*
+  choice system we've described here is called *instant runoff voting*
   (abbreviated *IRV*).
 
   #### Where Is Instant Runoff Voting Used?
 
-  Instant Runoff Voting is the system that is used to elect the mayor of
-  San Francisco. It is used to elect members of the lower house of
-  Australia's parliament (since 1919!). Maine will use IRV in 2020 when
-  it votes for president.
+  Instant runoff voting is the system that is used to elect the mayor of
+  San Francisco. It has been used to elect members of the lower house of
+  Australia's parliament since 1919! Maine will use IRV in 2020 when it
+  votes for president.
 
   #### Instant Runoff Voting: An Example
 
@@ -258,9 +289,9 @@ markdown:
   there are only two widely-supported candidates. This is the typical
   case within the US two-party default. IRV is "overkill" when the two
   candidates that get the most first-round votes always go on to the
-  final IRV round. If the US were to (somehow) develop a strong
-  third-party, then IRV could be helpful (as in the 2002 French
-  election).
+  final IRV round. If the US were to (somehow) develop stronger
+  third-parties, then IRV could be helpful (as demonstrated by the 2002
+  French election example).
 
   It would be nice if voters could vote their conscience in a
   first-round. I think it's undesirable in FPTP that a candidate like
@@ -268,25 +299,28 @@ markdown:
   candidate's victory.
 
   On the other hand, I would not want to overdramatize the failure of
-  FPTP with respect to spoilers. Given the two-party system that
-  prevails in the United States, voters can easily identify the top two
-  general election candidates. To avoid wasting their ballot, they can
-  vote for one of the top two candidates, even if neither are their true
-  first choice. Voters do this all the time.
+  FPTP with respect to spoiling US general elections. Given the
+  two-party system that prevails in the United States, voters can easily
+  identify the top two general election candidates. To avoid wasting
+  their ballot, they can vote for one of the top two candidates, even if
+  neither are their true first choice. Voters do this all the time.
 
   Also: in the American two-party system, third-party candidates are
   marginal enough that they attract relatively few votes. Thus third
   party candidates can "spoil" only elections that were already very
   close. Nader spoiled an election which was basically 49%/49%/2%.
-  Perhaps if there had been a small tornado in Jacksonville, Bush would
-  have lost. Perhaps if there had been a flood in Miami, it wouldn't
-  matter what Nader voters did: Gore would have lost.
 
-  When an election result is close enough that it is not robust to
-  random but typical events, the injustice of getting an election
-  "wrong" is less. In my opinion, the greater tragedy of Florida 2000
-  was that 49% of voters wanted to vote for Bush. I hesitate to blame
-  FPTP and Nader too much.
+  Imagine that there had been a heavy rainstorm in Jacksonville. Maybe
+  Bush voters would have stayed home rather than go out to vote. Bush
+  might have lost despite Nader's spoiling. On the other hand: imagine
+  that there had been a storm in Miami. If Gore voters had stayed home
+  it probably wouldn't matter what Nader voters did.
+
+  When an election is close enough that the outcome it is not robust to
+  random but typical events (like a rainstorm), the injustice of getting
+  an election "wrong" is less. If there is a Florida 2000 tragedy, I
+  think it is that 49% of voters chose to vote for Bush. I hesitate to
+  blame FPTP and Nader too much.
 
   #### Primary Elections In The United States
 
@@ -304,9 +338,10 @@ markdown:
   20% of a state's primary vote, then X receives 20% of the state's
   primary delegates. This is (mostly) the way that the Democrats award
   delegates. The major caveat is that Democratic candidates with less
-  than 15% of the vote get *no* delegates. This is (supposedly) intended
-  to reduce the influence of fringe candidates. Delegates are divided
-  proportionally once votes for eliminated candidates are disregarded.
+  than 15% of the vote in a state get *no* delegates. This is
+  (supposedly) intended to reduce the influence of fringe candidates.
+  Delegates are divided proportionally once votes for eliminated
+  candidates are disregarded.
 
   On the Republican side: some state primaries award delegates
   proportionally (often with floor thresholds as in Democratic
@@ -317,18 +352,18 @@ markdown:
   Every state uses its own specific method with its own rules. One
   instructive example is [the system used by Alabama][alabama-rules].
   Alabama allocates three convention delegates for each congressional
-  district. Within each congressional district, if a candidate wins >50%
+  district. Within each congressional district, if candidate X wins >50%
   of the vote *or* is the only candidate to win >20% of the vote, then
-  the candidate wins *all* of the district's three delegates. Only if
+  candidate X wins *all* of the district's three delegates. Only if
   there are multiple candidates that win at least 20% of the vote in a
   district are delegates dived amongst candidates.
 
-  In Alabama, Trump won 43% of the primary vote, while Ted Cruz won
-  about 21% of the statewide vote. But Cruz's support in many individual
-  districts was less than the 20% cutoff. Thus Trump won all three
-  delegates in many Alabama congressional districts. This is how Trump
-  can receive only 43% of the votes cast in Alabama but still win 72% of
-  the delegates.
+  In Alabama, Trump won 43% of the statewide primary vote, while Ted
+  Cruz won about 21% of the statewide vote. But Cruz's support in many
+  individual districts was less than the 20% cutoff. Thus Trump won all
+  three delegates in many Alabama congressional districts. This is how
+  Trump can receive only 43% of the votes cast in Alabama but still win
+  72% of the delegates.
 
   [alabama-rules]: http://www.thegreenpapers.com/P16/AL-R
 
@@ -347,27 +382,32 @@ markdown:
 
   When an electoral system is non-proportional, we've seen that wasted
   votes and spoiling becomes problematic. For instance, Marco Rubio
-  received 18% of the vote in Alabama and won only 2% of the convention
+  received 18% of the vote in Alabama yet won only 2% of the convention
   delegates. If we presume that Rubio supporters wanted to stop Trump
   and would have preferred Cruz, then their votes for Rubio were wasted
-  and regrettable. Switching Rubio votes to Cruz would have a huge
-  impact because it would help Cruz avoid the 20% cutoff in many
-  districts.
+  and regrettable. Switching Rubio votes to Cruz would have made a big
+  difference in the election outcome because it would have helped Cruz
+  avoid the 20% cutoff in many districts.
 
   The problem is acute because Rubio is so close to the elimination
-  cutoff. How could Rubio voters know that he would not meet the 20%
-  cutoff in most districts? If Rubio voters expect that Rubio will meet
-  the threshold, they should vote Rubio. If they expect he will not,
-  then they should vote Cruz. In fact, the same difficult calculation
-  must be made by the Cruz voters -- Cruz's support also hovered just
-  around the cutoff. The problem is that without perfect polling, you
-  cannot know before an election whether a candidate will be eliminated
-  by the threshold.
+  threshold. How could Rubio voters have known that he would not meet
+  the 20% threshold in most districts? If Rubio voters expected that
+  Rubio would surpass the elimination threshold, then they were "right"
+  to vote for Rubio. If they expected he would *not* surpass the
+  threshold, then they "should" have voted for Cruz.
+
+  In fact, the same difficult calculation must be made by the Cruz
+  voters -- Cruz's support also hovered just around the elimination
+  threshold. The problem is that without perfect polling, you cannot
+  know before an election whether a candidate will be eliminated by the
+  elimination threshold.
 
   In the 2016 Republican primary, ~40% of all delegates were awarded by
   the FPTP winner-take-all and various winner-take-most methods. Given
-  his fragmented opposition, winner-take-most systems helped to greatly
-  amplify Trump's delegate count in 2016.
+  his fragmented opposition, winner-take-all and winner-take-most
+  systems helped to greatly amplify Trump's delegate count in 2016. It
+  is very possible that Trump would not have been selected if
+  alternative electoral methods had been used.
 
   #### Fixing Non-Proportionality In Primary Elections
 
@@ -376,52 +416,52 @@ markdown:
   winner-take-all might have [flipped some early Trump
   victories][trump-flip] like South Carolina. I see no downside in
   selecting a candidate like Rubio or Cruz if the majority of the
-  Republican electorate prefers either of them to Donald Trump.
+  Republican electorate prefers both of them to Donald Trump.
 
   [trump-flip]: https://www.fairvote.org/simulating_instant_runoff_flips_most_donald_trump_primary_victories
 
   It is difficult to analyze post-hoc what could have happened in
   Alabama if a winner-take-all IRV system had been used instead of their
   winner-take-most system. As candidates like Kasich, Carson, and Rubio
-  were eliminated, would their votes transfer to Cruz or to Trump? It's
-  quite possible that Trump would have won a majority after eliminated
-  candidates' votes were transferred. Winner-take-all IRV could have
-  *helped* Trump in Alabama.
+  were eliminated, would their votes have transferred to Cruz or to
+  Trump? It's quite possible that Trump would have won a majority after
+  eliminated candidates' votes were transferred. Winner-take-all IRV
+  could have *helped* Trump in Alabama.
 
   One alternative (amongst many), is to retain the existing
-  winner-take-most system, but to have voters rank candidates. Alabama
-  could eliminate candidates below the proportionality threshold
+  winner-take-most system, but to have voters rank the candidates.
+  Alabama could eliminate candidates below the elimination threshold
   one-at-a-time (IRV style). Votes for an eliminated candidate could be
-  transferred to the voter's lower-ranked candidates. You continue
-  elimination until all remaining candidates meet the threshold.
+  transferred to the voter's lower-ranked candidates. You continue the
+  elimination/transfer process until all remaining candidates meet the
+  threshold. Then you distribute delegates proportionally.
 
   Under the existing Alabama system, voters for eliminated candidates
-  effectively have their votes discarded. Their vote is wasted and
-  regrettable. Why not let voters (automatically) change their vote to
-  an uneliminated candidate? Doing so would both retain the intended
-  proportionality of winner-take-most, while reducing vote wastage and
-  spoiling.
+  effectively have their votes discarded. That seems ridiculously
+  capricious and wasteful. Why not let voters (automatically) change
+  their vote to an uneliminated candidate? Doing so would both retain
+  the intended proportionality of winner-take-most, while reducing vote
+  wastage and spoiling.
 
   #### Conclusions
 
   1. Using either a two-round or IRV system for *general* elections
      would reduce the possibility of spoiling. Doing so would be less
-     idiosyncratic and more like the rest of the world. This change
-     would *usually* have no impact on the final outcome, but could be
-     nice in some very close elections like Florida 2000. There is no
-     obvious downside.
+     idiosyncratic of the US and more like the rest of the world. This
+     change would *usually* have no impact on the final outcome, but
+     could be nice in some very close elections like Florida 2000. There
+     is no obvious downside.
   1. For general elections, IRV would be better than the
      two-round system if the US were to (somehow) develop a multiparty
-     political system (as in France). IRV would prevent the spoiling
+     political order (as in France). IRV would prevent the spoiling
      problem seen in France 2002.
-  1. Winner-take-all *primaries* should absolutely be replaced by IRV in
-     US primaries. This is a simple change with significant benefits. It
-     would produce much fairer outcomes with no downside. Fragmentation,
-     vote wasting, and spoiling are common problems in primaries. It
-     doesn't make sense that a widely undesired candidate should win
-     their party's nomination simply because a minority of voters want
-     that person.
-  1. Where "proportional" primary systems are encumbered by floor
+  1. Winner-take-all *primaries* should absolutely be replaced by IRV.
+     This is a simple change with significant benefits. It would produce
+     much fairer outcomes with no downside. Fragmentation, vote wasting,
+     and spoiling are common problems in primaries. It doesn't make
+     sense that a widely undesired candidate can win their party's
+     nomination when a majority of voters want anyone but that person.
+  1. Where "proportional" primary systems are encumbered by elimination
      thresholds (as in the Democratic primaries or winner-take-most
      primaries à la Alabama), it seems clear that allowing votes of
      eliminated candidates to transfer IRV-style is the more rational
@@ -436,9 +476,9 @@ markdown:
   For instance: would adopting IRV encourage more and stronger
   third-party candidates to run in general elections? Would political
   parties try to pick less alienating candidates if they knew that
-  voters would have more plausible general election options? Would IRV
-  vote transfers discover desirable candidates outside the bipolar US
-  political order?
+  voters would have more general election alternatives? Would IRV vote
+  transfers "discover" and elect desirable candidates outside the
+  bipolar US political order?
 
   Many other nations use proportional representation in the national
   legislature. That is: if X% of the population votes for the Green
@@ -446,35 +486,20 @@ markdown:
   parliament. Is this desirable? What are the pros-and-cons? Can such a
   system discover a path forward that our bipolar order cannot?
 
-  These are all questions for a future essay!
+  These are all questions I hope to discuss in a future essay!
 
-  #### Outline
+  #### Further resources
 
-  * Describe FPTP
-  * Describe wasted votes, spoilers
-  * Describe two round, where it is used
-  * Describe when two round fails
-  * Diagnose the problem as wasted votes in first round
-  * Introduce multiple rounds.
-  * Describe IRV as an automation
-  * Describe where IRV is used.
-  * Work an IRV example.
-  * Assess IRV impact on *general* elections.
-    * Not significantly better than two rounds in two-party system.
-    * Could help in some close situations, but those are already so
-      close...
-  * Discuss US primary methods
-    * Proportional with threshold.
-    * Winner-take-all.
-    * Winner-take-most.
-  * Work Alabama example.
-  * Describe non-proportionality and wasted votes.
-  * Describe fixes.
-    * IRV is better than FPTP. Could change South Carolina.
-    * IRV could be less proportional than winner-take-most.
-    * Transferring votes of threshold eliminated candidates makes sense.
-  * Future: how would IRV change the political landscape? If we adopt
-    a different electoral system, can we find a path forward for the US?
+  * The [FairVote][fairvote] organization advocates for ranked choice
+    voting in US elections.
+  * [The Green Papers][the-green-papers] is a website that documents the
+    US primary process and results.
 
-  **TODO**: Why didn't voters focus on one non-Trump candidate in the
-  primaries?
+  [fairvote]: https://www.fairvote.org/
+  [the-green-papers]: http://www.thegreenpapers.com/
+
+  #### TODOs
+
+  * Why didn't voters focus on one non-Trump candidate in the primaries?
+  * Write intro that explains premise of this series of entries.
+  * Replace example with the Wikipedia IRV example. Link Wikipedia. Use diagrams.
